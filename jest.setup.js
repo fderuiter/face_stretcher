@@ -4,7 +4,8 @@ require('@testing-library/jest-dom');
 jest.mock('three', () => ({
     WebGLRenderer: jest.fn(),
     Scene: jest.fn(),
-    PerspectiveCamera: jest.fn(),    PlaneGeometry: jest.fn(() => {
+    PerspectiveCamera: jest.fn(),
+    PlaneGeometry: jest.fn(() => {
         const posArray = new Float32Array(300);
         for (let i = 0; i < 100; i++) {
             posArray[i * 3] = Math.random();
@@ -22,17 +23,23 @@ jest.mock('three', () => ({
             dispose: jest.fn()
         };
     }),
-    MeshBasicMaterial: jest.fn(() => {
-        const material = {
-            dispose: jest.fn(),
-            map: {
-                dispose: jest.fn()
-            }
-        };
-        return material;
-    }),
-    Mesh: jest.fn(() => {
-        const geometry = {
+    MeshBasicMaterial: jest.fn(() => ({
+        dispose: jest.fn(),
+        map: {
+            dispose: jest.fn()
+        }
+    })),
+    Mesh: jest.fn(() => ({
+        position: { set: jest.fn() },
+        scale: { set: jest.fn() },
+        rotation: { set: jest.fn() },
+        userData: {
+            radius: 0.3,
+            strength: 1.0,
+            kStiff: 8,
+            damping: 4
+        },
+        geometry: {
             attributes: {
                 position: {
                     count: 100,
@@ -41,32 +48,21 @@ jest.mock('three', () => ({
                 }
             },
             dispose: jest.fn()
-        };
-        const material = {
+        },
+        material: {
             dispose: jest.fn(),
             map: {
                 dispose: jest.fn()
             }
-        };
-        return {
-            position: { set: jest.fn() },
-            scale: { set: jest.fn() },
-            rotation: { set: jest.fn() },
-            userData: {
-                radius: 0.3,
-                strength: 1.0,
-                kStiff: 8,
-                damping: 4
-            },
-            geometry: geometry,
-            material: material
-        };
-    }),Vector2: jest.fn(() => ({ 
-        x: 0, 
+        }
+    })),
+    Vector2: jest.fn(() => ({
+        x: 0,
         y: 0,
         subVectors: jest.fn().mockReturnThis(),
         multiplyScalar: jest.fn().mockReturnThis()
-    })),    Vector3: jest.fn(() => {
+    })),
+    Vector3: jest.fn(() => {
         const vec = {
             x: 0,
             y: 0,
@@ -99,28 +95,26 @@ jest.mock('three', () => ({
                 vec.z = array[offset + 2];
                 return vec;
             }),
-            distanceTo: jest.fn((v) => {
-                const dx = vec.x - v.x;
-                const dy = vec.y - v.y;
-                const dz = vec.z - v.z;
-                return Math.sqrt(dx * dx + dy * dy + dz * dz);
-            }),
-            clone: jest.fn(() => {
-                const newVec = { x: vec.x, y: vec.y, z: vec.z };
-                return {
-                    ...newVec,
-                    subVectors: vec.subVectors,
-                    multiplyScalar: vec.multiplyScalar,
-                    length: vec.length,
-                    normalize: vec.normalize,
-                    fromArray: vec.fromArray,
-                    distanceTo: vec.distanceTo,
-                    clone: vec.clone,
-                    copy: vec.copy,
-                    add: vec.add,
-                    toArray: vec.toArray
-                };
-            }),
+            distanceTo: jest.fn((v) => Math.sqrt(
+                Math.pow(vec.x - v.x, 2) +
+                Math.pow(vec.y - v.y, 2) +
+                Math.pow(vec.z - v.z, 2)
+            )),
+            clone: jest.fn(() => ({
+                x: vec.x,
+                y: vec.y,
+                z: vec.z,
+                subVectors: vec.subVectors,
+                multiplyScalar: vec.multiplyScalar,
+                length: vec.length,
+                normalize: vec.normalize,
+                fromArray: vec.fromArray,
+                distanceTo: vec.distanceTo,
+                clone: vec.clone,
+                copy: vec.copy,
+                add: vec.add,
+                toArray: vec.toArray
+            })),
             copy: jest.fn((v) => {
                 vec.x = v.x;
                 vec.y = v.y;
@@ -153,13 +147,10 @@ jest.mock('three', () => ({
 }));
 
 // Mock TensorFlow
-const mockEstimateFaces = jest.fn().mockResolvedValue([{
-    mesh: [[0, 0, 0]],
-    scaledMesh: [[0, 0, 0]],
-    boundingBox: {
-        topLeft: [0, 0],
-        bottomRight: [100, 100]
-    }
+const mockEstimateFaces = jest.fn().mockImplementation(async () => [{
+    box: { xMin: 0, yMin: 0, xMax: 100, yMax: 100 },
+    mesh: Array(468).fill([0, 0, 0]),
+    scaledMesh: Array(468).fill([0, 0, 0])
 }]);
 
 const mockModel = {
@@ -173,36 +164,27 @@ jest.mock('@tensorflow-models/face-landmarks-detection', () => ({
     }
 }));
 
-// Make mock functions available globally for tests
+// Make functions available globally
 global.mockEstimateFaces = mockEstimateFaces;
-
-// Mock TensorFlow globally
-const mockFaceLandmarksDetection = jest.fn();
-
-// Default mock implementation that returns a face
-const defaultMockImpl = async () => [{
-    box: { xMin: 0, yMin: 0, xMax: 100, yMax: 100 },
-    mesh: Array(468).fill([0, 0, 0]),
-    scaledMesh: Array(468).fill([0, 0, 0])
-}];
-
-// Update the existing mockEstimateFaces instead of redeclaring it
-mockEstimateFaces.mockImplementation(defaultMockImpl);
-
-mockFaceLandmarksDetection.load = jest.fn().mockResolvedValue({
-    estimateFaces: mockEstimateFaces
-});
-
-mockFaceLandmarksDetection.SupportedPackages = {
-    mediapipeFacemesh: 'mediapipeFacemesh'
+global.faceLandmarksDetection = {
+    load: jest.fn().mockResolvedValue(mockModel),
+    SupportedPackages: {
+        mediapipeFacemesh: 'mediapipeFacemesh'
+    }
 };
 
-// Make mocks available globally for tests
-global.faceLandmarksDetection = mockFaceLandmarksDetection;
-global.mockEstimateFaces = mockEstimateFaces;
-global.defaultMockImpl = defaultMockImpl;
+// Mock document and canvas API
+class MockCanvas {
+    constructor() {
+        this.toBlob = jest.fn((callback) => {
+            callback(new Blob(['mock-image-data'], { type: 'image/png' }));
+        });
+        this.getContext = jest.fn(() => ({
+            drawImage: jest.fn()
+        }));
+    }
+}
 
-// Mock document and URL for share tests
 const mockDocument = {
     createElement: jest.fn((type) => {
         if (type === 'a') {
@@ -214,38 +196,15 @@ const mockDocument = {
                 download: ''
             };
         }
-        return {
-            setAttribute: jest.fn(),
-            click: jest.fn(),
-            style: {},
-            toBlob: jest.fn((callback) => {
-                callback(new Blob(['mock-image-data'], { type: 'image/png' }));
-            }),
-            getContext: jest.fn(() => ({
-                drawImage: jest.fn()
-            }))
-        };
+        return new MockCanvas();
     })
 };
+
 global.document = mockDocument;
+global.mockDocument = mockDocument;
+global.HTMLCanvasElement = MockCanvas;
 
 global.URL = {
     createObjectURL: jest.fn(() => 'blob://mock-url'),
     revokeObjectURL: jest.fn()
 };
-
-// Make the mock document available for tests
-global.mockDocument = mockDocument;
-
-// Mock canvas API
-class MockCanvas {
-    constructor() {
-        this.toBlob = jest.fn((callback) => {
-            callback(new Blob(['mock-image-data'], { type: 'image/png' }));
-        });
-        this.getContext = jest.fn(() => ({
-            drawImage: jest.fn()
-        }));
-    }
-}
-global.HTMLCanvasElement = MockCanvas;
