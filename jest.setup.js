@@ -29,9 +29,21 @@ jest.mock('three', () => ({
                 }
             }
         }
+    })),    Vector2: jest.fn(() => ({ 
+        x: 0, 
+        y: 0,
+        subVectors: jest.fn().mockReturnThis(),
+        multiplyScalar: jest.fn().mockReturnThis()
     })),
-    Vector2: jest.fn(() => ({ x: 0, y: 0 })),
-    Vector3: jest.fn(() => ({ x: 0, y: 0, z: 0 })),
+    Vector3: jest.fn(() => ({ 
+        x: 0, 
+        y: 0, 
+        z: 0,
+        subVectors: jest.fn().mockReturnThis(),
+        multiplyScalar: jest.fn().mockReturnThis(),
+        length: jest.fn().mockReturnValue(1),
+        normalize: jest.fn().mockReturnThis()
+    })),
     Raycaster: jest.fn(),
     CanvasTexture: jest.fn(() => ({
         dispose: jest.fn()
