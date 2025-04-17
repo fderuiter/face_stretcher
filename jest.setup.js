@@ -65,3 +65,17 @@ jest.mock('@tensorflow-models/face-landmarks-detection', () => ({
 
 // Make mock functions available globally for tests
 global.mockEstimateFaces = mockEstimateFaces;
+
+// Mock document and URL for share tests
+global.document = {
+    createElement: jest.fn(() => ({
+        setAttribute: jest.fn(),
+        click: jest.fn(),
+        style: {}
+    }))
+};
+
+global.URL = {
+    createObjectURL: jest.fn(() => 'blob://mock-url'),
+    revokeObjectURL: jest.fn()
+};
