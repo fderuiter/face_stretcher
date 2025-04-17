@@ -116,18 +116,18 @@ jest.mock('@tensorflow-models/face-landmarks-detection', () => ({
 global.mockEstimateFaces = mockEstimateFaces;
 
 // Mock TensorFlow globally
-global.faceLandmarksDetection = {
-    load: jest.fn().mockResolvedValue({
-        estimateFaces: jest.fn().mockImplementation(async () => [{
-            box: { xMin: 0, yMin: 0, xMax: 100, yMax: 100 },
-            mesh: Array(468).fill([0, 0, 0]),
-            scaledMesh: Array(468).fill([0, 0, 0])
-        }])
-    }),
-    SupportedPackages: {
-        mediapipeFacemesh: 'mediapipeFacemesh'
-    }
+const mockFaceLandmarksDetection = jest.fn();
+mockFaceLandmarksDetection.load = jest.fn().mockResolvedValue({
+    estimateFaces: jest.fn().mockImplementation(async () => [{
+        box: { xMin: 0, yMin: 0, xMax: 100, yMax: 100 },
+        mesh: Array(468).fill([0, 0, 0]),
+        scaledMesh: Array(468).fill([0, 0, 0])
+    }])
+});
+mockFaceLandmarksDetection.SupportedPackages = {
+    mediapipeFacemesh: 'mediapipeFacemesh'
 };
+global.faceLandmarksDetection = mockFaceLandmarksDetection;
 
 // Mock document and URL for share tests
 global.document = {
