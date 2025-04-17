@@ -84,8 +84,40 @@ html, body {
   box-shadow: 0 0 0 8px rgba(0,0,0,0.08) inset;
 }
 
+#loading-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255,255,255,0.92);
+  padding: 2rem 2.5rem;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+.spinner {
+  border: 6px solid #eee;
+  border-top: 6px solid #6a82fb;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.spinner-text {
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: 500;
+}
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 /* dat.GUI tweaks */

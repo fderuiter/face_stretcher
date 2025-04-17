@@ -12,12 +12,33 @@ async function init() {
   const img = await showCropper();
   hideCropper();
 
+  const spinner = document.getElementById('loading-spinner');
+  spinner.classList.remove('hidden');
+
   let bbox;
+  let detectionFailed = false;
   try {
     bbox = await detectFace(img);
   } catch {
-    bbox = { x: 0, y: 0, width: img.width, height: img.height };
+    detectionFailed = true;
   }
+  spinner.classList.add('hidden');
+
+  if (detectionFailed) {
+    // Show manual cropper if detection fails
+    const manualImg = await showCropper();
+    hideCropper();
+    bbox = { x: 0, y: 0, width: manualImg.width, height: manualImg.height };
+    // Use the manually cropped image for the rest of the workflow
+    proceedWithCroppedImage(manualImg, bbox);
+    return;
+  }
+
+  // Center crop region on detected face
+  proceedWithCroppedImage(img, bbox);
+}
+
+function proceedWithCroppedImage(img, bbox) {
   const cropped = document.createElement('canvas');
   cropped.width = bbox.width;
   cropped.height = bbox.height;
