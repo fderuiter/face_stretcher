@@ -7,7 +7,7 @@ export function initControls({ onReset, onDownload, onParamsChange, onNewImage, 
     strength: 1.0,
     stiffness: 8,
     damping: 4,
-    n64Mode: false, // Added N64 mode state
+    n64Mode: true, // Default N64 mode enabled
     reset: () => onReset(),
     download: () => onDownload(),
     newImage: () => onNewImage() // Added New Image action
