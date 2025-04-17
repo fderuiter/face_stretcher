@@ -1,8 +1,52 @@
 import { defineConfig } from 'vite';
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
-  root: 'src',
+  // ... other config if any
+  plugins: [
+    VitePWA({
+      registerType: 'autoUpdate', // Automatically update the service worker
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'], // Add your icons here
+      manifest: {
+        name: 'Face Stretcher',
+        short_name: 'FaceStretch',
+        description: 'A fun Mario 64 style face stretching app.',
+        theme_color: '#ffffff',
+        background_color: '#ffffff',
+        display: 'standalone',
+        scope: '/',
+        start_url: '/',
+        icons: [
+          {
+            src: 'pwa-192x192.png', // Create these icon files in public/
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: 'pwa-512x512.png', // Create these icon files in public/
+            sizes: '512x512',
+            type: 'image/png',
+          },
+          {
+            src: 'pwa-512x512.png', // Create these icon files in public/
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable', // Add a maskable icon
+          }
+        ],
+      },
+      devOptions: {
+        enabled: true // Enable PWA in development mode
+      }
+    })
+  ],
   build: {
-    outDir: '../dist'
+    outDir: '../dist', // Output to a dist folder in the root
+    emptyOutDir: true, // Clear the dist folder before building
+  },
+  root: 'src', // Set the root to the src directory
+  publicDir: '../public', // Set the public directory relative to the root
+  server: {
+    port: 3000 // Optional: specify dev server port
   }
 });
