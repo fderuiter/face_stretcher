@@ -4,17 +4,24 @@ require('@testing-library/jest-dom');
 jest.mock('three', () => ({
     WebGLRenderer: jest.fn(),
     Scene: jest.fn(),
-    PerspectiveCamera: jest.fn(),
-    PlaneGeometry: jest.fn(() => ({
-        attributes: {
-            position: {
-                count: 100,
-                array: new Float32Array(300),
-                needsUpdate: false
-            }
-        },
-        dispose: jest.fn()
-    })),
+    PerspectiveCamera: jest.fn(),    PlaneGeometry: jest.fn(() => {
+        const posArray = new Float32Array(300);
+        for (let i = 0; i < 100; i++) {
+            posArray[i * 3] = Math.random();
+            posArray[i * 3 + 1] = Math.random();
+            posArray[i * 3 + 2] = Math.random();
+        }
+        return {
+            attributes: {
+                position: {
+                    count: 100,
+                    array: posArray,
+                    needsUpdate: false
+                }
+            },
+            dispose: jest.fn()
+        };
+    }),
     MeshBasicMaterial: jest.fn(() => {
         const material = {
             dispose: jest.fn(),
