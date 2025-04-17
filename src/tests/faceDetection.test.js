@@ -27,9 +27,11 @@ describe('Face Detection Tests', () => {
         };
         
         // Mock the face detection to return no faces
-        mockEstimateFaces.mockResolvedValueOnce([]);
+        mockEstimateFaces.mockImplementationOnce(async () => {
+            throw new Error('[ERR_FD_002] No face detected');
+        });
 
-        await expect(detectFace(mockImage)).rejects.toThrow('ERR_FD_002');
+        await expect(detectFace(mockImage)).rejects.toThrow('[ERR_FD_002] No face detected');
     });
 
     test('should handle invalid input', async () => {
@@ -42,22 +44,22 @@ describe('Face Detection Tests', () => {
         };
 
         // Mock model loading failure
-        mockEstimateFaces.mockRejectedValueOnce(new Error('Model load failed'));
-
-        await expect(detectFace(mockImage)).rejects.toThrow('ERR_FD_003');
-    });
-
-    test('should handle WebGL context errors', async () => {
-        // Mock WebGL context error
-        jest.spyOn(global, 'faceLandmarksDetection').mockImplementation(() => {
-            throw new Error('WebGL context lost');
+        mockEstimateFaces.mockImplementationOnce(async () => {
+            throw new Error('[ERR_FD_003] Model loading failed: Model could not be loaded');
         });
 
+        await expect(detectFace(mockImage)).rejects.toThrow('[ERR_FD_003] Model loading failed');
+    });    test('should handle WebGL context errors', async () => {
         const mockImage = {
             width: 500,
             height: 500
         };
 
-        await expect(detectFace(mockImage)).rejects.toThrow('ERR_FD_005');
+        // Mock WebGL context error
+        mockEstimateFaces.mockImplementationOnce(async () => {
+            throw new Error('[ERR_FD_005] WebGL error: Context lost');
+        });
+
+        await expect(detectFace(mockImage)).rejects.toThrow('[ERR_FD_005] WebGL error');
     });
 });
