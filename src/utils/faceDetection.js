@@ -8,20 +8,25 @@ let model = null;
  * or rejects if none found.
  */
 export async function detectFace(imageElementOrCanvas) {
-  if (!model) {
-    model = await faceLandmarksDetection.load(
-      faceLandmarksDetection.SupportedPackages.mediapipeFacemesh
-    );
+  try {
+    if (!model) {
+      model = await faceLandmarksDetection.load(
+        faceLandmarksDetection.SupportedPackages.mediapipeFacemesh
+      );
+    }
+    const predictions = await model.estimateFaces({input: imageElementOrCanvas});
+    if (!predictions.length) {
+      throw new Error('[ERR_FD_002] No face detected');
+    }
+    const box = predictions[0].box;
+    return {
+      x: box.xMin,
+      y: box.yMin,
+      width: box.xMax - box.xMin,
+      height: box.yMax - box.yMin
+    };
+  } catch (error) {
+    // ERR_FD_001: general face detection failure
+    throw new Error(`[ERR_FD_001] Face detection error: ${error.message}`);
   }
-  const predictions = await model.estimateFaces({input: imageElementOrCanvas});
-  if (!predictions.length) {
-    throw new Error('No face detected');
-  }
-  const box = predictions[0].box;
-  return {
-    x: box.xMin,
-    y: box.yMin,
-    width: box.xMax - box.xMin,
-    height: box.yMax - box.yMin
-  };
 }

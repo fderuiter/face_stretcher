@@ -17,53 +17,58 @@ let currentFile = null;
  * @returns {Promise<HTMLImageElement | { imageElement: HTMLImageElement, cropData: { x: number, y: number, width: number, height: number } }>} Resolves with the original image element after initial selection, or with the image element and crop data if confirming a manual crop.
  */
 export function showCropper(forceManual = false) {
-  return new Promise((resolve) => {
-    currentResolve = resolve;
+  return new Promise((resolve, reject) => {
+     currentResolve = resolve;
 
-    if (forceManual && currentFile) {
-      // If forcing manual crop and we have a file, reuse it
-      setupCropper(URL.createObjectURL(currentFile));
-    } else {
-      // Normal flow: wait for file input
-      uploadInput.onchange = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-          currentFile = file; // Store the selected file
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const img = new Image();
-            img.onload = () => resolve(img); // Resolve with the full image for face detection first
-            img.src = e.target.result;
-          };
-          reader.readAsDataURL(file);
-        }
-      };
-      // Trigger file input if needed (e.g., if re-upload button was clicked)
-      // uploadInput.click(); // Consider if this is the desired UX
-    }
+     if (forceManual && currentFile) {
+       // If forcing manual crop and we have a file, reuse it
+       try {
+         setupCropper(URL.createObjectURL(currentFile));
+       } catch (err) {
+         console.error(`[ERR_CR_002] Cropper setup error: ${err.message}`);
+         reject(new Error(`[ERR_CR_002] Cropper setup error: ${err.message}`));
+       }
+     } else {
+       // Normal flow: wait for file input
+       uploadInput.onchange = (event) => {
+         const file = event.target.files[0];
+         if (file) {
+           currentFile = file; // Store the selected file
+           const reader = new FileReader();
+           reader.onload = (e) => {
+             const img = new Image();
+             img.onload = () => resolve(img); // initial success
+             img.src = e.target.result;
+           };
+           reader.onerror = () => {
+             console.error(`[ERR_CR_001] File read error: ${reader.error?.message}`);
+             reject(new Error(`[ERR_CR_001] File read error: ${reader.error?.message}`));
+           };
+           reader.readAsDataURL(file);
+         }
+       };
+     }
 
     useCropButton.onclick = () => {
-      if (cropperInstance && currentResolve) {
-        const cropData = cropperInstance.getData(true); // Get rounded crop data
-        const imgElement = new Image();
-        imgElement.onload = () => {
-            // Resolve with both the original image element and the crop data
-            currentResolve({ imageElement: imgElement, cropData });
-            currentResolve = null; // Prevent multiple resolves
-        };
-        imgElement.src = cropperImage.src; // Use the source that was loaded into cropper
-      }
-    };
+       if (cropperInstance && currentResolve) {
+         const cropData = cropperInstance.getData(true); // Get rounded crop data
+         const imgElement = new Image();
+         imgElement.onload = () => {
+             // Resolve with both the original image element and the crop data
+             currentResolve({ imageElement: imgElement, cropData });
+             currentResolve = null; // Prevent multiple resolves
+         };
+         imgElement.src = cropperImage.src;
+       }
+     };
 
-    reuploadButton.onclick = () => {
-      hideCropper();
-      uploadInput.value = ''; // Clear the input
-      document.getElementById('upload-container').classList.remove('hidden'); // Show upload container again
-      // Potentially trigger click or let user click again
-      // uploadInput.click();
-    };
-  });
-}
+     reuploadButton.onclick = () => {
+       hideCropper();
+       uploadInput.value = ''; // Clear the input
+       document.getElementById('upload-container').classList.remove('hidden');
+     };
+   });
+ }
 
 function setupCropper(imageSrc) {
   console.log("setupCropper called with src:", imageSrc);
@@ -86,33 +91,27 @@ function setupCropper(imageSrc) {
                 checkOrientation: false, // Avoid issues with EXIF data
                 ready() {
                     console.log("Cropper.js is ready!");
-                    // Potentially resolve a promise here if needed for timeout
                 },
             });
         } catch (cropperError) {
-            console.error("Error initializing Cropper.js:", cropperError);
-            // Handle cropper initialization error (e.g., show message, reject promise)
+            console.error(`[ERR_CR_003] Cropper.js init failed: ${cropperError.message}`);
             if (currentResolve) {
-                // We need a way to reject the promise from main.js
-                // For now, just log and maybe alert
-                alert("Failed to initialize the image cropper.");
-                // Consider calling hideCropper() or similar cleanup
+                reject(new Error(`[ERR_CR_003] Cropper.js init failed: ${cropperError.message}`));
+                currentResolve = null;
             }
         }
     };
     cropperImage.onerror = () => {
-        console.error("cropperImage failed to load src:", imageSrc);
-        alert("Failed to load the image for cropping.");
-        // Handle image load error
+        console.error(`[ERR_CR_004] Cropper image load error: ${imageSrc}`);
+        reject(new Error(`[ERR_CR_004] Cropper image load error: ${imageSrc}`));
     };
 
     console.log("Setting cropperImage.src");
     cropperImage.src = imageSrc;
 
   } catch (error) {
-    console.error("Error in setupCropper function:", error);
-    alert("An unexpected error occurred while setting up the cropper.");
-    // Handle general error
+    console.error(`[ERR_CR_000] Unexpected setupCropper error: ${error.message}`);
+    reject(new Error(`[ERR_CR_000] Unexpected setupCropper error: ${error.message}`));
   }
 }
 
