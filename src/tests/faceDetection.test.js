@@ -20,18 +20,14 @@ describe('Face Detection Tests', () => {
         expect(bbox.y).toBeDefined();
         expect(bbox.width).toBeDefined();
         expect(bbox.height).toBeDefined();
-    });
-
-    test('should handle missing face', async () => {
+    });    test('should handle missing face', async () => {
         const mockImage = {
             width: 500,
             height: 500
         };
         
         // Mock the face detection to return no faces
-        jest.spyOn(global, 'faceLandmarksDetection').mockImplementation(() => ({
-            estimateFaces: async () => []
-        }));
+        mockEstimateFaces.mockResolvedValueOnce([]);
 
         await expect(detectFace(mockImage)).rejects.toThrow('ERR_FD_002');
     });
@@ -39,18 +35,14 @@ describe('Face Detection Tests', () => {
     test('should handle invalid input', async () => {
         await expect(detectFace(null)).rejects.toThrow('ERR_FD_004');
         await expect(detectFace(undefined)).rejects.toThrow('ERR_FD_004');
-    });
-
-    test('should handle model loading failure', async () => {
-        // Mock model loading failure
-        jest.spyOn(global, 'faceLandmarksDetection').mockImplementation(() => {
-            throw new Error('Model load failed');
-        });
-
+    });    test('should handle model loading failure', async () => {
         const mockImage = {
             width: 500,
             height: 500
         };
+
+        // Mock model loading failure
+        mockEstimateFaces.mockRejectedValueOnce(new Error('Model load failed'));
 
         await expect(detectFace(mockImage)).rejects.toThrow('ERR_FD_003');
     });
