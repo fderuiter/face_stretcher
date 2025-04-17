@@ -14,6 +14,15 @@ import {
 import { initControls } from './ui/controlsUI.js';
 import { captureCanvas } from './utils/share.js';
 
+// Error codes:
+// ERR_IN_001: Initialization failed
+// ERR_IN_002: Three.js setup failed
+// ERR_IN_003: Image processing failed
+// ERR_IN_004: Canvas capture failed
+// ERR_IN_005: Image load failed
+// ERR_IN_006: WebGL context lost
+// ERR_IN_007: Resource cleanup failed
+
 let renderer, scene, camera, mesh, controls;
 let lastTime = performance.now();
 let isN64Mode = true; // Default to N64 low-poly mode

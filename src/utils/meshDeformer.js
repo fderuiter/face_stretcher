@@ -2,45 +2,56 @@ import * as THREE from 'three';
 
 let positions, originalPos, velocities, vertexCount, geo, mesh, texture;
 
+// Error codes:
+// ERR_MD_001: Invalid mesh parameters
+// ERR_MD_002: Texture creation failed
+// ERR_MD_003: Geometry creation failed
+// ERR_MD_004: Update geometry failed
+// ERR_MD_005: Spring update error
+// ERR_MD_006: Stretch region error
+
 /**
  * Creates a subdivided plane mesh, sets up userData for springs.
- * @param {THREE.Texture} initialTexture
- * @param {number} width
- * @param {number} height
- * @param {number} segments - Controls the mesh resolution.
- * @param {boolean} pixelated - If true, use nearest neighbor filtering.
  */
 export function createMesh(initialTexture, width, height, segments, pixelated = false) {
-  texture = initialTexture;
-  texture.needsUpdate = true; // Ensure texture updates
+  try {
+    if (!initialTexture || width <= 0 || height <= 0 || segments < 1) {
+      throw new Error('[ERR_MD_001] Invalid mesh parameters');
+    }
 
-  // Apply pixelation if requested
-  if (pixelated) {
-    texture.magFilter = THREE.NearestFilter;
-    texture.minFilter = THREE.NearestFilter;
-  } else {
-    texture.magFilter = THREE.LinearFilter;
-    texture.minFilter = THREE.LinearFilter;
+    texture = initialTexture;
+    texture.needsUpdate = true;
+
+    if (pixelated) {
+      texture.magFilter = THREE.NearestFilter;
+      texture.minFilter = THREE.NearestFilter;
+    } else {
+      texture.magFilter = THREE.LinearFilter;
+      texture.minFilter = THREE.LinearFilter;
+    }
+
+    geo = new THREE.PlaneGeometry(width, height, segments, segments);
+    vertexCount = geo.attributes.position.count;
+    positions = geo.attributes.position;
+    originalPos = positions.array.slice();
+    velocities = new Float32Array(vertexCount * 3).fill(0);
+
+    const mat = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide }); // Use DoubleSide
+    mesh = new THREE.Mesh(geo, mat);
+
+    // default spring params & brush
+    mesh.userData.radius = 0.3;
+    mesh.userData.strength = 1.0;
+    mesh.userData.kStiff = 8;
+    mesh.userData.damping = 4;
+    mesh.userData.segments = segments; // Store segments count
+    mesh.userData.pixelated = pixelated; // Store pixelated state
+
+    return mesh;
+  } catch (error) {
+    console.error(`[ERR_MD_003] Geometry creation failed: ${error.message}`);
+    throw error;
   }
-
-  geo = new THREE.PlaneGeometry(width, height, segments, segments);
-  vertexCount = geo.attributes.position.count;
-  positions = geo.attributes.position;
-  originalPos = positions.array.slice();
-  velocities = new Float32Array(vertexCount * 3).fill(0);
-
-  const mat = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide }); // Use DoubleSide
-  mesh = new THREE.Mesh(geo, mat);
-
-  // default spring params & brush
-  mesh.userData.radius = 0.3;
-  mesh.userData.strength = 1.0;
-  mesh.userData.kStiff = 8;
-  mesh.userData.damping = 4;
-  mesh.userData.segments = segments; // Store segments count
-  mesh.userData.pixelated = pixelated; // Store pixelated state
-
-  return mesh;
 }
 
 /**
