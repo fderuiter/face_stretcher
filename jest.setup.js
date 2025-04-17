@@ -10,26 +10,51 @@ jest.mock('three', () => ({
             position: {
                 count: 100,
                 array: new Float32Array(300),
+                needsUpdate: false
             }
         },
         dispose: jest.fn()
     })),
-    MeshBasicMaterial: jest.fn(() => ({
-        dispose: jest.fn()
-    })),    Mesh: jest.fn(() => ({
-        position: { set: jest.fn() },
-        scale: { set: jest.fn() },
-        rotation: { set: jest.fn() },
-        userData: {},
-        geometry: {
+    MeshBasicMaterial: jest.fn(() => {
+        const material = {
+            dispose: jest.fn(),
+            map: {
+                dispose: jest.fn()
+            }
+        };
+        return material;
+    }),
+    Mesh: jest.fn(() => {
+        const geometry = {
             attributes: {
                 position: {
                     count: 100,
-                    array: new Float32Array(300)
+                    array: new Float32Array(300),
+                    needsUpdate: false
                 }
+            },
+            dispose: jest.fn()
+        };
+        const material = {
+            dispose: jest.fn(),
+            map: {
+                dispose: jest.fn()
             }
-        }
-    })),    Vector2: jest.fn(() => ({ 
+        };
+        return {
+            position: { set: jest.fn() },
+            scale: { set: jest.fn() },
+            rotation: { set: jest.fn() },
+            userData: {
+                radius: 0.3,
+                strength: 1.0,
+                kStiff: 8,
+                damping: 4
+            },
+            geometry: geometry,
+            material: material
+        };
+    }),Vector2: jest.fn(() => ({ 
         x: 0, 
         y: 0,
         subVectors: jest.fn().mockReturnThis(),
