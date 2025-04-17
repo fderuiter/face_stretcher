@@ -105,7 +105,22 @@ jest.mock('three', () => ({
                 const dz = vec.z - v.z;
                 return Math.sqrt(dx * dx + dy * dy + dz * dz);
             }),
-            clone: jest.fn(() => new THREE.Vector3().copy(vec)),
+            clone: jest.fn(() => {
+                const newVec = { x: vec.x, y: vec.y, z: vec.z };
+                return {
+                    ...newVec,
+                    subVectors: vec.subVectors,
+                    multiplyScalar: vec.multiplyScalar,
+                    length: vec.length,
+                    normalize: vec.normalize,
+                    fromArray: vec.fromArray,
+                    distanceTo: vec.distanceTo,
+                    clone: vec.clone,
+                    copy: vec.copy,
+                    add: vec.add,
+                    toArray: vec.toArray
+                };
+            }),
             copy: jest.fn((v) => {
                 vec.x = v.x;
                 vec.y = v.y;
