@@ -23,131 +23,205 @@ let currentImage = null; // Store the original full image
 let currentBBox = null; // Store the bounding box used
 
 const uploadContainer = document.getElementById('upload-container');
+const spinner = document.getElementById('loading-spinner');
+const spinnerText = spinner.querySelector('.spinner-text'); // Get the text element
+
+// Helper functions for loading state
+function showLoading(text = "Loading...") {
+    spinnerText.textContent = text;
+    spinner.classList.remove('hidden');
+    console.log(`Showing loading: ${text}`); // Debug log
+}
+
+function hideLoading() {
+    spinner.classList.add('hidden');
+    console.log("Hiding loading"); // Debug log
+}
 
 async function init() {
-  uploadContainer.classList.remove('hidden'); // Ensure upload is visible initially
-  const img = await showCropper();
-  currentImage = img; // Store the full image
-  hideCropper();
-  uploadContainer.classList.add('hidden'); // Hide upload after selection
+  hideLoading(); // Ensure hidden initially
+  uploadContainer.classList.remove('hidden');
 
-  const spinner = document.getElementById('loading-spinner');
-  spinner.classList.remove('hidden');
+  let img;
+  try {
+    img = await showCropper();
+    if (!img) { // Handle case where user closes file picker without selecting
+        console.log("No image selected.");
+        uploadContainer.classList.remove('hidden');
+        return;
+    }
+    currentImage = img;
+    hideCropper();
+    uploadContainer.classList.add('hidden');
+  } catch (error) {
+    console.error("Error during initial image selection:", error);
+    hideLoading();
+    uploadContainer.classList.remove('hidden'); // Show upload again on error
+    return;
+  }
+
+  showLoading("Detecting face...");
 
   let bbox;
   let detectionFailed = false;
   try {
     bbox = await detectFace(img);
-    currentBBox = bbox; // Store detected bbox
-  } catch {
+    currentBBox = bbox;
+  } catch (error) {
+    console.warn("Face detection failed:", error);
     detectionFailed = true;
   }
-  spinner.classList.add('hidden');
+  // Don't hide loading here yet
 
   if (detectionFailed) {
-    // Show manual cropper if detection fails
-    const manualImgData = await showCropper(true); // Pass flag to indicate re-crop
-    hideCropper();
-    uploadContainer.classList.add('hidden'); // Hide upload again
-    // Use the manually cropped image data for the rest of the workflow
-    // The cropperUI now returns { imageElement, cropData }
-    currentImage = manualImgData.imageElement;
-    currentBBox = manualImgData.cropData; // Store manual crop data
-    proceedWithCroppedImage(currentImage, currentBBox);
+    showLoading("Preparing manual crop...");
+    try {
+        const manualImgData = await showCropper(true); // Pass flag to indicate re-crop
+        if (!manualImgData) {
+            console.log("Manual cropping cancelled.");
+            hideLoading();
+            uploadContainer.classList.remove('hidden');
+            return;
+        }
+        hideCropper();
+        uploadContainer.classList.add('hidden');
+        currentImage = manualImgData.imageElement;
+        currentBBox = manualImgData.cropData;
+        proceedWithCroppedImage(currentImage, currentBBox);
+    } catch (error) {
+        console.error("Error during manual cropping:", error);
+        hideLoading();
+        uploadContainer.classList.remove('hidden');
+    }
     return;
   }
 
-  // Center crop region on detected face
+  // If detection succeeded, proceed
   proceedWithCroppedImage(img, bbox);
 }
 
 function proceedWithCroppedImage(img, bbox) {
-  const cropped = document.createElement('canvas');
-  cropped.width = bbox.width;
-  cropped.height = bbox.height;
-  const ctx = cropped.getContext('2d');
-  ctx.drawImage(
-    img,
-    bbox.x,
-    bbox.y,
-    bbox.width,
-    bbox.height,
-    0,
-    0,
-    bbox.width,
-    bbox.height
-  );
+  showLoading("Creating mesh..."); // Show loading before mesh creation
 
-  const canvasTexture = new THREE.CanvasTexture(cropped);
+  try {
+    const cropped = document.createElement('canvas');
+    cropped.width = bbox.width;
+    cropped.height = bbox.height;
+    const ctx = cropped.getContext('2d');
+    ctx.drawImage(
+      img,
+      bbox.x,
+      bbox.y,
+      bbox.width,
+      bbox.height,
+      0,
+      0,
+      bbox.width,
+      bbox.height
+    );
 
-  if (!renderer) { // First time setup
-    renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('c'), antialias: true, preserveDrawingBuffer: true }); // preserveDrawingBuffer for saving
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    window.addEventListener('resize', onWindowResize, false);
+    const canvasTexture = new THREE.CanvasTexture(cropped);
 
-    scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 0, 3);
-    scene.add(new THREE.AmbientLight(0xffffff, 1));
-  }
+    if (!renderer) { // First time setup
+       renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('c'), antialias: true, preserveDrawingBuffer: true }); // preserveDrawingBuffer for saving
+       renderer.setSize(window.innerWidth, window.innerHeight);
+       window.addEventListener('resize', onWindowResize, false);
 
-  const segments = isN64Mode ? N64_SEGMENTS : HD_SEGMENTS;
-  const meshWidth = 2;
-  const meshHeight = 2 * (bbox.height / bbox.width);
+       scene = new THREE.Scene();
+       camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+       camera.position.set(0, 0, 3);
+       scene.add(new THREE.AmbientLight(0xffffff, 1));
+    }
 
-  if (mesh) {
-    scene.remove(mesh); // Remove old mesh if exists
-  }
+    const segments = isN64Mode ? N64_SEGMENTS : HD_SEGMENTS;
+    const meshWidth = 2;
+    const meshHeight = 2 * (bbox.height / bbox.width);
 
-  mesh = createMesh(
-    canvasTexture,
-    meshWidth,
-    meshHeight,
-    segments,
-    isN64Mode // Pass pixelated flag
-  );
-  scene.add(mesh);
-
-  // Re-setup interaction if needed (or ensure it works with new mesh)
-  setupInteraction();
-
-  if (!controls) { // Initialize controls only once
-    controls = initControls({
-      onReset: () => resetMesh(),
-      onDownload: () => captureCanvas(renderer.domElement),
-      onParamsChange: (params) => {
-        if (mesh) {
-          mesh.userData.radius = params.radius;
-          mesh.userData.strength = params.strength;
-          mesh.userData.kStiff = params.stiffness;
-          mesh.userData.damping = params.damping;
-        }
-      },
-      onNewImage: () => {
-        // Clean up Three.js resources
-        if (mesh) scene.remove(mesh);
-        if (controls) controls.destroy();
-        controls = null;
-        mesh = null;
-        // Simply reload the page to start fresh
-        window.location.reload();
-      },
-      onN64Toggle: (enabled) => {
-        isN64Mode = enabled;
-        // Recreate mesh with new settings
-        if (currentImage && currentBBox) {
-            proceedWithCroppedImage(currentImage, currentBBox);
-        }
+    if (mesh) {
+      scene.remove(mesh);
+      // Consider disposing geometry/material if needed
+      if (mesh.geometry) mesh.geometry.dispose();
+      if (mesh.material) {
+          if (mesh.material.map) mesh.material.map.dispose();
+          mesh.material.dispose();
       }
-    });
-  }
+    }
 
-  // Start animation loop if not already running
-  if (lastTime === 0) { // Check if it's the first run
-      lastTime = performance.now();
-      requestAnimationFrame(animate);
-  } else {
-      lastTime = performance.now(); // Reset timer if recreating mesh
+    mesh = createMesh(
+      canvasTexture,
+      meshWidth,
+      meshHeight,
+      segments,
+      isN64Mode
+    );
+    scene.add(mesh);
+
+    setupInteraction();
+
+    if (!controls) {
+       controls = initControls({
+         onReset: () => resetMesh(),
+         onDownload: () => captureCanvas(renderer.domElement),
+         onParamsChange: (params) => {
+           if (mesh) {
+             mesh.userData.radius = params.radius;
+             mesh.userData.strength = params.strength;
+             mesh.userData.kStiff = params.stiffness;
+             mesh.userData.damping = params.damping;
+           }
+         },
+         onNewImage: () => {
+           // Clean up Three.js resources
+           if (mesh) {
+                scene.remove(mesh);
+                if (mesh.geometry) mesh.geometry.dispose();
+                if (mesh.material) {
+                    if (mesh.material.map) mesh.material.map.dispose();
+                    mesh.material.dispose();
+                }
+           }
+           if (controls) controls.destroy();
+           controls = null;
+           mesh = null;
+           currentImage = null;
+           currentBBox = null;
+           // Stop animation loop
+           lastTime = 0;
+           // Show upload container again
+           uploadContainer.classList.remove('hidden');
+           hideLoading(); // Ensure loading is hidden
+           // No page reload needed now
+           // window.location.reload();
+         },
+         onN64Toggle: (enabled) => {
+           isN64Mode = enabled;
+           if (currentImage && currentBBox) {
+               proceedWithCroppedImage(currentImage, currentBBox);
+           }
+         }
+       });
+    }
+
+    // Start animation loop or reset time
+    if (lastTime === 0) {
+        lastTime = performance.now();
+        requestAnimationFrame(animate);
+    } else {
+        lastTime = performance.now();
+    }
+
+    hideLoading(); // Hide loading ONLY after everything is set up
+
+  } catch (error) {
+    console.error("Error processing image or creating mesh:", error);
+    hideLoading(); // Hide loading on error
+    // Optionally show an error message to the user here
+    alert("An error occurred while processing the image. Please try again.");
+    // Show upload container again
+    uploadContainer.classList.remove('hidden');
+    // Clean up potentially broken state
+    if (mesh) scene.remove(mesh);
+    mesh = null;
   }
 }
 
