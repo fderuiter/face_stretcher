@@ -66,21 +66,67 @@ jest.mock('three', () => ({
         y: 0,
         subVectors: jest.fn().mockReturnThis(),
         multiplyScalar: jest.fn().mockReturnThis()
-    })),    Vector3: jest.fn(() => ({ 
-        x: 0, 
-        y: 0, 
-        z: 0,
-        subVectors: jest.fn().mockReturnThis(),
-        multiplyScalar: jest.fn().mockReturnThis(),
-        length: jest.fn().mockReturnValue(1),
-        normalize: jest.fn().mockReturnThis(),
-        fromArray: jest.fn().mockReturnThis(),
-        distanceTo: jest.fn().mockReturnValue(0.5),
-        clone: jest.fn().mockReturnThis(),
-        copy: jest.fn().mockReturnThis(),
-        add: jest.fn().mockReturnThis(),
-        toArray: jest.fn()
-    })),
+    })),    Vector3: jest.fn(() => {
+        const vec = {
+            x: 0,
+            y: 0,
+            z: 0,
+            subVectors: jest.fn((a, b) => {
+                vec.x = a.x - b.x;
+                vec.y = a.y - b.y;
+                vec.z = a.z - b.z;
+                return vec;
+            }),
+            multiplyScalar: jest.fn((scalar) => {
+                vec.x *= scalar;
+                vec.y *= scalar;
+                vec.z *= scalar;
+                return vec;
+            }),
+            length: jest.fn(() => Math.sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z)),
+            normalize: jest.fn(() => {
+                const len = vec.length();
+                if (len > 0) {
+                    vec.x /= len;
+                    vec.y /= len;
+                    vec.z /= len;
+                }
+                return vec;
+            }),
+            fromArray: jest.fn((array, offset = 0) => {
+                vec.x = array[offset];
+                vec.y = array[offset + 1];
+                vec.z = array[offset + 2];
+                return vec;
+            }),
+            distanceTo: jest.fn((v) => {
+                const dx = vec.x - v.x;
+                const dy = vec.y - v.y;
+                const dz = vec.z - v.z;
+                return Math.sqrt(dx * dx + dy * dy + dz * dz);
+            }),
+            clone: jest.fn(() => new THREE.Vector3().copy(vec)),
+            copy: jest.fn((v) => {
+                vec.x = v.x;
+                vec.y = v.y;
+                vec.z = v.z;
+                return vec;
+            }),
+            add: jest.fn((v) => {
+                vec.x += v.x;
+                vec.y += v.y;
+                vec.z += v.z;
+                return vec;
+            }),
+            toArray: jest.fn((array = [], offset = 0) => {
+                array[offset] = vec.x;
+                array[offset + 1] = vec.y;
+                array[offset + 2] = vec.z;
+                return array;
+            })
+        };
+        return vec;
+    }),
     Raycaster: jest.fn(),
     CanvasTexture: jest.fn(() => ({
         dispose: jest.fn()
