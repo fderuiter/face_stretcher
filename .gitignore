@@ -23,3 +23,5 @@ Thumbs.db
 
 # Public folder
 /public/
+
+/src/dev-dist/
