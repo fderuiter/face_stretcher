@@ -8,11 +8,16 @@
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,html}\""
   },
+  "dependencies": {
+    "three": "^0.151.0",
+    "@tensorflow-models/facemesh": "^0.0.4",
+    "@tensorflow/tfjs-backend-webgl": "^4.2.0",
+    "cropperjs": "^1.5.13",
+    "dat.gui": "^0.7.9",
+    "html2canvas": "^1.4.1",
+    "stats.js": "^0.17.0"
+  },
   "devDependencies": {
-    "eslint": "^9.24.0",
-    "eslint-config-prettier": "^10.1.2",
-    "eslint-plugin-prettier": "^5.2.6",
-    "prettier": "^3.5.3",
-    "vite": "^6.3.1"
+    "vercel": "^28.0.8"
   }
 }
