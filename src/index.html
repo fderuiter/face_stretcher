@@ -1,0 +1,22 @@
+// entire file replaced with structured upload, cropper, and Three.js canvas
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stretchy Face</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div id="upload-container">
+    <input type="file" id="upload" accept="image/*" />
+  </div>
+  <div id="cropper-container" class="hidden">
+    <img id="cropper-image" src="" alt="Crop your photo" />
+    <button id="use-crop">Use This Crop</button>
+    <button id="reupload">Re-upload Photo</button>
+  </div>
+  <canvas id="c"></canvas>
+  <script type="module" src="./main.js"></script>
+</body>
+</html>
