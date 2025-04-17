@@ -1,5 +1,6 @@
 import Cropper from 'cropperjs';
 import 'cropperjs/dist/cropper.css';
+import { loadAndValidateImage } from '../utils/imageValidation.js';
 
 const uploadInput = document.getElementById('upload');
 const cropperContainer = document.getElementById('cropper-container');
@@ -38,24 +39,23 @@ export function showCropper(forceManual = false) {
       }
     } else {
       uploadInput.value = ''; // Clear the input
-      uploadInput.onchange = (event) => {
+      uploadInput.onchange = async (event) => {
         const file = event.target.files[0];
         if (file) {
-          currentFile = file;
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const img = new Image();
-            img.onload = () => resolve(img);
-            img.onerror = () => {
-              reject(new Error(`[ERR_CR_005] Image load failed`));
-            };
-            img.src = e.target.result;
-          };
-          reader.onerror = () => {
-            console.error(`[ERR_CR_001] File read error: ${reader.error?.message}`);
-            reject(new Error(`[ERR_CR_001] File read error: ${reader.error?.message}`));
-          };
-          reader.readAsDataURL(file);
+          try {
+            // Validate and load the image
+            const validatedImage = await loadAndValidateImage(file);
+            currentFile = file;
+            if (forceManual) {
+              setupCropper(validatedImage.src);
+            } else {
+              resolve(validatedImage);
+            }
+          } catch (error) {
+            console.error("Image validation failed:", error);
+            alert(error.message); // Show user-friendly error
+            reject(error);
+          }
         }
       };
       uploadInput.click();
