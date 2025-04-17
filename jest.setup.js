@@ -31,11 +31,7 @@ jest.mock('three', () => ({
     })),
     Mesh: jest.fn(() => {
         const positions = new Float32Array(300);
-        for (let i = 0; i < 100; i++) {
-            positions[i * 3] = Math.random();
-            positions[i * 3 + 1] = Math.random();
-            positions[i * 3 + 2] = Math.random();
-        }
+        positions.set(Array(300).fill(0));
         return {
             position: { set: jest.fn() },
             scale: { set: jest.fn() },
@@ -44,14 +40,16 @@ jest.mock('three', () => ({
                 radius: 0.3,
                 strength: 1.0,
                 kStiff: 8,
-                damping: 4
+                damping: 4,
+                originalPositions: positions.slice()
             },
             geometry: {
                 attributes: {
                     position: {
                         count: 100,
                         array: positions,
-                        needsUpdate: false
+                        needsUpdate: false,
+                        clone: () => positions.slice()
                     }
                 },
                 dispose: jest.fn()
@@ -154,32 +152,29 @@ jest.mock('three', () => ({
     DoubleSide: 'double',
 }));
 
-// Mock TensorFlow faceLandmarksDetection
-const faceLandmarksDetection = function() {};
-faceLandmarksDetection.load = jest.fn().mockResolvedValue({
-    estimateFaces: jest.fn().mockImplementation(async () => [{
-        box: { xMin: 0, yMin: 0, xMax: 100, yMax: 100 },
-        mesh: Array(468).fill([0, 0, 0]),
-        scaledMesh: Array(468).fill([0, 0, 0])
-    }])
-});
-faceLandmarksDetection.SupportedPackages = {
-    mediapipeFacemesh: 'mediapipeFacemesh'
+// Mock @tensorflow-models/face-landmarks-detection
+const mockTensorflow = {
+    SupportedPackages: {
+        mediapipeFacemesh: 'mediapipeFacemesh'
+    },
+    load: jest.fn().mockResolvedValue({
+        estimateFaces: jest.fn().mockResolvedValue([{
+            box: { xMin: 0, yMin: 0, xMax: 100, yMax: 100 },
+            mesh: Array(468).fill([0, 0, 0]),
+            scaledMesh: Array(468).fill([0, 0, 0])
+        }])
+    })
 };
 
-// Make the mock spyable
-Object.defineProperty(global, 'faceLandmarksDetection', {
-    value: faceLandmarksDetection,
-    writable: true,
-    configurable: true
-});
+jest.mock('@tensorflow-models/face-landmarks-detection', () => mockTensorflow);
+
+// Set up global mocks
+global.faceLandmarksDetection = mockTensorflow;
 
 // Mock document and canvas API
 class MockCanvas {
     constructor() {
-        this.toBlob = jest.fn((callback) => {
-            callback(new Blob(['mock-image-data'], { type: 'image/png' }));
-        });
+        this.toBlob = jest.fn((callback) => callback(new Blob(['mock-image-data'], { type: 'image/png' })));
         this.getContext = jest.fn(() => ({
             drawImage: jest.fn()
         }));
@@ -204,12 +199,22 @@ const mockDocument = {
     })
 };
 
+// Set up global mocks for document and canvas
 global.document = mockDocument;
-global.mockDocument = mockDocument;
 global.HTMLCanvasElement = MockCanvas;
+global.HTMLImageElement = class {};
 
 // Mock URL API
 global.URL = {
     createObjectURL: jest.fn(() => 'blob://mock-url'),
     revokeObjectURL: jest.fn()
+};
+
+// Mock File for image validation
+global.File = class {
+    constructor(parts, filename, options = {}) {
+        this.name = filename;
+        this.size = options.size || parts.reduce((total, part) => total + part.length, 0);
+        this.type = options.type || '';
+    }
 };
