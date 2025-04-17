@@ -59,15 +59,20 @@ jest.mock('three', () => ({
         y: 0,
         subVectors: jest.fn().mockReturnThis(),
         multiplyScalar: jest.fn().mockReturnThis()
-    })),
-    Vector3: jest.fn(() => ({ 
+    })),    Vector3: jest.fn(() => ({ 
         x: 0, 
         y: 0, 
         z: 0,
         subVectors: jest.fn().mockReturnThis(),
         multiplyScalar: jest.fn().mockReturnThis(),
         length: jest.fn().mockReturnValue(1),
-        normalize: jest.fn().mockReturnThis()
+        normalize: jest.fn().mockReturnThis(),
+        fromArray: jest.fn().mockReturnThis(),
+        distanceTo: jest.fn().mockReturnValue(0.5),
+        clone: jest.fn().mockReturnThis(),
+        copy: jest.fn().mockReturnThis(),
+        add: jest.fn().mockReturnThis(),
+        toArray: jest.fn()
     })),
     Raycaster: jest.fn(),
     CanvasTexture: jest.fn(() => ({
@@ -104,18 +109,13 @@ jest.mock('@tensorflow-models/face-landmarks-detection', () => ({
 global.mockEstimateFaces = mockEstimateFaces;
 
 // Mock TensorFlow globally
-global.faceLandmarksDetection = {
-    load: jest.fn().mockResolvedValue({
-        estimateFaces: jest.fn().mockResolvedValue([{
-            box: { xMin: 0, yMin: 0, xMax: 100, yMax: 100 },
-            mesh: [[0, 0, 0]],
-            scaledMesh: [[0, 0, 0]]
-        }])
-    }),
-    SupportedPackages: {
-        mediapipeFacemesh: 'mediapipeFacemesh'
-    }
-};
+global.faceLandmarksDetection = jest.fn().mockResolvedValue({
+    estimateFaces: jest.fn().mockResolvedValue([{
+        box: { xMin: 0, yMin: 0, xMax: 100, yMax: 100 },
+        mesh: [[0, 0, 0]],
+        scaledMesh: [[0, 0, 0]]
+    }])
+});
 
 // Mock document and URL for share tests
 global.document = {
