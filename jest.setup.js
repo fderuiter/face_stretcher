@@ -29,33 +29,41 @@ jest.mock('three', () => ({
             dispose: jest.fn()
         }
     })),
-    Mesh: jest.fn(() => ({
-        position: { set: jest.fn() },
-        scale: { set: jest.fn() },
-        rotation: { set: jest.fn() },
-        userData: {
-            radius: 0.3,
-            strength: 1.0,
-            kStiff: 8,
-            damping: 4
-        },
-        geometry: {
-            attributes: {
-                position: {
-                    count: 100,
-                    array: new Float32Array(300),
-                    needsUpdate: false
-                }
-            },
-            dispose: jest.fn()
-        },
-        material: {
-            dispose: jest.fn(),
-            map: {
-                dispose: jest.fn()
-            }
+    Mesh: jest.fn(() => {
+        const positions = new Float32Array(300);
+        for (let i = 0; i < 100; i++) {
+            positions[i * 3] = Math.random();
+            positions[i * 3 + 1] = Math.random();
+            positions[i * 3 + 2] = Math.random();
         }
-    })),
+        return {
+            position: { set: jest.fn() },
+            scale: { set: jest.fn() },
+            rotation: { set: jest.fn() },
+            userData: {
+                radius: 0.3,
+                strength: 1.0,
+                kStiff: 8,
+                damping: 4
+            },
+            geometry: {
+                attributes: {
+                    position: {
+                        count: 100,
+                        array: positions,
+                        needsUpdate: false
+                    }
+                },
+                dispose: jest.fn()
+            },
+            material: {
+                dispose: jest.fn(),
+                map: {
+                    dispose: jest.fn()
+                }
+            }
+        };
+    }),
     Vector2: jest.fn(() => ({
         x: 0,
         y: 0,
@@ -146,32 +154,25 @@ jest.mock('three', () => ({
     DoubleSide: 'double',
 }));
 
-// Mock TensorFlow
-const mockEstimateFaces = jest.fn().mockImplementation(async () => [{
-    box: { xMin: 0, yMin: 0, xMax: 100, yMax: 100 },
-    mesh: Array(468).fill([0, 0, 0]),
-    scaledMesh: Array(468).fill([0, 0, 0])
-}]);
-
-const mockModel = {
-    estimateFaces: mockEstimateFaces
+// Mock TensorFlow faceLandmarksDetection
+const faceLandmarksDetection = function() {};
+faceLandmarksDetection.load = jest.fn().mockResolvedValue({
+    estimateFaces: jest.fn().mockImplementation(async () => [{
+        box: { xMin: 0, yMin: 0, xMax: 100, yMax: 100 },
+        mesh: Array(468).fill([0, 0, 0]),
+        scaledMesh: Array(468).fill([0, 0, 0])
+    }])
+});
+faceLandmarksDetection.SupportedPackages = {
+    mediapipeFacemesh: 'mediapipeFacemesh'
 };
 
-jest.mock('@tensorflow-models/face-landmarks-detection', () => ({
-    load: jest.fn().mockResolvedValue(mockModel),
-    SupportedPackages: {
-        mediapipeFacemesh: 'mediapipeFacemesh'
-    }
-}));
-
-// Make functions available globally
-global.mockEstimateFaces = mockEstimateFaces;
-global.faceLandmarksDetection = {
-    load: jest.fn().mockResolvedValue(mockModel),
-    SupportedPackages: {
-        mediapipeFacemesh: 'mediapipeFacemesh'
-    }
-};
+// Make the mock spyable
+Object.defineProperty(global, 'faceLandmarksDetection', {
+    value: faceLandmarksDetection,
+    writable: true,
+    configurable: true
+});
 
 // Mock document and canvas API
 class MockCanvas {
@@ -188,15 +189,18 @@ class MockCanvas {
 const mockDocument = {
     createElement: jest.fn((type) => {
         if (type === 'a') {
-            return {
+            const element = {
                 setAttribute: jest.fn(),
                 click: jest.fn(),
                 style: {},
                 href: '',
                 download: ''
             };
+            return element;
         }
-        return new MockCanvas();
+        const canvas = new MockCanvas();
+        Object.setPrototypeOf(canvas, MockCanvas.prototype);
+        return canvas;
     })
 };
 
@@ -204,6 +208,7 @@ global.document = mockDocument;
 global.mockDocument = mockDocument;
 global.HTMLCanvasElement = MockCanvas;
 
+// Mock URL API
 global.URL = {
     createObjectURL: jest.fn(() => 'blob://mock-url'),
     revokeObjectURL: jest.fn()
