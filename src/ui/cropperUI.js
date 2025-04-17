@@ -66,18 +66,54 @@ export function showCropper(forceManual = false) {
 }
 
 function setupCropper(imageSrc) {
-  cropperImage.src = imageSrc;
-  if (cropperInstance) {
-    cropperInstance.destroy();
+  console.log("setupCropper called with src:", imageSrc);
+  try {
+    cropperImage.onload = () => {
+        console.log("cropperImage finished loading src");
+        if (cropperInstance) {
+            console.log("Destroying previous cropper instance.");
+            cropperInstance.destroy();
+            cropperInstance = null;
+        }
+        cropperContainer.classList.remove('hidden');
+        console.log("Initializing Cropper.js...");
+        try {
+            cropperInstance = new Cropper(cropperImage, {
+                aspectRatio: 0, // Free aspect ratio initially
+                viewMode: 1, // Restrict crop box to canvas
+                autoCropArea: 0.8,
+                responsive: true,
+                checkOrientation: false, // Avoid issues with EXIF data
+                ready() {
+                    console.log("Cropper.js is ready!");
+                    // Potentially resolve a promise here if needed for timeout
+                },
+            });
+        } catch (cropperError) {
+            console.error("Error initializing Cropper.js:", cropperError);
+            // Handle cropper initialization error (e.g., show message, reject promise)
+            if (currentResolve) {
+                // We need a way to reject the promise from main.js
+                // For now, just log and maybe alert
+                alert("Failed to initialize the image cropper.");
+                // Consider calling hideCropper() or similar cleanup
+            }
+        }
+    };
+    cropperImage.onerror = () => {
+        console.error("cropperImage failed to load src:", imageSrc);
+        alert("Failed to load the image for cropping.");
+        // Handle image load error
+    };
+
+    console.log("Setting cropperImage.src");
+    cropperImage.src = imageSrc;
+
+  } catch (error) {
+    console.error("Error in setupCropper function:", error);
+    alert("An unexpected error occurred while setting up the cropper.");
+    // Handle general error
   }
-  cropperContainer.classList.remove('hidden');
-  cropperInstance = new Cropper(cropperImage, {
-    aspectRatio: 0, // Free aspect ratio initially
-    viewMode: 1, // Restrict crop box to canvas
-    autoCropArea: 0.8,
-    responsive: true,
-    checkOrientation: false, // Avoid issues with EXIF data
-  });
 }
 
 export function hideCropper() {
