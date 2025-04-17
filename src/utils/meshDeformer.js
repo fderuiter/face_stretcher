@@ -58,44 +58,63 @@ export function createMesh(initialTexture, width, height, segments, pixelated = 
  * Smear vertices near `from` toward the drag vector (from→to).
  */
 export function stretchRegion(from, to) {
-  const drag = new THREE.Vector3().subVectors(to, from);
-  const tmp = new THREE.Vector3();
-  const { radius, strength } = mesh.userData;
-  for (let i = 0; i < vertexCount; i++) {
-    tmp.fromArray(originalPos, i * 3);
-    const d = tmp.distanceTo(from);
-    if (d > radius) continue;
-    const falloff = 1 - d / radius;
-    const idx = i * 3;
-    positions.array[idx] += drag.x * strength * falloff;
-    positions.array[idx + 1] += drag.y * strength * falloff;
-    positions.array[idx + 2] += drag.z * strength * falloff;
+  try {
+    if (!from || !to || !mesh) {
+      throw new Error('[ERR_MD_006] Invalid stretch parameters');
+    }
+
+    const drag = new THREE.Vector3().subVectors(to, from);
+    const tmp = new THREE.Vector3();
+    const { radius, strength } = mesh.userData;
+    
+    for (let i = 0; i < vertexCount; i++) {
+      tmp.fromArray(originalPos, i * 3);
+      const d = tmp.distanceTo(from);
+      if (d > radius) continue;
+      const falloff = 1 - d / radius;
+      const idx = i * 3;
+      positions.array[idx] += drag.x * strength * falloff;
+      positions.array[idx + 1] += drag.y * strength * falloff;
+      positions.array[idx + 2] += drag.z * strength * falloff;
+    }
+    positions.needsUpdate = true;
+  } catch (error) {
+    console.error(`[ERR_MD_006] Region stretch failed: ${error.message}`);
+    throw error;
   }
-  positions.needsUpdate = true;
 }
 
 /**
  * Runs spring-damper on every vertex.
  */
 export function updateSprings(dt) {
-  const pos = positions.array;
-  for (let i = 0; i < vertexCount; i++) {
-    const idx = i * 3;
-    const dx = pos[idx] - originalPos[idx];
-    const dy = pos[idx + 1] - originalPos[idx + 1];
-    const dz = pos[idx + 2] - originalPos[idx + 2];
-    // Hooke’s law + damping
-    const fx = -mesh.userData.kStiff * dx - mesh.userData.damping * velocities[idx];
-    const fy = -mesh.userData.kStiff * dy - mesh.userData.damping * velocities[idx + 1];
-    const fz = -mesh.userData.kStiff * dz - mesh.userData.damping * velocities[idx + 2];
-    velocities[idx] += fx * dt;
-    velocities[idx + 1] += fy * dt;
-    velocities[idx + 2] += fz * dt;
-    pos[idx] += velocities[idx] * dt;
-    pos[idx + 1] += velocities[idx + 1] * dt;
-    pos[idx + 2] += velocities[idx + 2] * dt;
+  try {
+    if (!positions || !originalPos || !velocities || dt <= 0) {
+      throw new Error('[ERR_MD_005] Invalid spring update parameters');
+    }
+
+    const pos = positions.array;
+    for (let i = 0; i < vertexCount; i++) {
+      const idx = i * 3;
+      const dx = pos[idx] - originalPos[idx];
+      const dy = pos[idx + 1] - originalPos[idx + 1];
+      const dz = pos[idx + 2] - originalPos[idx + 2];
+      // Hooke's law + damping
+      const fx = -mesh.userData.kStiff * dx - mesh.userData.damping * velocities[idx];
+      const fy = -mesh.userData.kStiff * dy - mesh.userData.damping * velocities[idx + 1];
+      const fz = -mesh.userData.kStiff * dz - mesh.userData.damping * velocities[idx + 2];
+      velocities[idx] += fx * dt;
+      velocities[idx + 1] += fy * dt;
+      velocities[idx + 2] += fz * dt;
+      pos[idx] += velocities[idx] * dt;
+      pos[idx + 1] += velocities[idx + 1] * dt;
+      pos[idx + 2] += velocities[idx + 2] * dt;
+    }
+    positions.needsUpdate = true;
+  } catch (error) {
+    console.error(`[ERR_MD_005] Spring physics update failed: ${error.message}`);
+    throw error;
   }
-  positions.needsUpdate = true;
 }
 
 /**
