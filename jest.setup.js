@@ -66,6 +66,20 @@ jest.mock('@tensorflow-models/face-landmarks-detection', () => ({
 // Make mock functions available globally for tests
 global.mockEstimateFaces = mockEstimateFaces;
 
+// Mock TensorFlow globally
+global.faceLandmarksDetection = {
+    load: jest.fn().mockResolvedValue({
+        estimateFaces: jest.fn().mockResolvedValue([{
+            box: { xMin: 0, yMin: 0, xMax: 100, yMax: 100 },
+            mesh: [[0, 0, 0]],
+            scaledMesh: [[0, 0, 0]]
+        }])
+    }),
+    SupportedPackages: {
+        mediapipeFacemesh: 'mediapipeFacemesh'
+    }
+};
+
 // Mock document and URL for share tests
 global.document = {
     createElement: jest.fn(() => ({
