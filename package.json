@@ -6,7 +6,8 @@
     "build": "vite build",
     "serve": "vite preview",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
-    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,html}\""
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,html}\"",
+    "deploy": "vercel --prod"
   },
   "dependencies": {
     "three": "^0.151.0",
