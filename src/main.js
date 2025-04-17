@@ -16,26 +16,35 @@ import { captureCanvas } from './utils/share.js';
 
 let renderer, scene, camera, mesh, controls;
 let lastTime = performance.now();
-let isN64Mode = false;
+let isN64Mode = true; // Default to N64 low-poly mode
 const N64_SEGMENTS = 10; // Low resolution for N64 mode
 const HD_SEGMENTS = 100; // High resolution for HD mode
 let currentImage = null; // Store the original full image
 let currentBBox = null; // Store the bounding box used
 
 const uploadContainer = document.getElementById('upload-container');
-const spinner = document.getElementById('loading-spinner');
-const spinnerText = spinner.querySelector('.spinner-text'); // Get the text element
+const loadingContainer = document.getElementById('loading-bar-container');
+const loadingBar = document.getElementById('loading-bar');
+const loadingText = document.getElementById('loading-text');
+let loadingInterval;
 
 // Helper functions for loading state
 function showLoading(text = "Loading...") {
-    spinnerText.textContent = text;
-    spinner.classList.remove('hidden');
-    console.log(`Showing loading: ${text}`); // Debug log
+    loadingText.textContent = text;
+    loadingContainer.classList.remove('hidden');
+    loadingBar.value = 0;
+    console.log(`Showing loading: ${text}`);
+    clearInterval(loadingInterval);
+    loadingInterval = setInterval(() => {
+      if (loadingBar.value < 90) loadingBar.value += 10;
+    }, 300);
 }
 
 function hideLoading() {
-    spinner.classList.add('hidden');
-    console.log("Hiding loading"); // Debug log
+    clearInterval(loadingInterval);
+    loadingBar.value = 100;
+    console.log("Hiding loading");
+    setTimeout(() => loadingContainer.classList.add('hidden'), 300);
 }
 
 async function init() {

@@ -84,7 +84,8 @@ html, body {
   box-shadow: 0 0 0 8px rgba(0,0,0,0.08) inset;
 }
 
-#loading-spinner {
+/* Loading bar container styles */
+#loading-bar-container {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -98,20 +99,25 @@ html, body {
   border-radius: 18px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.18);
 }
-.spinner {
-  border: 6px solid #eee;
-  border-top: 6px solid #6a82fb;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  animation: spin 1s linear infinite;
+#loading-bar {
+  width: 200px;
+  height: 12px;
   margin-bottom: 1rem;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #eee;
+  border-radius: 6px;
+  overflow: hidden;
 }
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+#loading-bar::-webkit-progress-bar {
+  background-color: #eee;
+  border-radius: 6px;
 }
-.spinner-text {
+#loading-bar::-webkit-progress-value {
+  background: linear-gradient(90deg, #6a82fb 0%, #fc5c7d 100%);
+  border-radius: 6px;
+}
+#loading-text {
   font-size: 1.1rem;
   color: #333;
   font-weight: 500;
