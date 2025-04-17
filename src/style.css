@@ -117,6 +117,11 @@ html, body {
   background: linear-gradient(90deg, #6a82fb 0%, #fc5c7d 100%);
   border-radius: 6px;
 }
+/* Firefox progress bar fill styling */
+#loading-bar::-moz-progress-bar {
+  background: linear-gradient(90deg, #6a82fb 0%, #fc5c7d 100%);
+  border-radius: 6px;
+}
 #loading-text {
   font-size: 1.1rem;
   color: #333;
