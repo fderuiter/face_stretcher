@@ -83,7 +83,7 @@ async function init() {
   // Don't hide loading here yet
 
   if (detectionFailed) {
-    showLoading("Preparing manual crop...");
+    hideLoading(); // Hide loading bar to allow manual crop UI
     try {
         const manualImgData = await showCropper(true); // Pass flag to indicate re-crop
         if (!manualImgData) {
