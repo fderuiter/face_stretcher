@@ -176,7 +176,7 @@ mockFaceLandmarksDetection.SupportedPackages = {
 global.faceLandmarksDetection = mockFaceLandmarksDetection;
 
 // Mock document and URL for share tests
-global.document = {
+const mockDocument = {
     createElement: jest.fn((type) => {
         if (type === 'a') {
             return {
@@ -190,17 +190,35 @@ global.document = {
         return {
             setAttribute: jest.fn(),
             click: jest.fn(),
-            style: {}
+            style: {},
+            toBlob: jest.fn((callback) => {
+                callback(new Blob(['mock-image-data'], { type: 'image/png' }));
+            }),
+            getContext: jest.fn(() => ({
+                drawImage: jest.fn()
+            }))
         };
     })
 };
+global.document = mockDocument;
 
 global.URL = {
     createObjectURL: jest.fn(() => 'blob://mock-url'),
     revokeObjectURL: jest.fn()
 };
 
+// Make the mock document available for tests
+global.mockDocument = mockDocument;
+
 // Mock canvas API
-HTMLCanvasElement.prototype.toBlob = function(callback) {
-    callback(new Blob(['mock-image-data'], { type: 'image/png' }));
-};
+class MockCanvas {
+    constructor() {
+        this.toBlob = jest.fn((callback) => {
+            callback(new Blob(['mock-image-data'], { type: 'image/png' }));
+        });
+        this.getContext = jest.fn(() => ({
+            drawImage: jest.fn()
+        }));
+    }
+}
+global.HTMLCanvasElement = MockCanvas;
