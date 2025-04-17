@@ -31,7 +31,11 @@ jest.mock('three', () => ({
     })),
     Mesh: jest.fn(() => {
         const positions = new Float32Array(300);
-        positions.set(Array(300).fill(0));
+        for (let i = 0; i < 100; i++) {
+            positions[i * 3] = i / 100;
+            positions[i * 3 + 1] = Math.sin(i / 10);
+            positions[i * 3 + 2] = Math.cos(i / 10);
+        }
         return {
             position: { set: jest.fn() },
             scale: { set: jest.fn() },
@@ -59,7 +63,8 @@ jest.mock('three', () => ({
                 map: {
                     dispose: jest.fn()
                 }
-            }
+            },
+            clone: jest.fn()
         };
     }),
     Vector2: jest.fn(() => ({
@@ -153,31 +158,45 @@ jest.mock('three', () => ({
 }));
 
 // Mock @tensorflow-models/face-landmarks-detection
-const mockTensorflow = {
-    SupportedPackages: {
-        mediapipeFacemesh: 'mediapipeFacemesh'
-    },
-    load: jest.fn().mockResolvedValue({
+const mockFaceLandmarksDetection = function() {
+    return {
         estimateFaces: jest.fn().mockResolvedValue([{
             box: { xMin: 0, yMin: 0, xMax: 100, yMax: 100 },
             mesh: Array(468).fill([0, 0, 0]),
             scaledMesh: Array(468).fill([0, 0, 0])
         }])
-    })
+    };
 };
 
-jest.mock('@tensorflow-models/face-landmarks-detection', () => mockTensorflow);
+mockFaceLandmarksDetection.load = jest.fn().mockResolvedValue({
+    estimateFaces: jest.fn().mockResolvedValue([{
+        box: { xMin: 0, yMin: 0, xMax: 100, yMax: 100 },
+        mesh: Array(468).fill([0, 0, 0]),
+        scaledMesh: Array(468).fill([0, 0, 0])
+    }])
+});
+
+mockFaceLandmarksDetection.SupportedPackages = {
+    mediapipeFacemesh: 'mediapipeFacemesh'
+};
+
+jest.mock('@tensorflow-models/face-landmarks-detection', () => mockFaceLandmarksDetection);
 
 // Set up global mocks
-global.faceLandmarksDetection = mockTensorflow;
+global.faceLandmarksDetection = mockFaceLandmarksDetection;
 
 // Mock document and canvas API
 class MockCanvas {
     constructor() {
-        this.toBlob = jest.fn((callback) => callback(new Blob(['mock-image-data'], { type: 'image/png' })));
+        this.toBlob = jest.fn((callback) => {
+            const blob = new Blob(['mock-image-data'], { type: 'image/png' });
+            callback(blob);
+        });
         this.getContext = jest.fn(() => ({
             drawImage: jest.fn()
         }));
+        this.width = 100;
+        this.height = 100;
     }
 }
 
@@ -202,7 +221,14 @@ const mockDocument = {
 // Set up global mocks for document and canvas
 global.document = mockDocument;
 global.HTMLCanvasElement = MockCanvas;
-global.HTMLImageElement = class {};
+global.HTMLImageElement = class {
+    constructor() {
+        this.width = 100;
+        this.height = 100;
+        this.naturalWidth = 100;
+        this.naturalHeight = 100;
+    }
+};
 
 // Mock URL API
 global.URL = {
