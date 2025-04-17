@@ -116,24 +116,45 @@ jest.mock('@tensorflow-models/face-landmarks-detection', () => ({
 global.mockEstimateFaces = mockEstimateFaces;
 
 // Mock TensorFlow globally
-global.faceLandmarksDetection = jest.fn().mockResolvedValue({
-    estimateFaces: jest.fn().mockResolvedValue([{
-        box: { xMin: 0, yMin: 0, xMax: 100, yMax: 100 },
-        mesh: [[0, 0, 0]],
-        scaledMesh: [[0, 0, 0]]
-    }])
-});
+global.faceLandmarksDetection = {
+    load: jest.fn().mockResolvedValue({
+        estimateFaces: jest.fn().mockImplementation(async () => [{
+            box: { xMin: 0, yMin: 0, xMax: 100, yMax: 100 },
+            mesh: Array(468).fill([0, 0, 0]),
+            scaledMesh: Array(468).fill([0, 0, 0])
+        }])
+    }),
+    SupportedPackages: {
+        mediapipeFacemesh: 'mediapipeFacemesh'
+    }
+};
 
 // Mock document and URL for share tests
 global.document = {
-    createElement: jest.fn(() => ({
-        setAttribute: jest.fn(),
-        click: jest.fn(),
-        style: {}
-    }))
+    createElement: jest.fn((type) => {
+        if (type === 'a') {
+            return {
+                setAttribute: jest.fn(),
+                click: jest.fn(),
+                style: {},
+                href: '',
+                download: ''
+            };
+        }
+        return {
+            setAttribute: jest.fn(),
+            click: jest.fn(),
+            style: {}
+        };
+    })
 };
 
 global.URL = {
     createObjectURL: jest.fn(() => 'blob://mock-url'),
     revokeObjectURL: jest.fn()
+};
+
+// Mock canvas API
+HTMLCanvasElement.prototype.toBlob = function(callback) {
+    callback(new Blob(['mock-image-data'], { type: 'image/png' }));
 };
