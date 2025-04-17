@@ -35,9 +35,25 @@ jest.mock('three', () => ({
 }));
 
 // Mock TensorFlow
+const mockEstimateFaces = jest.fn().mockResolvedValue([{
+    mesh: [[0, 0, 0]],
+    scaledMesh: [[0, 0, 0]],
+    boundingBox: {
+        topLeft: [0, 0],
+        bottomRight: [100, 100]
+    }
+}]);
+
+const mockModel = {
+    estimateFaces: mockEstimateFaces
+};
+
 jest.mock('@tensorflow-models/face-landmarks-detection', () => ({
-    load: jest.fn(),
+    load: jest.fn().mockResolvedValue(mockModel),
     SupportedPackages: {
         mediapipeFacemesh: 'mediapipeFacemesh'
     }
 }));
+
+// Make mock functions available globally for tests
+global.mockEstimateFaces = mockEstimateFaces;
