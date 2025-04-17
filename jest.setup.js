@@ -178,17 +178,29 @@ global.mockEstimateFaces = mockEstimateFaces;
 
 // Mock TensorFlow globally
 const mockFaceLandmarksDetection = jest.fn();
+
+// Default mock implementation that returns a face
+const defaultMockImpl = async () => [{
+    box: { xMin: 0, yMin: 0, xMax: 100, yMax: 100 },
+    mesh: Array(468).fill([0, 0, 0]),
+    scaledMesh: Array(468).fill([0, 0, 0])
+}];
+
+// Update the existing mockEstimateFaces instead of redeclaring it
+mockEstimateFaces.mockImplementation(defaultMockImpl);
+
 mockFaceLandmarksDetection.load = jest.fn().mockResolvedValue({
-    estimateFaces: jest.fn().mockImplementation(async () => [{
-        box: { xMin: 0, yMin: 0, xMax: 100, yMax: 100 },
-        mesh: Array(468).fill([0, 0, 0]),
-        scaledMesh: Array(468).fill([0, 0, 0])
-    }])
+    estimateFaces: mockEstimateFaces
 });
+
 mockFaceLandmarksDetection.SupportedPackages = {
     mediapipeFacemesh: 'mediapipeFacemesh'
 };
+
+// Make mocks available globally for tests
 global.faceLandmarksDetection = mockFaceLandmarksDetection;
+global.mockEstimateFaces = mockEstimateFaces;
+global.defaultMockImpl = defaultMockImpl;
 
 // Mock document and URL for share tests
 const mockDocument = {
