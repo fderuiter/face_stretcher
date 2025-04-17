@@ -57,13 +57,13 @@ function hideLoading() {
 }
 
 async function init() {
-  hideLoading(); // Ensure hidden initially
+  hideLoading();
   uploadContainer.classList.remove('hidden');
 
   let img;
   try {
     img = await showCropper();
-    if (!img) { // Handle case where user closes file picker without selecting
+    if (!img) {
         console.log("No image selected.");
         uploadContainer.classList.remove('hidden');
         return;
@@ -74,7 +74,8 @@ async function init() {
   } catch (error) {
     console.error("Error during initial image selection:", error);
     hideLoading();
-    uploadContainer.classList.remove('hidden'); // Show upload again on error
+    uploadContainer.classList.remove('hidden');
+    alert("Error loading image. Please try a different file.");
     return;
   }
 
@@ -89,12 +90,11 @@ async function init() {
     console.warn("Face detection failed:", error);
     detectionFailed = true;
   }
-  // Don't hide loading here yet
 
   if (detectionFailed) {
-    hideLoading(); // Hide loading bar to allow manual crop UI
+    hideLoading();
     try {
-        const manualImgData = await showCropper(true); // Pass flag to indicate re-crop
+        const manualImgData = await showCropper(true);
         if (!manualImgData) {
             console.log("Manual cropping cancelled.");
             hideLoading();
@@ -110,22 +110,26 @@ async function init() {
         console.error("Error during manual cropping:", error);
         hideLoading();
         uploadContainer.classList.remove('hidden');
+        alert("An error occurred while processing the image. Please try again.");
     }
     return;
   }
 
-  // If detection succeeded, proceed
   proceedWithCroppedImage(img, bbox);
 }
 
 function proceedWithCroppedImage(img, bbox) {
-  showLoading("Creating mesh..."); // Show loading before mesh creation
+  showLoading("Creating mesh...");
 
   try {
     const cropped = document.createElement('canvas');
     cropped.width = bbox.width;
     cropped.height = bbox.height;
     const ctx = cropped.getContext('2d');
+    if (!ctx) {
+      throw new Error('[ERR_IN_003] Could not get 2D context');
+    }
+
     ctx.drawImage(
       img,
       bbox.x,
@@ -140,15 +144,12 @@ function proceedWithCroppedImage(img, bbox) {
 
     const canvasTexture = new THREE.CanvasTexture(cropped);
 
-    if (!renderer) { // First time setup
-       renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('c'), antialias: true, preserveDrawingBuffer: true }); // preserveDrawingBuffer for saving
-       renderer.setSize(window.innerWidth, window.innerHeight);
-       window.addEventListener('resize', onWindowResize, false);
-
-       scene = new THREE.Scene();
-       camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-       camera.position.set(0, 0, 3);
-       scene.add(new THREE.AmbientLight(0xffffff, 1));
+    if (!renderer) {
+      try {
+        setupRenderer();
+      } catch (error) {
+        throw new Error(`[ERR_IN_002] ${error.message}`);
+      }
     }
 
     const segments = isN64Mode ? N64_SEGMENTS : HD_SEGMENTS;
@@ -231,15 +232,11 @@ function proceedWithCroppedImage(img, bbox) {
     hideLoading(); // Hide loading ONLY after everything is set up
 
   } catch (error) {
-    console.error("Error processing image or creating mesh:", error);
-    hideLoading(); // Hide loading on error
-    // Optionally show an error message to the user here
-    alert("An error occurred while processing the image. Please try again.");
-    // Show upload container again
+    console.error("Error creating mesh:", error);
+    hideLoading();
     uploadContainer.classList.remove('hidden');
-    // Clean up potentially broken state
-    if (mesh) scene.remove(mesh);
-    mesh = null;
+    alert("An error occurred while processing the image. Please try again.");
+    return;
   }
 }
 
