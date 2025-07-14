@@ -1,6 +1,6 @@
 # Face Stretcher POC
 
-A lightweight proof of concept for a browser‑based face stretching tool using HTML5 Canvas and Vite.
+A lightweight proof of concept for a browser‑based face stretching tool using HTML5 Canvas and Vite. It lets you upload a photo and drag parts of the face just like the Mario 64 start screen.
 
 ## Features
 
@@ -11,7 +11,7 @@ A lightweight proof of concept for a browser‑based face stretching tool using 
 
 ### Prerequisites
 
-- Node.js 14+ installed
+- Node.js 16+ installed
 
 ### Install
 
@@ -47,11 +47,11 @@ npm run serve
 
 ## CI
 
-This project includes a GitHub Actions workflow (`.github/workflows/ci.yml`) that installs dependencies and runs a build on every push and pull request.
+Continuous integration has not been set up yet. The plan is to add a GitHub Actions workflow that runs linting, tests and a production build on every pull request.
 
 ## Roadmap
 
-See `build.md` for planned features like auto face‑crop, PWA support, web worker physics, and shareable permalinks.
+See the files under `build/` for long term ideas and check `TASKS.md` for the current to‑do list.
 
 ---
 
