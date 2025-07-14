@@ -11,6 +11,7 @@ This document outlines the remaining work needed to turn this proof of concept i
 - [ ] **Interactive Deformation** – click or touch to grab points on the mesh and drag them around. Vertices should spring back when released.
 - [ ] **Reset Button** – instantly restore the mesh to its original state.
 - [ ] **Save/Share** – capture the canvas to an image so users can download or share their creations.
+- [ ] **Keyboard Controls** – support keyboard mappings for cursor movement, grabbing, zoom and rotation as listed in the README.
 
 ## Polishing & UX
 
