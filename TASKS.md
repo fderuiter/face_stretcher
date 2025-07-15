@@ -26,7 +26,7 @@ This document tracks current and upcoming work for the Mario‑style face stretc
 - [x] **Save Image** – capture the canvas to a PNG for download.
 - [x] **Keyboard Controls** – arrow keys for movement, A/R/B/I/J/K/L and Enter to mimic N64 actions.
 - [x] **Mario‑Style Cursor** – white glove pointer for nostalgia.
-- [ ] **Share Links** – generate a permalink so finished faces can be re‑loaded or shared on social media.
+- [x] **Share Links** – generate a permalink so finished faces can be re‑loaded or shared on social media.
 - [ ] **Lockable Deformations** – support holding A + R to pin vertices in place just like the original game.
 
 ## Graphics & Interaction

@@ -17,6 +17,8 @@ import { captureCanvas } from "./utils/share.js";
 import { initKeyboardControls } from "./ui/keyboardControls.js";
 import { initResetButton } from "./ui/resetButton.js";
 import { initShareButton } from "./ui/shareButton.js";
+import { initShareLinkButton } from "./ui/shareLinkButton.js";
+import { generateShareLink, loadSharedImage } from "./utils/shareLink.js";
 import { initLoadingIndicator } from "./ui/loadingIndicator.js";
 import { initInstructions } from "./ui/instructions.js";
 
@@ -41,8 +43,10 @@ const uploadContainer = document.getElementById("upload-container");
 let loadingIndicator;
 const resetButton = document.getElementById("reset-btn");
 const shareButton = document.getElementById("share-btn");
+const linkButton = document.getElementById("link-btn");
 let resetControl;
 let shareControl;
+let linkControl;
 let instructionsControl;
 
 // Helper functions for loading state are provided by loadingIndicator
@@ -63,12 +67,21 @@ function hideShareButton() {
   if (shareButton) shareButton.classList.add("hidden");
 }
 
+function showLinkButton() {
+  if (linkButton) linkButton.classList.remove("hidden");
+}
+
+function hideLinkButton() {
+  if (linkButton) linkButton.classList.add("hidden");
+}
+
 async function init(startFile = null) {
   if (loadingIndicator) loadingIndicator.hide();
   uploadContainer.classList.remove("hidden");
   hideResetButton();
   hideShareButton();
-
+  hideLinkButton();
+  
   let img;
   try {
     img = await showCropper(false, startFile);
@@ -189,6 +202,7 @@ function proceedWithCroppedImage(img, bbox) {
           if (loadingIndicator) loadingIndicator.hide(); // Ensure loading is hidden
           hideResetButton();
           hideShareButton();
+          hideLinkButton();
           // No page reload needed now
           // window.location.reload();
         },
@@ -212,6 +226,7 @@ function proceedWithCroppedImage(img, bbox) {
     if (loadingIndicator) loadingIndicator.hide(); // Hide loading ONLY after everything is set up
     showResetButton();
     showShareButton();
+    showLinkButton();
   } catch (error) {
     console.error("Error creating mesh:", error);
     if (loadingIndicator) loadingIndicator.hide();
@@ -343,6 +358,7 @@ function setupKeyboard() {
       uploadContainer.classList.remove("hidden");
       hideResetButton();
       hideShareButton();
+      hideLinkButton();
     },
   });
 }
@@ -393,14 +409,32 @@ function setupUploadHandlers() {
 document.addEventListener("DOMContentLoaded", () => {
   loadingIndicator = initLoadingIndicator();
   setupUploadHandlers();
+  const shared = loadSharedImage();
+  if (shared) {
+    shared.onload = () => {
+      proceedWithCroppedImage(shared, { x: 0, y: 0, width: shared.width, height: shared.height });
+    };
+    return;
+  }
   resetControl = initResetButton(() => {
     resetMesh();
   });
   shareControl = initShareButton(() => {
     if (renderer) captureCanvas(renderer.domElement);
   });
+  linkControl = initShareLinkButton(() => {
+    if (renderer) {
+      const link = generateShareLink(renderer.domElement);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(() => alert("Link copied to clipboard!"), () => window.prompt("Copy this link:", link));
+      } else {
+        window.prompt("Copy this link:", link);
+      }
+    }
+  });
   instructionsControl = initInstructions();
   hideResetButton();
   hideShareButton();
-});
-// init(); // Call init directly if script is at the end of body or defer
+  hideLinkButton();
+  });
+  // init(); // Call init directly if script is at the end of body or defer
