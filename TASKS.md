@@ -13,7 +13,7 @@ This document tracks current and upcoming work for the Mario‑style face stretc
 - [x] **Reset Button** – instantly restore the mesh to its original state.
 - [x] **Save/Share** – capture the canvas to an image so users can download or share their creations.
 - [x] **Keyboard Controls** – support keyboard mappings for cursor movement, grabbing, zoom and rotation as listed in the README.
-- [x] **Mario-style Cursor** – show a white glove cursor over the canvas for added nostalgia.
+- [ ] **Mario-style Cursor** – show a white glove cursor over the canvas for added nostalgia.
 
 ## Polishing & UX
 
@@ -25,7 +25,7 @@ This document tracks current and upcoming work for the Mario‑style face stretc
 - [x] **Reset Button** – instantly restore the original mesh state.
 - [x] **Save Image** – capture the canvas to a PNG for download.
 - [x] **Keyboard Controls** – arrow keys for movement, A/R/B/I/J/K/L and Enter to mimic N64 actions.
-- [x] **Mario‑Style Cursor** – white glove pointer for nostalgia.
+- [ ] **Mario‑Style Cursor** – white glove pointer for nostalgia.
 - [ ] **Share Links** – generate a permalink so finished faces can be re‑loaded or shared on social media.
 - [ ] **Lockable Deformations** – support holding A + R to pin vertices in place just like the original game.
 
@@ -42,9 +42,9 @@ This document tracks current and upcoming work for the Mario‑style face stretc
 
 ## Development Workflow
 - [x] Write unit tests for critical utilities such as face detection and mesh deformation.
-- [x] Configure a CI workflow (GitHub Actions or similar) to run linting, tests and builds on every pull request.
-- [x] Deploy automatically to a free hosting provider (e.g. Vercel) when the `main` branch updates.
-- [x] Add Playwright end-to-end tests to validate the user flow.
+- [ ] Configure a CI workflow (GitHub Actions or similar) to run linting, tests and builds on every pull request.
+- [ ] Deploy automatically to a free hosting provider (e.g. Vercel) when the `main` branch updates.
+- [ ] Add Playwright end-to-end tests to validate the user flow.
 
 This list should be reviewed and updated as development progresses.
 - [x] First‑time instructions overlay.
@@ -56,7 +56,7 @@ This list should be reviewed and updated as development progresses.
 
 ## Testing & Quality
 - [x] Unit tests for key utilities and UI helpers.
-- [x] Playwright end‑to-end tests.
+- [ ] Playwright end‑to-end tests.
 - [ ] **Comprehensive Playwright e2e coverage across desktop and mobile browsers.**
 - [ ] Visual regression tests for the canvas output.
 - [ ] Offload spring physics to a Web Worker for better performance on low‑end devices.
@@ -64,8 +64,8 @@ This list should be reviewed and updated as development progresses.
 - [ ] Error and analytics tracking (e.g. Sentry or Plausible).
 
 ## Deployment & CI
-- [x] GitHub Actions workflow for linting, tests and builds.
-- [x] Automatic deployment to Vercel on every push to `main`.
+- [ ] GitHub Actions workflow for linting, tests and builds.
+- [ ] Automatic deployment to Vercel on every push to `main`.
 - [ ] Preview deployments for pull requests.
 - [ ] Documentation for configuring custom domains and environment variables.
 
