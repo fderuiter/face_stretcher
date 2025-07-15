@@ -65,4 +65,20 @@ describe('keyboard controls', () => {
     expect(onGrabEnd).toHaveBeenCalledWith(true);
     kc.destroy();
   });
+
+  test('custom step and zoom levels', () => {
+    const onMove = jest.fn();
+    const onZoom = jest.fn();
+    const kc = initKeyboardControls({ onMove, onZoom, step: 0.2, zoomLevels: [1, 2] });
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { code: 'ArrowRight' }));
+    expect(kc.state.cursor.x).toBeCloseTo(0.2);
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyB' }));
+    expect(onZoom).toHaveBeenLastCalledWith(2);
+    window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyB' }));
+    expect(onZoom).toHaveBeenLastCalledWith(1);
+
+    kc.destroy();
+  });
 });

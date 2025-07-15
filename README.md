@@ -1,5 +1,6 @@
 # Face Stretcher POC
 
+
 A lightweight proof of concept for a browser‑based face stretching tool using HTML5 Canvas and Vite. It lets you upload a photo and drag parts of the face just like the Mario 64 start screen. You can either click the upload area or drag a file onto it.
 
 ## Features
@@ -11,6 +12,7 @@ A lightweight proof of concept for a browser‑based face stretching tool using 
 - Toggle classic **N64 Mode** for a low-poly mesh or switch to a smoother high-res version.
 - Stretch the face interactively with mouse, touch, or the new keyboard controls.
 - Dedicated pointer controls ensure smooth dragging on both mouse and touch devices.
+- Nostalgic Mario-style glove cursor over the canvas.
 - Click the dedicated **Reset** button at any time to snap the face back to its original shape.
 - Save your creation as a PNG using the **Save Image** button.
 - Copy a shareable link to your stretched face with the **Share Link** button.
@@ -67,6 +69,8 @@ The original Mario 64 intro relied on the N64 controller. This project mirrors t
 | **Zoom levels**                   | Tap **B** to cycle through 3 head sizes: close-up, mid, far                     | At the farthest zoom you can drag features much farther—great for “mega-nose” gags. | ([GameFAQs][1], [GameFAQs][3]) |
 | **Rotate the head**               | Use **I**, **J**, **K** and **L** for C-Up, C-Left, C-Down and C-Right          | Lets you examine your handiwork from any angle.                                     | ([GameFAQs][3])                |
 | **Exit to the actual file menu**  | Press **Enter**                                                                 | The face pops back to normal and the save icons fade in.                            | ([GameFAQs][1])                |
+Keyboard behavior is configurable via the options passed to [`initKeyboardControls`](./src/ui/keyboardControls.js), letting you adjust cursor step size and zoom levels.
+
 
 [1]: https://gamefaqs.gamespot.com/n64/198848-super-mario-64/faqs/22000?utm_source=chatgpt.com "Super Mario 64 - Guide and Walkthrough - Nintendo 64 - By CWall"
 [2]: https://gamefaqs.gamespot.com/n64/198848-super-mario-64/faqs/3326?utm_source=chatgpt.com "Super Mario 64 - Guide and Walkthrough - Nintendo 64 - GameFAQs"
