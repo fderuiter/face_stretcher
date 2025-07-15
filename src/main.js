@@ -20,6 +20,7 @@ import { initControls } from "./ui/controlsUI.js";
 import { captureCanvas } from "./utils/share.js";
 import { initKeyboardControls } from "./ui/keyboardControls.js";
 import { initResetButton } from "./ui/resetButton.js";
+import { initShareButton } from "./ui/shareButton.js";
 
 // Error codes:
 // ERR_IN_001: Initialization failed
@@ -45,7 +46,9 @@ const loadingContainer = document.getElementById("loading-bar-container");
 const loadingBar = document.getElementById("loading-bar");
 const loadingText = document.getElementById("loading-text");
 const resetButton = document.getElementById("reset-btn");
+const shareButton = document.getElementById("share-btn");
 let resetControl;
+let shareControl;
 let loadingInterval;
 
 // Helper functions for loading state
@@ -75,10 +78,19 @@ function hideResetButton() {
   if (resetButton) resetButton.classList.add("hidden");
 }
 
+function showShareButton() {
+  if (shareButton) shareButton.classList.remove("hidden");
+}
+
+function hideShareButton() {
+  if (shareButton) shareButton.classList.add("hidden");
+}
+
 async function init(startFile = null) {
   hideLoading();
   uploadContainer.classList.remove("hidden");
   hideResetButton();
+  hideShareButton();
 
   let img;
   try {
@@ -199,6 +211,7 @@ function proceedWithCroppedImage(img, bbox) {
           uploadContainer.classList.remove("hidden");
           hideLoading(); // Ensure loading is hidden
           hideResetButton();
+          hideShareButton();
           // No page reload needed now
           // window.location.reload();
         },
@@ -221,6 +234,7 @@ function proceedWithCroppedImage(img, bbox) {
 
     hideLoading(); // Hide loading ONLY after everything is set up
     showResetButton();
+    showShareButton();
   } catch (error) {
     console.error("Error creating mesh:", error);
     hideLoading();
@@ -351,6 +365,7 @@ function setupKeyboard() {
       resetMesh();
       uploadContainer.classList.remove("hidden");
       hideResetButton();
+      hideShareButton();
     },
   });
 }
@@ -403,6 +418,10 @@ document.addEventListener("DOMContentLoaded", () => {
   resetControl = initResetButton(() => {
     resetMesh();
   });
+  shareControl = initShareButton(() => {
+    if (renderer) captureCanvas(renderer.domElement);
+  });
   hideResetButton();
+  hideShareButton();
 });
 // init(); // Call init directly if script is at the end of body or defer

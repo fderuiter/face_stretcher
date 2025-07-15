@@ -10,7 +10,7 @@ This document outlines the remaining work needed to turn this proof of concept i
 - [x] **Mesh Generation** – map the cropped face onto a deformable mesh. Support both a low‑poly "N64" mode and a smoother high‑res mode.
 - [x] **Interactive Deformation** – click or touch to grab points on the mesh and drag them around. Vertices should spring back when released.
 - [x] **Reset Button** – instantly restore the mesh to its original state.
-- [ ] **Save/Share** – capture the canvas to an image so users can download or share their creations.
+- [x] **Save/Share** – capture the canvas to an image so users can download or share their creations.
 - [x] **Keyboard Controls** – support keyboard mappings for cursor movement, grabbing, zoom and rotation as listed in the README.
 
 ## Polishing & UX

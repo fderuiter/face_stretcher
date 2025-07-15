@@ -11,6 +11,7 @@ A lightweight proof of concept for a browser‑based face stretching tool using 
 - Toggle classic **N64 Mode** for a low-poly mesh or switch to a smoother high-res version.
 - Stretch the face interactively with mouse, touch, or the new keyboard controls.
 - Instantly snap the face back with the **Reset** button.
+- Save your creation as a PNG using the **Save Image** button.
 
 ## Getting Started
 
