@@ -1,15 +1,17 @@
 {
   "env": {
     "browser": true,
-    "es2021": true
+    "es2021": true,
+    "jest": true,
+    "node": true
   },
-  "extends": [
-    "eslint:recommended",
-    "plugin:prettier/recommended"
-  ],
+  "extends": ["eslint:recommended"],
   "parserOptions": {
     "ecmaVersion": 12,
     "sourceType": "module"
+  },
+  "globals": {
+    "mockEstimateFaces": "readonly"
   },
   "rules": {
     "no-unused-vars": ["warn"],

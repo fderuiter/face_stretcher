@@ -1,20 +1,22 @@
 export function initInstructions() {
-  const overlay = document.getElementById('instructions-overlay');
+  const overlay = document.getElementById("instructions-overlay");
   if (!overlay) {
     return { destroy() {}, show() {}, hide() {} };
   }
-  const closeBtn = overlay.querySelector('button');
-  const key = 'instructionsSeen';
+  const closeBtn = overlay.querySelector("button");
+  const key = "instructionsSeen";
 
   function show() {
-    overlay.classList.remove('hidden');
+    overlay.classList.remove("hidden");
   }
 
   function hide() {
-    overlay.classList.add('hidden');
+    overlay.classList.add("hidden");
     try {
-      localStorage.setItem(key, 'yes');
-    } catch (_) {}
+      localStorage.setItem(key, "yes");
+    } catch (_) {
+      // ignore write errors
+    }
   }
 
   function maybeShow() {
@@ -23,12 +25,13 @@ export function initInstructions() {
         show();
       }
     } catch (_) {
+      // localStorage may be unavailable
       show();
     }
   }
 
   if (closeBtn) {
-    closeBtn.addEventListener('click', hide);
+    closeBtn.addEventListener("click", hide);
   }
 
   maybeShow();
@@ -37,7 +40,7 @@ export function initInstructions() {
     show,
     hide,
     destroy() {
-      if (closeBtn) closeBtn.removeEventListener('click', hide);
-    }
+      if (closeBtn) closeBtn.removeEventListener("click", hide);
+    },
   };
 }

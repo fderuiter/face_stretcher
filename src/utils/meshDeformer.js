@@ -1,6 +1,13 @@
 import * as THREE from 'three';
 
-let positions, originalPos, velocities, vertexCount, geo, mesh, texture;
+let positions,
+  originalPos,
+  velocities,
+  vertexCount,
+  geo,
+  mesh,
+  texture,
+  lockedVerts;
 
 // Error codes:
 // ERR_MD_001: Invalid mesh parameters
@@ -40,6 +47,7 @@ export function createMesh(initialTexture, width, height, segments, pixelated = 
     vertexCount = positions.count || geo.attributes.position.count;
     originalPos = positions.array.slice();
     velocities = new Float32Array(vertexCount * 3).fill(0);
+    lockedVerts = new Uint8Array(vertexCount).fill(0);
 
     // default spring params & brush
     mesh.userData.radius = 0.3;
@@ -67,14 +75,13 @@ export function stretchRegion(from, to) {
 
     const drag = new THREE.Vector3().subVectors(to, from);
     const { strength } = mesh.userData;
-    let changed = 0;
-    
+
     for (let i = 0; i < vertexCount; i++) {
+      if (lockedVerts && lockedVerts[i]) continue;
       const idx = i * 3;
       positions.array[idx] += drag.x * strength;
       positions.array[idx + 1] += drag.y * strength;
       positions.array[idx + 2] += drag.z * strength;
-      changed++;
     }
     positions.needsUpdate = true;
   } catch (error) {
@@ -95,13 +102,20 @@ export function updateSprings(dt) {
     const pos = positions.array;
     for (let i = 0; i < vertexCount; i++) {
       const idx = i * 3;
+      if (lockedVerts && lockedVerts[i]) {
+        velocities[idx] = velocities[idx + 1] = velocities[idx + 2] = 0;
+        continue;
+      }
       const dx = pos[idx] - originalPos[idx];
       const dy = pos[idx + 1] - originalPos[idx + 1];
       const dz = pos[idx + 2] - originalPos[idx + 2];
       // Hooke's law + damping
-      const fx = -mesh.userData.kStiff * dx - mesh.userData.damping * velocities[idx];
-      const fy = -mesh.userData.kStiff * dy - mesh.userData.damping * velocities[idx + 1];
-      const fz = -mesh.userData.kStiff * dz - mesh.userData.damping * velocities[idx + 2];
+      const fx = -mesh.userData.kStiff * dx -
+        mesh.userData.damping * velocities[idx];
+      const fy = -mesh.userData.kStiff * dy -
+        mesh.userData.damping * velocities[idx + 1];
+      const fz = -mesh.userData.kStiff * dz -
+        mesh.userData.damping * velocities[idx + 2];
       velocities[idx] += fx * dt;
       velocities[idx + 1] += fy * dt;
       velocities[idx + 2] += fz * dt;
@@ -160,6 +174,7 @@ export function updateGeometry(width, height, segments) {
     positions = geo.attributes.position;
     originalPos = positions.array.slice();
     velocities = new Float32Array(vertexCount * 3).fill(0);
+    lockedVerts = new Uint8Array(vertexCount).fill(0);
     mesh.geometry = geo;
     mesh.userData.segments = segments;
   }
@@ -172,4 +187,29 @@ export function getMeshDimensions() {
 
 export function getTextureData() {
   return texture;
+}
+
+/**
+ * Locks all vertices currently displaced from their original position.
+ */
+export function lockCurrentDeformation() {
+  if (!positions || !originalPos || !lockedVerts) return;
+  const pos = positions.array;
+  for (let i = 0; i < vertexCount; i++) {
+    const idx = i * 3;
+    if (
+      pos[idx] !== originalPos[idx] ||
+      pos[idx + 1] !== originalPos[idx + 1] ||
+      pos[idx + 2] !== originalPos[idx + 2]
+    ) {
+      lockedVerts[i] = 1;
+    }
+  }
+}
+
+/**
+ * Unlocks all locked vertices so they can spring back.
+ */
+export function unlockDeformation() {
+  if (lockedVerts) lockedVerts.fill(0);
 }

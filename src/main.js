@@ -10,6 +10,8 @@ import {
   updateTexture,
   getMeshDimensions,
   getTextureData,
+  lockCurrentDeformation,
+  unlockDeformation,
 } from "./utils/meshDeformer.js";
 import { generateMesh } from "./utils/generateMesh.js";
 import { initControls } from "./ui/controlsUI.js";
@@ -51,6 +53,21 @@ let instructionsControl;
 
 // Helper functions for loading state are provided by loadingIndicator
 
+function setupRenderer() {
+  const canvas = document.getElementById("c");
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(
+    45,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    100,
+  );
+  camera.position.z = 5;
+  window.addEventListener("resize", onWindowResize);
+}
+
 function showResetButton() {
   if (resetButton) resetButton.classList.remove("hidden");
 }
@@ -81,7 +98,7 @@ async function init(startFile = null) {
   hideResetButton();
   hideShareButton();
   hideLinkButton();
-  
+
   let img;
   try {
     img = await showCropper(false, startFile);
@@ -314,13 +331,11 @@ function setupKeyboard() {
     },
     onGrabEnd: (locked) => {
       if (locked) {
-        // Lock simply stops spring updates until released
-        orientation.locked = true;
+        lockCurrentDeformation();
       }
     },
     onLockEnd: () => {
-      orientation.locked = false;
-      resetMesh();
+      unlockDeformation();
     },
     onZoom: (level) => {
       if (camera && camera.position) {
@@ -378,9 +393,7 @@ function animate(now) {
     return;
   }
   const dt = (now - lastTime) / 1000;
-  if (!orientation.locked) {
-    updateSprings(Math.min(dt, 0.1)); // Clamp dt to avoid instability
-  }
+  updateSprings(Math.min(dt, 0.1)); // Clamp dt to avoid instability
   renderer.render(scene, camera);
   lastTime = now;
   requestAnimationFrame(animate);
@@ -412,7 +425,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const shared = loadSharedImage();
   if (shared) {
     shared.onload = () => {
-      proceedWithCroppedImage(shared, { x: 0, y: 0, width: shared.width, height: shared.height });
+      proceedWithCroppedImage(shared, {
+        x: 0,
+        y: 0,
+        width: shared.width,
+        height: shared.height,
+      });
     };
     return;
   }
@@ -426,7 +444,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (renderer) {
       const link = generateShareLink(renderer.domElement);
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(link).then(() => alert("Link copied to clipboard!"), () => window.prompt("Copy this link:", link));
+        navigator.clipboard.writeText(link).then(
+          () => alert("Link copied to clipboard!"),
+          () => window.prompt("Copy this link:", link),
+        );
       } else {
         window.prompt("Copy this link:", link);
       }
@@ -436,5 +457,5 @@ document.addEventListener("DOMContentLoaded", () => {
   hideResetButton();
   hideShareButton();
   hideLinkButton();
-  });
-  // init(); // Call init directly if script is at the end of body or defer
+});
+// init(); // Call init directly if script is at the end of body or defer
