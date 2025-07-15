@@ -203,3 +203,38 @@ body {
 #share-btn:hover {
   background: linear-gradient(90deg, #fc5c7d 0%, #6a82fb 100%);
 }
+
+/* Instructions overlay */
+#instructions-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+#instructions-overlay .instructions-box {
+  background: #fff;
+  color: #222;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 320px;
+}
+#instructions-overlay button {
+  margin-top: 1rem;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #6a82fb 0%, #fc5c7d 100%);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+#instructions-overlay button:hover {
+  background: linear-gradient(90deg, #fc5c7d 0%, #6a82fb 100%);
+}

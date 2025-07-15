@@ -16,7 +16,7 @@ This document outlines the remaining work needed to turn this proof of concept i
 ## Polishing & UX
 
 - [x] Loading indicators during face detection and mesh creation.
-- [ ] Simple instructions or tooltips for first‑time users.
+- [x] Simple instructions or tooltips for first‑time users.
 - [ ] Optionally package the app as a Progressive Web App so it can be installed and used offline.
 
 ## Development Workflow

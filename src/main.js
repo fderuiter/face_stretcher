@@ -18,6 +18,7 @@ import { initKeyboardControls } from "./ui/keyboardControls.js";
 import { initResetButton } from "./ui/resetButton.js";
 import { initShareButton } from "./ui/shareButton.js";
 import { initLoadingIndicator } from "./ui/loadingIndicator.js";
+import { initInstructions } from "./ui/instructions.js";
 
 // Error codes:
 // ERR_IN_001: Initialization failed
@@ -42,6 +43,7 @@ const resetButton = document.getElementById("reset-btn");
 const shareButton = document.getElementById("share-btn");
 let resetControl;
 let shareControl;
+let instructionsControl;
 
 // Helper functions for loading state are provided by loadingIndicator
 
@@ -397,6 +399,7 @@ document.addEventListener("DOMContentLoaded", () => {
   shareControl = initShareButton(() => {
     if (renderer) captureCanvas(renderer.domElement);
   });
+  instructionsControl = initInstructions();
   hideResetButton();
   hideShareButton();
 });
