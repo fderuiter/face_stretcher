@@ -26,6 +26,7 @@ import { initLoadingIndicator } from "./ui/loadingIndicator.js";
 import { initInstructions } from "./ui/instructions.js";
 import { createDefaultGrabPoints } from "./utils/grabPoints.js";
 import { initPointerControls } from "./ui/pointerControls.js";
+import { createCameraController } from "./utils/cameraController.js";
 
 // Error codes:
 // ERR_IN_001: Initialization failed
@@ -36,10 +37,9 @@ import { initPointerControls } from "./ui/pointerControls.js";
 // ERR_IN_006: WebGL context lost
 // ERR_IN_007: Resource cleanup failed
 
-let renderer, scene, camera, mesh, controls, keyboard, pointerControl;
+let renderer, scene, camera, mesh, controls, keyboard, pointerControl, cameraCtrl;
 const prevPt = new THREE.Vector3();
 const kbCursor = new THREE.Vector3();
-let orientation = { x: 0, y: 0 };
 let lastTime = performance.now();
 let isN64Mode = true; // Default to N64 low-poly mode
 let useHemisphere = false;
@@ -183,6 +183,7 @@ function proceedWithCroppedImage(img, bbox) {
 
     mesh = generateMesh(cropped, isN64Mode, useHemisphere);
     scene.add(mesh);
+    cameraCtrl = createCameraController({ camera, mesh });
 
     if (pointerControl) pointerControl.destroy();
     const dims = getMeshDimensions();
@@ -301,29 +302,10 @@ function setupKeyboard(grabPoints) {
       unlockDeformation();
     },
     onZoom: (level) => {
-      if (camera && camera.position) {
-        camera.position.z = 5 / level;
-      }
+      if (cameraCtrl) cameraCtrl.zoom(level);
     },
     onRotate: (dir) => {
-      if (!mesh || !mesh.rotation || typeof mesh.rotation.set !== "function")
-        return;
-      const step = Math.PI / 16;
-      switch (dir) {
-        case "left":
-          orientation.y += step;
-          break;
-        case "right":
-          orientation.y -= step;
-          break;
-        case "up":
-          orientation.x -= step;
-          break;
-        case "down":
-          orientation.x += step;
-          break;
-      }
-      mesh.rotation.set(orientation.x, orientation.y, 0);
+      if (cameraCtrl) cameraCtrl.rotate(dir);
     },
     onExit: () => {
       if (controls) controls.destroy();
