@@ -15,6 +15,10 @@ A lightweight proof of concept for a browser‑based face stretching tool using 
 - Visual loading indicators appear while the app detects your face and builds the mesh.
 - Helpful instructions appear the first time you visit so you know how to get started.
 
+### Manual Crop Fallback
+
+If automatic face detection fails, a drag-and-zoom cropper lets you manually select the face region before the mesh is generated.
+
 ## Getting Started
 
 ### Prerequisites
