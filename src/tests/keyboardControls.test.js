@@ -66,6 +66,22 @@ describe('keyboard controls', () => {
     kc.destroy();
   });
 
+  test('lock start and end callbacks', () => {
+    const onLockStart = jest.fn();
+    const onLockEnd = jest.fn();
+    const onGrabEnd = jest.fn();
+    const kc = initKeyboardControls({ onLockStart, onLockEnd, onGrabEnd });
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyA' }));
+    window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyR' }));
+    expect(onLockStart).toHaveBeenCalled();
+    window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyA' }));
+    expect(onGrabEnd).toHaveBeenCalledWith(true);
+    window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyR' }));
+    expect(onLockEnd).toHaveBeenCalled();
+    kc.destroy();
+  });
+
   test('custom step and zoom levels', () => {
     const onMove = jest.fn();
     const onZoom = jest.fn();

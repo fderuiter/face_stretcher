@@ -29,7 +29,7 @@ This document tracks current and upcoming work for the Mario‑style face stretc
 - [x] **Mario‑Style Cursor** – white glove pointer for nostalgia.
 - [x] **Pointer Controls** – click and drag with the mouse to deform the face.
 - [x] **Share Links** – generate a permalink so finished faces can be re‑loaded or shared on social media.
-- [ ] **Lockable Deformations** – support holding A + R to pin vertices in place just like the original game.
+- [x] **Lockable Deformations** – support holding A + R to pin vertices in place just like the original game.
 
 ## Graphics & Interaction
 - [ ] **Grab Points** – snap the cursor to nose, cheeks, hat brim and other key regions for easier stretching.
