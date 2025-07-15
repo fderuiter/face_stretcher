@@ -11,23 +11,28 @@ export function captureCanvas(canvas) {
     if (!canvas) {
       throw new Error('[ERR_SH_001] Invalid canvas element');
     }
-    
-    canvas.toBlob(blob => {
-      try {
-        if (!blob) {
-          throw new Error('[ERR_SH_002] Failed to create blob from canvas');
-        }
-        const url = globalThis.URL.createObjectURL(blob);
-        const a = globalThis.document.createElement('a');
-        a.href = url;
-        a.download = 'stretchy-face.png';
-        a.click();
-        globalThis.URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error(`[ERR_SH_003] Download failed: ${error.message}`);
-        throw error;
-      }
+
+    let blobResult = null;
+    canvas.toBlob(b => {
+      blobResult = b;
     });
+
+    if (!blobResult) {
+      throw new Error('[ERR_SH_002] Failed to create blob from canvas');
+    }
+
+    const url = (global.URL || URL).createObjectURL(blobResult);
+    try {
+      const a = (global.document || document).createElement('a');
+      a.href = url;
+      a.download = 'stretchy-face.png';
+      a.click();
+      (global.URL || URL).revokeObjectURL(url);
+    } catch (error) {
+      (global.URL || URL).revokeObjectURL(url);
+      console.error(`[ERR_SH_003] Download failed: ${error.message}`);
+      throw new Error('[ERR_SH_003] Download failed');
+    }
   } catch (error) {
     console.error(`Canvas capture failed: ${error.message}`);
     throw error;
