@@ -5,7 +5,7 @@ This document tracks current and upcoming work for the Mario‑style face stretc
 
 ## Core Features
 
-- [ ] **Image Upload & Validation** – allow users to upload JPEG/PNG/WEBP images. Validate file type, size and dimensions.
+- [x] **Image Upload & Validation** – allow users to upload JPEG/PNG/WEBP images. Validate file type, size and dimensions.
 - [ ] **Automatic Face Detection** – run TensorFlow.js face detection on the uploaded image and suggest a crop around the face.
 - [ ] **Manual Crop Fallback** – provide a cropper UI when detection fails so users can select the face region themselves.
 - [ ] **Mesh Generation** – map the cropped face onto a deformable mesh. Support both a low‑poly "N64" mode and a smoother high‑res mode.
@@ -17,7 +17,7 @@ This document tracks current and upcoming work for the Mario‑style face stretc
 
 ## Polishing & UX
 
-- [ ] **Image Upload & Validation** – drag/drop support and checks for JPEG/PNG/WEBP up to 10MB.
+- [x] **Image Upload & Validation** – drag/drop support and checks for JPEG/PNG/WEBP up to 10MB.
 - [ ] **Automatic Face Detection** – suggest a crop around the detected face using TensorFlow.js.
 - [ ] **Manual Crop Fallback** – present a cropper UI if detection fails.
 - [ ] **Mesh Generation** – build a deformable mesh in both classic low‑poly “N64 Mode” and smoother HD mode.

@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { selectFaceRegion } from "./utils/selectFaceRegion.js";
 import { showCropper, hideCropper } from "./ui/cropperUI.js";
+import { initUploadArea } from "./ui/uploadArea.js";
 import {
   createMesh,
   stretchRegion,
@@ -50,6 +51,7 @@ let resetControl;
 let shareControl;
 let linkControl;
 let instructionsControl;
+let uploadControl;
 
 // Helper functions for loading state are provided by loadingIndicator
 
@@ -399,29 +401,10 @@ function animate(now) {
   requestAnimationFrame(animate);
 }
 
-function setupUploadHandlers() {
-  if (loadingIndicator) loadingIndicator.hide();
-  uploadContainer.classList.remove("hidden");
-
-  uploadContainer.addEventListener("click", () => init());
-  uploadContainer.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    uploadContainer.classList.add("dragover");
-  });
-  uploadContainer.addEventListener("dragleave", () => {
-    uploadContainer.classList.remove("dragover");
-  });
-  uploadContainer.addEventListener("drop", (e) => {
-    e.preventDefault();
-    uploadContainer.classList.remove("dragover");
-    const file = e.dataTransfer.files[0];
-    if (file) init(file);
-  });
-}
 
 document.addEventListener("DOMContentLoaded", () => {
   loadingIndicator = initLoadingIndicator();
-  setupUploadHandlers();
+  uploadControl = initUploadArea((file) => init(file));
   const shared = loadSharedImage();
   if (shared) {
     shared.onload = () => {
