@@ -9,7 +9,20 @@ import '@tensorflow/tfjs-backend-webgl';
 // ERR_FD_005: WebGL context error
 // ERR_FD_006: Memory allocation error
 
-let model = null;
+let modelPromise = null;
+
+async function loadModel() {
+  if (!modelPromise) {
+    modelPromise = faceLandmarksDetection.load(
+      faceLandmarksDetection.SupportedPackages.mediapipeFacemesh,
+    );
+  }
+  return modelPromise;
+}
+
+export function __resetModel() {
+  modelPromise = null;
+}
 
 /**
  * Returns a bbox {x, y, width, height} around the first detected face
@@ -21,18 +34,15 @@ export async function detectFace(imageElementOrCanvas) {
       throw new Error('[ERR_FD_004] Invalid input image');
     }
 
-    if (!model) {
-      try {
-        model = await faceLandmarksDetection.load(
-          faceLandmarksDetection.SupportedPackages.mediapipeFacemesh
-        );
-      } catch (error) {
-        throw new Error(`[ERR_FD_003] Model loading failed: ${error.message}`);
-      }
+    let model;
+    try {
+      model = await loadModel();
+    } catch (error) {
+      throw new Error(`[ERR_FD_003] Model loading failed: ${error.message}`);
     }
 
     try {
-      const predictions = await model.estimateFaces({input: imageElementOrCanvas});
+      const predictions = await model.estimateFaces({ input: imageElementOrCanvas });
       if (!predictions.length) {
         throw new Error('[ERR_FD_002] No face detected');
       }
@@ -41,7 +51,7 @@ export async function detectFace(imageElementOrCanvas) {
         x: box.xMin,
         y: box.yMin,
         width: box.xMax - box.xMin,
-        height: box.yMax - box.yMin
+        height: box.yMax - box.yMin,
       };
     } catch (error) {
       if (error.message.includes('WebGL')) {

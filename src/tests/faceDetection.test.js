@@ -1,65 +1,38 @@
-import { detectFace } from '../utils/faceDetection.js';
+import { detectFace, __resetModel } from '../utils/faceDetection.js';
 
-describe('Face Detection Tests', () => {
-    beforeAll(() => {
-        // Mock canvas and context for testing
-        global.HTMLCanvasElement.prototype.getContext = () => ({
-            drawImage: jest.fn()
-        });
-    });
+describe('detectFace', () => {
+  const img = { width: 100, height: 100 };
 
-    test('should detect face in valid image', async () => {
-        const mockImage = {
-            width: 500,
-            height: 500
-        };
+  beforeEach(() => {
+    __resetModel();
+    global.mockEstimateFaces.mockReset();
+    global.mockEstimateFaces.mockResolvedValue([
+      { box: { xMin: 0, yMin: 0, xMax: 100, yMax: 100 } },
+    ]);
+  });
 
-        const bbox = await detectFace(mockImage);
-        expect(bbox).toBeDefined();
-        expect(bbox.x).toBeDefined();
-        expect(bbox.y).toBeDefined();
-        expect(bbox.width).toBeDefined();
-        expect(bbox.height).toBeDefined();
-    });    test('should handle missing face', async () => {
-        const mockImage = {
-            width: 500,
-            height: 500
-        };
-        
-        // Mock the face detection to return no faces
-        mockEstimateFaces.mockImplementationOnce(async () => {
-            throw new Error('[ERR_FD_002] No face detected');
-        });
+  test('returns bbox from detection', async () => {
+    const bbox = await detectFace(img);
+    expect(bbox).toEqual({ x: 0, y: 0, width: 100, height: 100 });
+  });
 
-        await expect(detectFace(mockImage)).rejects.toThrow('[ERR_FD_002] No face detected');
-    });
+  test('throws when no face found', async () => {
+    global.mockEstimateFaces.mockResolvedValueOnce([]);
+    await expect(detectFace(img)).rejects.toThrow('ERR_FD_002');
+  });
 
-    test('should handle invalid input', async () => {
-        await expect(detectFace(null)).rejects.toThrow('ERR_FD_004');
-        await expect(detectFace(undefined)).rejects.toThrow('ERR_FD_004');
-    });    test('should handle model loading failure', async () => {
-        const mockImage = {
-            width: 500,
-            height: 500
-        };
+  test('throws on invalid input', async () => {
+    await expect(detectFace(null)).rejects.toThrow('ERR_FD_004');
+  });
 
-        // Mock model loading failure
-        mockEstimateFaces.mockImplementationOnce(async () => {
-            throw new Error('[ERR_FD_003] Model loading failed: Model could not be loaded');
-        });
+  test('wraps model loading errors', async () => {
+    const err = new Error('bad');
+    global.faceLandmarksDetection.load.mockRejectedValueOnce(err);
+    await expect(detectFace(img)).rejects.toThrow('ERR_FD_003');
+  });
 
-        await expect(detectFace(mockImage)).rejects.toThrow('[ERR_FD_003] Model loading failed');
-    });    test('should handle WebGL context errors', async () => {
-        const mockImage = {
-            width: 500,
-            height: 500
-        };
-
-        // Mock WebGL context error
-        mockEstimateFaces.mockImplementationOnce(async () => {
-            throw new Error('[ERR_FD_005] WebGL error: Context lost');
-        });
-
-        await expect(detectFace(mockImage)).rejects.toThrow('[ERR_FD_005] WebGL error');
-    });
+  test('wraps WebGL errors', async () => {
+    global.mockEstimateFaces.mockRejectedValueOnce(new Error('WebGL context lost'));
+    await expect(detectFace(img)).rejects.toThrow('ERR_FD_005');
+  });
 });
