@@ -6,7 +6,7 @@
 /**
  * Capture the WebGL canvas and trigger a download
  */
-export function captureCanvas(canvas) {
+export function captureCanvas(canvas, doc = globalThis.document, urlObj = globalThis.URL) {
   try {
     if (!canvas) {
       throw new Error('[ERR_SH_001] Invalid canvas element');
@@ -21,15 +21,15 @@ export function captureCanvas(canvas) {
       throw new Error('[ERR_SH_002] Failed to create blob from canvas');
     }
 
-    const url = (global.URL || URL).createObjectURL(blobResult);
+    const url = urlObj.createObjectURL(blobResult);
     try {
-      const a = (global.document || document).createElement('a');
+      const a = doc.createElement('a');
       a.href = url;
       a.download = 'stretchy-face.png';
       a.click();
-      (global.URL || URL).revokeObjectURL(url);
+      urlObj.revokeObjectURL(url);
     } catch (error) {
-      (global.URL || URL).revokeObjectURL(url);
+      urlObj.revokeObjectURL(url);
       console.error(`[ERR_SH_003] Download failed: ${error.message}`);
       throw new Error('[ERR_SH_003] Download failed');
     }
