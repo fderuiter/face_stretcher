@@ -1,10 +1,11 @@
 # Face Stretcher POC
 
-A lightweight proof of concept for a browser‑based face stretching tool using HTML5 Canvas and Vite. It lets you upload a photo and drag parts of the face just like the Mario 64 start screen.
+A lightweight proof of concept for a browser‑based face stretching tool using HTML5 Canvas and Vite. It lets you upload a photo and drag parts of the face just like the Mario 64 start screen. You can either click the upload area or drag a file onto it.
 
 ## Features
 
 - Upload an image and manually stretch regions with a smooth falloff brush.
+- Supports JPEG, PNG and WebP uploads up to 10MB with drag-and-drop convenience.
 - Built with Vite for fast development and optimized production build.
 
 ## Getting Started

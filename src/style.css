@@ -37,6 +37,10 @@ html, body {
   border: 1.5px solid #888;
 }
 
+#upload-container.dragover {
+  border: 2px dashed #666;
+}
+
 #cropper-container {
   position: absolute;
   top: 10%;

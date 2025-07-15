@@ -56,13 +56,13 @@ function hideLoading() {
     setTimeout(() => loadingContainer.classList.add('hidden'), 300);
 }
 
-async function init() {
+async function init(startFile = null) {
   hideLoading();
   uploadContainer.classList.remove('hidden');
 
   let img;
   try {
-    img = await showCropper();
+    img = await showCropper(false, startFile);
     if (!img) {
         console.log("No image selected.");
         uploadContainer.classList.remove('hidden');
@@ -319,6 +319,25 @@ function animate(now) {
   requestAnimationFrame(animate);
 }
 
-// Add a check for cropperUI readiness if needed, or ensure init runs after DOM load
-document.addEventListener('DOMContentLoaded', init);
+function setupUploadHandlers() {
+  hideLoading();
+  uploadContainer.classList.remove('hidden');
+
+  uploadContainer.addEventListener('click', () => init());
+  uploadContainer.addEventListener('dragover', e => {
+    e.preventDefault();
+    uploadContainer.classList.add('dragover');
+  });
+  uploadContainer.addEventListener('dragleave', () => {
+    uploadContainer.classList.remove('dragover');
+  });
+  uploadContainer.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadContainer.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) init(file);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', setupUploadHandlers);
 // init(); // Call init directly if script is at the end of body or defer
