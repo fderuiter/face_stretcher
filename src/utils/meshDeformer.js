@@ -20,7 +20,7 @@ let positions,
 /**
  * Creates a subdivided plane mesh, sets up userData for springs.
  */
-export function createMesh(initialTexture, width, height, segments, pixelated = false) {
+export function createMesh(initialTexture, width, height, segments, pixelated = false, hemisphere = false) {
   try {
     if (!initialTexture || width <= 0 || height <= 0 || segments < 1) {
       throw new Error('[ERR_MD_001] Invalid mesh parameters');
@@ -37,7 +37,22 @@ export function createMesh(initialTexture, width, height, segments, pixelated = 
       texture.minFilter = THREE.LinearFilter;
     }
 
-    geo = new THREE.PlaneGeometry(width, height, segments, segments);
+    if (hemisphere) {
+      const radius = width / 2;
+      geo = new THREE.SphereGeometry(
+        radius,
+        segments,
+        segments,
+        -Math.PI / 2,
+        Math.PI,
+        0,
+        Math.PI
+      );
+      const scaleY = height / width;
+      geo.scale(1, scaleY, 1);
+    } else {
+      geo = new THREE.PlaneGeometry(width, height, segments, segments);
+    }
     const mat = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide }); // Use DoubleSide
     mesh = new THREE.Mesh(geo, mat);
 
@@ -56,6 +71,7 @@ export function createMesh(initialTexture, width, height, segments, pixelated = 
     mesh.userData.damping = 4;
     mesh.userData.segments = segments; // Store segments count
     mesh.userData.pixelated = pixelated; // Store pixelated state
+    mesh.userData.hemisphere = hemisphere; // Store hemisphere flag
 
     return mesh;
   } catch (error) {
@@ -74,14 +90,21 @@ export function stretchRegion(from, to) {
     }
 
     const drag = new THREE.Vector3().subVectors(to, from);
-    const { strength } = mesh.userData;
+    const { strength, radius } = mesh.userData;
+    const r2 = radius * radius;
 
     for (let i = 0; i < vertexCount; i++) {
       if (lockedVerts && lockedVerts[i]) continue;
       const idx = i * 3;
-      positions.array[idx] += drag.x * strength;
-      positions.array[idx + 1] += drag.y * strength;
-      positions.array[idx + 2] += drag.z * strength;
+      const dx = positions.array[idx] - from.x;
+      const dy = positions.array[idx + 1] - from.y;
+      const dz = positions.array[idx + 2] - from.z;
+      const distSq = dx * dx + dy * dy + dz * dz;
+      if (distSq > r2) continue;
+      const falloff = 1 - Math.sqrt(distSq) / radius;
+      positions.array[idx] += drag.x * strength * falloff;
+      positions.array[idx + 1] += drag.y * strength * falloff;
+      positions.array[idx + 2] += drag.z * strength * falloff;
     }
     positions.needsUpdate = true;
   } catch (error) {
@@ -169,7 +192,21 @@ export function updateTexture(newTexture) {
 export function updateGeometry(width, height, segments) {
   if (mesh) {
     geo.dispose(); // Dispose old geometry
-    geo = new THREE.PlaneGeometry(width, height, segments, segments);
+    if (mesh.userData.hemisphere) {
+      const radius = width / 2;
+      geo = new THREE.SphereGeometry(
+        radius,
+        segments,
+        segments,
+        -Math.PI / 2,
+        Math.PI,
+        0,
+        Math.PI
+      );
+      geo.scale(1, height / width, 1);
+    } else {
+      geo = new THREE.PlaneGeometry(width, height, segments, segments);
+    }
     vertexCount = geo.attributes.position.count;
     positions = geo.attributes.position;
     originalPos = positions.array.slice();

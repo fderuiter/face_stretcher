@@ -65,4 +65,48 @@ describe('keyboard controls', () => {
     expect(onGrabEnd).toHaveBeenCalledWith(true);
     kc.destroy();
   });
+
+  test('lock start and end callbacks', () => {
+    const onLockStart = jest.fn();
+    const onLockEnd = jest.fn();
+    const onGrabEnd = jest.fn();
+    const kc = initKeyboardControls({ onLockStart, onLockEnd, onGrabEnd });
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyA' }));
+    window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyR' }));
+    expect(onLockStart).toHaveBeenCalled();
+    window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyA' }));
+    expect(onGrabEnd).toHaveBeenCalledWith(true);
+    window.dispatchEvent(new KeyboardEvent('keyup', { code: 'KeyR' }));
+    expect(onLockEnd).toHaveBeenCalled();
+    kc.destroy();
+  });
+
+  test('custom step and zoom levels', () => {
+    const onMove = jest.fn();
+    const onZoom = jest.fn();
+    const kc = initKeyboardControls({ onMove, onZoom, step: 0.2, zoomLevels: [1, 2] });
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { code: 'ArrowRight' }));
+    expect(kc.state.cursor.x).toBeCloseTo(0.2);
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyB' }));
+    expect(onZoom).toHaveBeenLastCalledWith(2);
+    window.dispatchEvent(new KeyboardEvent('keydown', { code: 'KeyB' }));
+    expect(onZoom).toHaveBeenLastCalledWith(1);
+
+    kc.destroy();
+  });
+
+  test('cursor snaps to grab points', () => {
+    const onMove = jest.fn();
+    const grab = [{ x: 0.2, y: 0 }];
+    const kc = initKeyboardControls({ onMove, grabPoints: grab, snapDistance: 0.2 });
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { code: 'ArrowRight' }));
+    expect(kc.state.cursor.x).toBeCloseTo(0.2);
+    expect(onMove).toHaveBeenLastCalledWith({ x: 0.2, y: 0 });
+
+    kc.destroy();
+  });
 });

@@ -12,8 +12,9 @@ This document tracks current and upcoming work for the Mario‑style face stretc
 - [x] **Interactive Deformation** – click or touch to grab points on the mesh and drag them around. Vertices should spring back when released.
 - [x] **Reset Button** – instantly restore the mesh to its original state.
 - [x] **Save/Share** – capture the canvas to an image so users can download or share their creations.
-- [ ] **Keyboard Controls** – support keyboard mappings for cursor movement, grabbing, zoom and rotation as listed in the README.
-- [ ] **Mario-style Cursor** – show a white glove cursor over the canvas for added nostalgia.
+- [x] **Keyboard Controls** – support keyboard mappings for cursor movement, grabbing, zoom and rotation as listed in the README.
+- [x] **Pointer Controls** – allow manipulation via the mouse and clicks in addition to the keyboard.
+- [x] **Mario-style Cursor** – show a white glove cursor over the canvas for added nostalgia.
 
 ## Polishing & UX
 
@@ -24,16 +25,17 @@ This document tracks current and upcoming work for the Mario‑style face stretc
 - [x] **Interactive Deformation** – manipulate the mesh with mouse, touch or keyboard. Vertices spring back when released.
 - [x] **Reset Button** – instantly restore the original mesh state.
 - [x] **Save Image** – capture the canvas to a PNG for download.
-- [ ] **Keyboard Controls** – arrow keys for movement, A/R/B/I/J/K/L and Enter to mimic N64 actions.
-- [ ] **Mario‑Style Cursor** – white glove pointer for nostalgia.
-- [ ] **Share Links** – generate a permalink so finished faces can be re‑loaded or shared on social media.
-- [ ] **Lockable Deformations** – support holding A + R to pin vertices in place just like the original game.
+- [x] **Keyboard Controls** – arrow keys for movement, A/R/B/I/J/K/L and Enter to mimic N64 actions.
+- [x] **Mario‑Style Cursor** – white glove pointer for nostalgia.
+- [x] **Pointer Controls** – click and drag with the mouse to deform the face.
+- [x] **Share Links** – generate a permalink so finished faces can be re‑loaded or shared on social media.
+- [x] **Lockable Deformations** – support holding A + R to pin vertices in place just like the original game.
 
 ## Graphics & Interaction
-- [ ] **Grab Points** – snap the cursor to nose, cheeks, hat brim and other key regions for easier stretching.
-- [ ] **Hemisphere Mesh** – optionally map the face onto a curved surface for more depth.
-- [ ] **Brush & Physics Controls** – expose sliders for radius, strength, stiffness and damping.
-- [ ] **Camera Zoom & Rotation** – keyboard shortcuts for zoom levels and viewing angles.
+- [x] **Grab Points** – snap the cursor to nose, cheeks, hat brim and other key regions for easier stretching.
+- [x] **Hemisphere Mesh** – optionally map the face onto a curved surface for more depth.
+- [x] **Brush & Physics Controls** – expose sliders for radius, strength, stiffness and damping.
+- [x] **Camera Zoom & Rotation** – keyboard shortcuts for zoom levels and viewing angles.
 
 ## UI & UX
 - [ ] Loading indicators during face detection and mesh creation.

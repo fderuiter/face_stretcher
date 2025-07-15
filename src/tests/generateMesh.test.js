@@ -18,20 +18,22 @@ describe('generateMesh', () => {
 
   test('creates low-poly mesh in N64 mode', () => {
     const spy = jest.spyOn(meshDeformer, 'createMesh').mockReturnValue({ userData: {} });
-    const mesh = generateMesh(canvas, true, docMock);
+    const mesh = generateMesh(canvas, true, false, docMock);
     expect(spy).toHaveBeenCalled();
     const args = spy.mock.calls[0];
     expect(args[3]).toBe(N64_SEGMENTS);
     expect(args[4]).toBe(true);
+    expect(args[5]).toBe(false);
     expect(mesh).toBeDefined();
   });
 
   test('creates high-res mesh in HD mode', () => {
     const spy = jest.spyOn(meshDeformer, 'createMesh').mockReturnValue({ userData: {} });
-    generateMesh(canvas, false, docMock);
+    generateMesh(canvas, false, false, docMock);
     const args = spy.mock.calls[0];
     expect(args[3]).toBe(HD_SEGMENTS);
     expect(args[4]).toBe(false);
+    expect(args[5]).toBe(false);
   });
 
   test('throws on invalid source', () => {

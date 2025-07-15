@@ -1,3 +1,4 @@
+import { snapToGrabPoints } from "../utils/grabPoints.js";
 export function initKeyboardControls({
   onMove = () => {},
   onGrabStart = () => {},
@@ -7,21 +8,24 @@ export function initKeyboardControls({
   onLockEnd = () => {},
   onZoom = () => {},
   onRotate = () => {},
-  onExit = () => {}
+  onExit = () => {},
+  step = 0.1,
+  zoomLevels = [1, 1.5, 2],
+  grabPoints = [],
+  snapDistance = 0.25
 } = {}) {
   const state = {
     cursor: { x: 0, y: 0 },
     grabbing: false,
     rHeld: false,
-    zoomLevels: [1, 1.5, 2],
+    zoomLevels,
     zoomIndex: 0
   };
-
-  const step = 0.1;
 
   function move(dx, dy) {
     state.cursor.x += dx;
     state.cursor.y += dy;
+    snapToGrabPoints(state.cursor, grabPoints, snapDistance);
     onMove({ ...state.cursor });
     if (state.grabbing) {
       onGrabMove({ ...state.cursor });
