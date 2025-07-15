@@ -10,8 +10,10 @@ A lightweight proof of concept for a browser‑based face stretching tool using 
 - Automatically detects your face using TensorFlow.js and suggests a crop around your face. If detection fails, a manual cropper UI lets you select the region yourself.
 - Toggle classic **N64 Mode** for a low-poly mesh or switch to a smoother high-res version.
 - Stretch the face interactively with mouse, touch, or the new keyboard controls.
-- Instantly snap the face back with the **Reset** button.
+- Dedicated pointer controls ensure smooth dragging on both mouse and touch devices.
+- Click the dedicated **Reset** button at any time to snap the face back to its original shape.
 - Save your creation as a PNG using the **Save Image** button.
+- Copy a shareable link to your stretched face with the **Share Link** button.
 - Visual loading indicators appear while the app detects your face and builds the mesh.
 - Helpful instructions appear the first time you visit so you know how to get started.
 
