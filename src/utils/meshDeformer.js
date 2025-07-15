@@ -90,14 +90,21 @@ export function stretchRegion(from, to) {
     }
 
     const drag = new THREE.Vector3().subVectors(to, from);
-    const { strength } = mesh.userData;
+    const { strength, radius } = mesh.userData;
+    const r2 = radius * radius;
 
     for (let i = 0; i < vertexCount; i++) {
       if (lockedVerts && lockedVerts[i]) continue;
       const idx = i * 3;
-      positions.array[idx] += drag.x * strength;
-      positions.array[idx + 1] += drag.y * strength;
-      positions.array[idx + 2] += drag.z * strength;
+      const dx = positions.array[idx] - from.x;
+      const dy = positions.array[idx + 1] - from.y;
+      const dz = positions.array[idx + 2] - from.z;
+      const distSq = dx * dx + dy * dy + dz * dz;
+      if (distSq > r2) continue;
+      const falloff = 1 - Math.sqrt(distSq) / radius;
+      positions.array[idx] += drag.x * strength * falloff;
+      positions.array[idx + 1] += drag.y * strength * falloff;
+      positions.array[idx + 2] += drag.z * strength * falloff;
     }
     positions.needsUpdate = true;
   } catch (error) {

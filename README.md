@@ -12,6 +12,7 @@ A lightweight proof of concept for a browser‑based face stretching tool using 
 - Optionally map the face onto a curved hemisphere for extra depth.
 - Stretch the face interactively with mouse, touch, or the new keyboard controls.
 - Dedicated pointer controls ensure smooth dragging on both mouse and touch devices.
+- Fine-tune brush radius, strength and spring physics with handy sliders.
 - Nostalgic Mario-style glove cursor over the canvas.
 - Cursor snaps to grab-points like the nose, cheeks and hat brim for precise stretching.
 - Hold **A** then press **R** to lock a deformation in place.

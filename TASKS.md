@@ -34,7 +34,7 @@ This document tracks current and upcoming work for the Mario‑style face stretc
 ## Graphics & Interaction
 - [x] **Grab Points** – snap the cursor to nose, cheeks, hat brim and other key regions for easier stretching.
 - [x] **Hemisphere Mesh** – optionally map the face onto a curved surface for more depth.
-- [ ] **Brush & Physics Controls** – expose sliders for radius, strength, stiffness and damping.
+- [x] **Brush & Physics Controls** – expose sliders for radius, strength, stiffness and damping.
 - [ ] **Camera Zoom & Rotation** – keyboard shortcuts for zoom levels and viewing angles.
 
 ## UI & UX

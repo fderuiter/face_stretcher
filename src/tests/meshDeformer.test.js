@@ -51,18 +51,28 @@ describe('MeshDeformer Tests', () => {
 
     test('should correctly apply stretch deformation', () => {
         mesh = createMesh(texture, 2, 2, 10);
+        mesh.userData.radius = 2;
         const originalPositions = mesh.geometry.attributes.position.array.slice();
         const from = new THREE.Vector3(0, 0, 0);
         const to = new THREE.Vector3(0.5, 0.5, 0);
-        
+
         stretchRegion(from, to);
-        
+
         const newPositions = mesh.geometry.attributes.position.array;
         expect(newPositions).not.toEqual(originalPositions);
     });
 
+    test('stretchRegion respects brush radius', () => {
+        mesh = createMesh(texture, 2, 2, 2);
+        mesh.userData.radius = 0;
+        const before = mesh.geometry.attributes.position.array.slice();
+        stretchRegion(new THREE.Vector3(0,0,0), new THREE.Vector3(0.5,0,0));
+        expect(mesh.geometry.attributes.position.array).toEqual(before);
+    });
+
     test('should correctly reset mesh', () => {
         mesh = createMesh(texture, 2, 2, 10);
+        mesh.userData.radius = 2;
         const originalPositions = mesh.geometry.attributes.position.array.slice();
         
         // Apply deformation
@@ -79,6 +89,7 @@ describe('MeshDeformer Tests', () => {
 
     test('should update springs correctly', () => {
         mesh = createMesh(texture, 2, 2, 10);
+        mesh.userData.radius = 2;
         const originalPositions = mesh.geometry.attributes.position.array.slice();
         
         // Apply deformation
@@ -95,6 +106,7 @@ describe('MeshDeformer Tests', () => {
 
     test('locked vertices remain until unlocked', () => {
         mesh = createMesh(texture, 2, 2, 10);
+        mesh.userData.radius = 2;
         const from = new THREE.Vector3(0, 0, 0);
         const to = new THREE.Vector3(0.5, 0, 0);
         stretchRegion(from, to);
