@@ -10,6 +10,8 @@ import {
   updateTexture,
   getMeshDimensions,
   getTextureData,
+  lockCurrentDeformation,
+  unlockDeformation,
 } from "./utils/meshDeformer.js";
 import { generateMesh } from "./utils/generateMesh.js";
 import { initControls } from "./ui/controlsUI.js";
@@ -314,13 +316,11 @@ function setupKeyboard() {
     },
     onGrabEnd: (locked) => {
       if (locked) {
-        // Lock simply stops spring updates until released
-        orientation.locked = true;
+        lockCurrentDeformation();
       }
     },
     onLockEnd: () => {
-      orientation.locked = false;
-      resetMesh();
+      unlockDeformation();
     },
     onZoom: (level) => {
       if (camera && camera.position) {
@@ -378,9 +378,7 @@ function animate(now) {
     return;
   }
   const dt = (now - lastTime) / 1000;
-  if (!orientation.locked) {
-    updateSprings(Math.min(dt, 0.1)); // Clamp dt to avoid instability
-  }
+  updateSprings(Math.min(dt, 0.1)); // Clamp dt to avoid instability
   renderer.render(scene, camera);
   lastTime = now;
   requestAnimationFrame(animate);

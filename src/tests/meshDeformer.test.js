@@ -1,5 +1,12 @@
 import * as THREE from 'three';
-import { createMesh, stretchRegion, updateSprings, resetMesh } from '../utils/meshDeformer.js';
+import {
+  createMesh,
+  stretchRegion,
+  updateSprings,
+  resetMesh,
+  lockCurrentDeformation,
+  unlockDeformation,
+} from '../utils/meshDeformer.js';
 
 describe('MeshDeformer Tests', () => {
     let texture, mesh;
@@ -83,5 +90,21 @@ describe('MeshDeformer Tests', () => {
         
         const updatedPositions = mesh.geometry.attributes.position.array;
         expect(updatedPositions).not.toEqual(originalPositions);
+    });
+
+    test('locked vertices remain until unlocked', () => {
+        mesh = createMesh(texture, 2, 2, 10);
+        const from = new THREE.Vector3(0, 0, 0);
+        const to = new THREE.Vector3(0.5, 0, 0);
+        stretchRegion(from, to);
+        lockCurrentDeformation();
+        const lockedPos = mesh.geometry.attributes.position.array.slice();
+        stretchRegion(from, new THREE.Vector3(1, 0, 0));
+        expect(mesh.geometry.attributes.position.array).toEqual(lockedPos);
+        updateSprings(0.016);
+        expect(mesh.geometry.attributes.position.array).toEqual(lockedPos);
+        unlockDeformation();
+        updateSprings(0.016);
+        expect(mesh.geometry.attributes.position.array).not.toEqual(lockedPos);
     });
 });
