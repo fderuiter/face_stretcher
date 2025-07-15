@@ -15,6 +15,12 @@ A lightweight proof of concept for a browser‑based face stretching tool using 
 - Visual loading indicators appear while the app detects your face and builds the mesh.
 - Helpful instructions appear the first time you visit so you know how to get started.
 
+### Mesh Generation
+
+The cropped face is projected onto a Three.js plane mesh. In **N64 Mode** a
+pixelated texture and just 10 segments recreate the low-poly look. Switch it off
+for a smoother high-res mesh with linear filtering.
+
 ### Manual Crop Fallback
 
 If automatic face detection fails, a drag-and-zoom cropper lets you manually select the face region before the mesh is generated.

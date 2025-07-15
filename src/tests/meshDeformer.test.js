@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {
   createMesh,
+  updateGeometry,
   stretchRegion,
   updateSprings,
   resetMesh,
@@ -106,5 +107,16 @@ describe('MeshDeformer Tests', () => {
         unlockDeformation();
         updateSprings(0.016);
         expect(mesh.geometry.attributes.position.array).not.toEqual(lockedPos);
+    });
+
+    test('uses pixelated filtering when requested', () => {
+        mesh = createMesh(texture, 2, 2, 10, true);
+        expect(mesh.userData.pixelated).toBe(true);
+    });
+
+    test('updateGeometry adjusts segment count', () => {
+        mesh = createMesh(texture, 2, 2, 8);
+        updateGeometry(2, 2, 4);
+        expect(mesh.userData.segments).toBe(4);
     });
 });

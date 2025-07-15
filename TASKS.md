@@ -8,7 +8,7 @@ This document tracks current and upcoming work for the Mario‑style face stretc
 - [x] **Image Upload & Validation** – allow users to upload JPEG/PNG/WEBP images. Validate file type, size and dimensions.
 - [x] **Automatic Face Detection** – run TensorFlow.js face detection on the uploaded image and suggest a crop around the face.
 - [x] **Manual Crop Fallback** – provide a cropper UI when detection fails so users can select the face region themselves.
-- [ ] **Mesh Generation** – map the cropped face onto a deformable mesh. Support both a low‑poly "N64" mode and a smoother high‑res mode.
+- [x] **Mesh Generation** – map the cropped face onto a deformable mesh. Support both a low‑poly "N64" mode and a smoother high‑res mode.
 - [ ] **Interactive Deformation** – click or touch to grab points on the mesh and drag them around. Vertices should spring back when released.
 - [ ] **Reset Button** – instantly restore the mesh to its original state.
 - [ ] **Save/Share** – capture the canvas to an image so users can download or share their creations.
@@ -20,7 +20,7 @@ This document tracks current and upcoming work for the Mario‑style face stretc
 - [x] **Image Upload & Validation** – drag/drop support and checks for JPEG/PNG/WEBP up to 10MB.
 - [x] **Automatic Face Detection** – suggest a crop around the detected face using TensorFlow.js.
 - [x] **Manual Crop Fallback** – present a cropper UI if detection fails.
-- [ ] **Mesh Generation** – build a deformable mesh in both classic low‑poly “N64 Mode” and smoother HD mode.
+- [x] **Mesh Generation** – build a deformable mesh in both classic low‑poly “N64 Mode” and smoother HD mode.
 - [ ] **Interactive Deformation** – manipulate the mesh with mouse, touch or keyboard. Vertices spring back when released.
 - [ ] **Reset Button** – instantly restore the original mesh state.
 - [ ] **Save Image** – capture the canvas to a PNG for download.
