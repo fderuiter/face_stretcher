@@ -24,6 +24,7 @@ import { initShareLinkButton } from "./ui/shareLinkButton.js";
 import { generateShareLink, loadSharedImage } from "./utils/shareLink.js";
 import { initLoadingIndicator } from "./ui/loadingIndicator.js";
 import { initInstructions } from "./ui/instructions.js";
+import { initPointerControls } from "./ui/pointerControls.js";
 
 // Error codes:
 // ERR_IN_001: Initialization failed
@@ -34,7 +35,8 @@ import { initInstructions } from "./ui/instructions.js";
 // ERR_IN_006: WebGL context lost
 // ERR_IN_007: Resource cleanup failed
 
-let renderer, scene, camera, mesh, controls, keyboard;
+let renderer, scene, camera, mesh, controls, keyboard, pointerControl;
+const prevPt = new THREE.Vector3();
 const kbCursor = new THREE.Vector3();
 let orientation = { x: 0, y: 0 };
 let lastTime = performance.now();
@@ -180,7 +182,8 @@ function proceedWithCroppedImage(img, bbox) {
     mesh = generateMesh(cropped, isN64Mode);
     scene.add(mesh);
 
-    setupInteraction();
+    if (pointerControl) pointerControl.destroy();
+pointerControl = initPointerControls({ renderer, camera, mesh, onDrag: stretchRegion });
     setupKeyboard();
 
     if (!controls) {
@@ -206,6 +209,10 @@ function proceedWithCroppedImage(img, bbox) {
             }
           }
           if (controls) controls.destroy();
+          if (pointerControl) {
+            pointerControl.destroy();
+            pointerControl = null;
+          }
           controls = null;
           if (keyboard) {
             keyboard.destroy();
@@ -253,69 +260,6 @@ function proceedWithCroppedImage(img, bbox) {
     alert("An error occurred while processing the image. Please try again.");
     return;
   }
-}
-
-let isDown = false;
-const prevPt = new THREE.Vector3();
-const ray = new THREE.Raycaster();
-const ptr = new THREE.Vector2();
-
-function getHit(event) {
-  if (!renderer || !camera || !mesh) return null;
-  const rect = renderer.domElement.getBoundingClientRect();
-  // Use clientX/Y for broader compatibility (touch/mouse)
-  const x = event.clientX ?? event.touches[0].clientX;
-  const y = event.clientY ?? event.touches[0].clientY;
-  ptr.x = ((x - rect.left) / rect.width) * 2 - 1;
-  ptr.y = -((y - rect.top) / rect.height) * 2 + 1;
-  ray.setFromCamera(ptr, camera);
-  const hits = ray.intersectObject(mesh);
-  return hits[0] ? hits[0].point : null;
-}
-
-function handlePointerDown(e) {
-  isDown = true;
-  const p = getHit(e);
-  if (p) prevPt.copy(p);
-}
-
-function handlePointerMove(e) {
-  if (!isDown) return;
-  const p = getHit(e);
-  if (p) {
-    stretchRegion(prevPt, p);
-    prevPt.copy(p);
-  }
-}
-
-function handlePointerUp() {
-  isDown = false;
-}
-
-function setupInteraction() {
-  if (!renderer) return;
-  const domElement = renderer.domElement;
-  // Remove previous listeners if any to avoid duplicates
-  domElement.removeEventListener("pointerdown", handlePointerDown);
-  domElement.removeEventListener("pointermove", handlePointerMove);
-  domElement.removeEventListener("pointerup", handlePointerUp);
-  domElement.removeEventListener("pointerleave", handlePointerUp); // Handle leaving canvas
-  domElement.removeEventListener("touchstart", handlePointerDown);
-  domElement.removeEventListener("touchmove", handlePointerMove);
-  domElement.removeEventListener("touchend", handlePointerUp);
-
-  // Add new listeners
-  domElement.addEventListener("pointerdown", handlePointerDown);
-  domElement.addEventListener("pointermove", handlePointerMove);
-  domElement.addEventListener("pointerup", handlePointerUp);
-  domElement.addEventListener("pointerleave", handlePointerUp);
-  domElement.addEventListener("touchstart", handlePointerDown, {
-    passive: false,
-  }); // passive: false for potential preventDefault
-  domElement.addEventListener("touchmove", handlePointerMove, {
-    passive: false,
-  });
-  domElement.addEventListener("touchend", handlePointerUp);
 }
 
 function setupKeyboard() {
@@ -366,6 +310,10 @@ function setupKeyboard() {
     },
     onExit: () => {
       if (controls) controls.destroy();
+          if (pointerControl) {
+            pointerControl.destroy();
+            pointerControl = null;
+          }
       controls = null;
       if (keyboard) {
         keyboard.destroy();
