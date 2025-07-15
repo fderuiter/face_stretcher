@@ -14,6 +14,7 @@ import {
 import { generateMesh, N64_SEGMENTS, HD_SEGMENTS } from './utils/generateMesh.js';
 import { initControls } from './ui/controlsUI.js';
 import { captureCanvas } from './utils/share.js';
+import { initKeyboardControls } from './ui/keyboardControls.js';
 
 // Error codes:
 // ERR_IN_001: Initialization failed
@@ -24,7 +25,9 @@ import { captureCanvas } from './utils/share.js';
 // ERR_IN_006: WebGL context lost
 // ERR_IN_007: Resource cleanup failed
 
-let renderer, scene, camera, mesh, controls;
+let renderer, scene, camera, mesh, controls, keyboard;
+const kbCursor = new THREE.Vector3();
+let orientation = { x: 0, y: 0 };
 let lastTime = performance.now();
 let isN64Mode = true; // Default to N64 low-poly mode
 const N64_SEGMENTS = 10; // Low resolution for N64 mode
@@ -141,6 +144,7 @@ function proceedWithCroppedImage(img, bbox) {
     scene.add(mesh);
 
     setupInteraction();
+    setupKeyboard();
 
     if (!controls) {
        controls = initControls({
@@ -164,10 +168,14 @@ function proceedWithCroppedImage(img, bbox) {
                     mesh.material.dispose();
                 }
            }
-           if (controls) controls.destroy();
-           controls = null;
-           mesh = null;
-           currentImage = null;
+          if (controls) controls.destroy();
+          controls = null;
+          if (keyboard) {
+            keyboard.destroy();
+            keyboard = null;
+          }
+          mesh = null;
+          currentImage = null;
            currentBBox = null;
            // Stop animation loop
            lastTime = 0;
@@ -264,6 +272,66 @@ function setupInteraction() {
   domElement.addEventListener('touchend', handlePointerUp);
 }
 
+function setupKeyboard() {
+  if (keyboard) keyboard.destroy();
+  keyboard = initKeyboardControls({
+    onMove: pos => {
+      kbCursor.set(pos.x, pos.y, 0);
+    },
+    onGrabStart: () => {
+      prevPt.copy(kbCursor);
+    },
+    onGrabMove: () => {
+      stretchRegion(prevPt, kbCursor);
+      prevPt.copy(kbCursor);
+    },
+    onGrabEnd: locked => {
+      if (locked) {
+        // Lock simply stops spring updates until released
+        orientation.locked = true;
+      }
+    },
+    onLockEnd: () => {
+      orientation.locked = false;
+      resetMesh();
+    },
+    onZoom: level => {
+      if (camera && camera.position) {
+        camera.position.z = 5 / level;
+      }
+    },
+    onRotate: dir => {
+      if (!mesh || !mesh.rotation || typeof mesh.rotation.set !== 'function') return;
+      const step = Math.PI / 16;
+      switch (dir) {
+        case 'left':
+          orientation.y += step;
+          break;
+        case 'right':
+          orientation.y -= step;
+          break;
+        case 'up':
+          orientation.x -= step;
+          break;
+        case 'down':
+          orientation.x += step;
+          break;
+      }
+      mesh.rotation.set(orientation.x, orientation.y, 0);
+    },
+    onExit: () => {
+      if (controls) controls.destroy();
+      controls = null;
+      if (keyboard) {
+        keyboard.destroy();
+        keyboard = null;
+      }
+      resetMesh();
+      uploadContainer.classList.remove('hidden');
+    }
+  });
+}
+
 function onWindowResize() {
   if (camera && renderer) {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -278,7 +346,9 @@ function animate(now) {
       return;
   }
   const dt = (now - lastTime) / 1000;
-  updateSprings(Math.min(dt, 0.1)); // Clamp dt to avoid instability
+  if (!orientation.locked) {
+    updateSprings(Math.min(dt, 0.1)); // Clamp dt to avoid instability
+  }
   renderer.render(scene, camera);
   lastTime = now;
   requestAnimationFrame(animate);
