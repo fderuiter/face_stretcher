@@ -7,7 +7,7 @@ A lightweight proof of concept for a browser‑based face stretching tool using 
 - Upload an image and manually stretch regions with a smooth falloff brush.
 - Supports JPEG, PNG and WebP uploads up to 10MB with drag-and-drop convenience.
 - Built with Vite for fast development and optimized production build.
-- Automatically detects your face using TensorFlow.js and suggests a crop. If detection fails, a manual cropper UI lets you select the face region.
+- Automatically detects your face using TensorFlow.js and suggests a crop around your face. If detection fails, a manual cropper UI lets you select the region yourself.
 - Toggle classic **N64 Mode** for a low-poly mesh or switch to a smoother high-res version.
 - Stretch the face interactively with mouse, touch, or the new keyboard controls.
 - Instantly snap the face back with the **Reset** button.
