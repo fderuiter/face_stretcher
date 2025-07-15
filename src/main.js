@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { detectFace } from './utils/faceDetection.js';
+import { selectFaceRegion } from './utils/selectFaceRegion.js';
 import { showCropper, hideCropper } from './ui/cropperUI.js';
 import {
   createMesh,
@@ -81,41 +81,18 @@ async function init(startFile = null) {
 
   showLoading("Detecting face...");
 
-  let bbox;
-  let detectionFailed = false;
   try {
-    bbox = await detectFace(img);
+    const { image: faceImg, bbox } = await selectFaceRegion(img, startFile);
+    currentImage = faceImg;
     currentBBox = bbox;
+    hideCropper();
+    proceedWithCroppedImage(currentImage, currentBBox);
   } catch (error) {
-    console.warn("Face detection failed:", error);
-    detectionFailed = true;
-  }
-
-  if (detectionFailed) {
+    console.error("Error during face selection:", error);
     hideLoading();
-    try {
-        const manualImgData = await showCropper(true);
-        if (!manualImgData) {
-            console.log("Manual cropping cancelled.");
-            hideLoading();
-            uploadContainer.classList.remove('hidden');
-            return;
-        }
-        hideCropper();
-        uploadContainer.classList.add('hidden');
-        currentImage = manualImgData.imageElement;
-        currentBBox = manualImgData.cropData;
-        proceedWithCroppedImage(currentImage, currentBBox);
-    } catch (error) {
-        console.error("Error during manual cropping:", error);
-        hideLoading();
-        uploadContainer.classList.remove('hidden');
-        alert("An error occurred while processing the image. Please try again.");
-    }
-    return;
+    uploadContainer.classList.remove('hidden');
+    alert("An error occurred while processing the image. Please try again.");
   }
-
-  proceedWithCroppedImage(img, bbox);
 }
 
 function proceedWithCroppedImage(img, bbox) {
