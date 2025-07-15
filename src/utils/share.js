@@ -6,16 +6,17 @@
 /**
  * Capture the WebGL canvas and trigger a download
  */
-export function captureCanvas(canvas, doc = globalThis.document, urlObj = globalThis.URL) {
+export async function captureCanvas(
+  canvas,
+  doc = globalThis.document,
+  urlObj = globalThis.URL,
+) {
   try {
-    if (!canvas) {
+    if (!canvas || typeof canvas.toBlob !== 'function') {
       throw new Error('[ERR_SH_001] Invalid canvas element');
     }
 
-    let blobResult = null;
-    canvas.toBlob(b => {
-      blobResult = b;
-    });
+    const blobResult = await new Promise((resolve) => canvas.toBlob(resolve));
 
     if (!blobResult) {
       throw new Error('[ERR_SH_002] Failed to create blob from canvas');
