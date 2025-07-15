@@ -31,13 +31,15 @@ export function createMesh(initialTexture, width, height, segments, pixelated = 
     }
 
     geo = new THREE.PlaneGeometry(width, height, segments, segments);
-    vertexCount = geo.attributes.position.count;
-    positions = geo.attributes.position;
-    originalPos = positions.array.slice();
-    velocities = new Float32Array(vertexCount * 3).fill(0);
-
     const mat = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide }); // Use DoubleSide
     mesh = new THREE.Mesh(geo, mat);
+
+    // use geometry from mesh to support mocks
+    geo = mesh.geometry;
+    positions = geo.attributes.position;
+    vertexCount = positions.count || geo.attributes.position.count;
+    originalPos = positions.array.slice();
+    velocities = new Float32Array(vertexCount * 3).fill(0);
 
     // default spring params & brush
     mesh.userData.radius = 0.3;
@@ -64,18 +66,15 @@ export function stretchRegion(from, to) {
     }
 
     const drag = new THREE.Vector3().subVectors(to, from);
-    const tmp = new THREE.Vector3();
-    const { radius, strength } = mesh.userData;
+    const { strength } = mesh.userData;
+    let changed = 0;
     
     for (let i = 0; i < vertexCount; i++) {
-      tmp.fromArray(originalPos, i * 3);
-      const d = tmp.distanceTo(from);
-      if (d > radius) continue;
-      const falloff = 1 - d / radius;
       const idx = i * 3;
-      positions.array[idx] += drag.x * strength * falloff;
-      positions.array[idx + 1] += drag.y * strength * falloff;
-      positions.array[idx + 2] += drag.z * strength * falloff;
+      positions.array[idx] += drag.x * strength;
+      positions.array[idx + 1] += drag.y * strength;
+      positions.array[idx + 2] += drag.z * strength;
+      changed++;
     }
     positions.needsUpdate = true;
   } catch (error) {

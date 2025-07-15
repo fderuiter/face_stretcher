@@ -17,7 +17,7 @@ let currentFile = null;
  * @param {boolean} forceManual - If true, skips the initial file selection and uses the existing image.
  * @returns {Promise<HTMLImageElement | { imageElement: HTMLImageElement, cropData: { x: number, y: number, width: number, height: number } }>} 
  */
-export function showCropper(forceManual = false) {
+export function showCropper(forceManual = false, file = null) {
   return new Promise((resolve, reject) => {
     if (cropperInstance) {
       cropperInstance.destroy();
@@ -26,7 +26,23 @@ export function showCropper(forceManual = false) {
     
     currentResolve = resolve;
 
-    if (forceManual && currentFile) {
+    if (file) {
+      // Handle directly provided file (e.g. drag & drop)
+      loadAndValidateImage(file)
+        .then(validatedImage => {
+          currentFile = file;
+          if (forceManual) {
+            setupCropper(validatedImage.src).catch(reject);
+          } else {
+            resolve(validatedImage);
+          }
+        })
+        .catch(err => {
+          console.error('Image validation failed:', err);
+          alert(err.message);
+          reject(err);
+        });
+    } else if (forceManual && currentFile) {
       try {
         const objectUrl = URL.createObjectURL(currentFile);
         setupCropper(objectUrl).catch(err => {
