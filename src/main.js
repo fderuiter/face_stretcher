@@ -11,6 +11,7 @@ import {
   getMeshDimensions,
   getTextureData
 } from './utils/meshDeformer.js';
+import { generateMesh, N64_SEGMENTS, HD_SEGMENTS } from './utils/generateMesh.js';
 import { initControls } from './ui/controlsUI.js';
 import { captureCanvas } from './utils/share.js';
 
@@ -119,8 +120,6 @@ function proceedWithCroppedImage(img, bbox) {
       bbox.height
     );
 
-    const canvasTexture = new THREE.CanvasTexture(cropped);
-
     if (!renderer) {
       try {
         setupRenderer();
@@ -129,13 +128,8 @@ function proceedWithCroppedImage(img, bbox) {
       }
     }
 
-    const segments = isN64Mode ? N64_SEGMENTS : HD_SEGMENTS;
-    const meshWidth = 2;
-    const meshHeight = 2 * (bbox.height / bbox.width);
-
     if (mesh) {
       scene.remove(mesh);
-      // Consider disposing geometry/material if needed
       if (mesh.geometry) mesh.geometry.dispose();
       if (mesh.material) {
           if (mesh.material.map) mesh.material.map.dispose();
@@ -143,13 +137,7 @@ function proceedWithCroppedImage(img, bbox) {
       }
     }
 
-    mesh = createMesh(
-      canvasTexture,
-      meshWidth,
-      meshHeight,
-      segments,
-      isN64Mode
-    );
+    mesh = generateMesh(cropped, isN64Mode);
     scene.add(mesh);
 
     setupInteraction();

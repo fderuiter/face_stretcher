@@ -8,6 +8,7 @@ A lightweight proof of concept for a browser‑based face stretching tool using 
 - Supports JPEG, PNG and WebP uploads up to 10MB with drag-and-drop convenience.
 - Built with Vite for fast development and optimized production build.
 - Automatically detects your face using TensorFlow.js and suggests a crop. If detection fails, a manual cropper UI lets you select the face region.
+- Toggle classic **N64 Mode** for a low-poly mesh or switch to a smoother high-res version.
 
 ## Getting Started
 
