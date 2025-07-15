@@ -1,6 +1,13 @@
 import * as THREE from 'three';
 
-export function initPointerControls({ renderer, camera, mesh, onDrag = () => {}, raycaster = new THREE.Raycaster(), vector = new THREE.Vector2() } = {}) {
+export function initPointerControls({
+  renderer,
+  camera,
+  mesh,
+  onDrag = () => {},
+  raycaster = new THREE.Raycaster(),
+  vector = new THREE.Vector2(),
+} = {}) {
   if (!renderer || !camera || !mesh) {
     return { destroy() {} };
   }
@@ -42,23 +49,23 @@ export function initPointerControls({ renderer, camera, mesh, onDrag = () => {},
   }
 
   const el = renderer.domElement;
-  el.addEventListener('pointerdown', handleDown);
-  el.addEventListener('pointermove', handleMove);
-  el.addEventListener('pointerup', handleUp);
-  el.addEventListener('pointerleave', handleUp);
-  el.addEventListener('touchstart', handleDown, { passive: false });
-  el.addEventListener('touchmove', handleMove, { passive: false });
-  el.addEventListener('touchend', handleUp);
+  const listeners = [
+    ['pointerdown', handleDown],
+    ['pointermove', handleMove],
+    ['pointerup', handleUp],
+    ['pointerleave', handleUp],
+    ['touchstart', handleDown, { passive: false }],
+    ['touchmove', handleMove, { passive: false }],
+    ['touchend', handleUp],
+  ];
+
+  listeners.forEach(([type, fn, opts]) => el.addEventListener(type, fn, opts));
 
   return {
     destroy() {
-      el.removeEventListener('pointerdown', handleDown);
-      el.removeEventListener('pointermove', handleMove);
-      el.removeEventListener('pointerup', handleUp);
-      el.removeEventListener('pointerleave', handleUp);
-      el.removeEventListener('touchstart', handleDown);
-      el.removeEventListener('touchmove', handleMove);
-      el.removeEventListener('touchend', handleUp);
-    }
+      listeners.forEach(([type, fn, opts]) =>
+        el.removeEventListener(type, fn, opts)
+      );
+    },
   };
 }
