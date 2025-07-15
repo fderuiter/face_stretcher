@@ -7,6 +7,7 @@ A lightweight proof of concept for a browser‑based face stretching tool using 
 - Upload an image and manually stretch regions with a smooth falloff brush.
 - Supports JPEG, PNG and WebP uploads up to 10MB with drag-and-drop convenience.
 - Built with Vite for fast development and optimized production build.
+- Automatically detects your face using TensorFlow.js and suggests a crop, with manual fallback.
 
 ## Getting Started
 
