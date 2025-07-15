@@ -28,7 +28,7 @@ describe('Share Functionality Tests', () => {
     });
 
     test('should capture canvas and trigger download', () => {
-        captureCanvas(mockCanvas);
+        captureCanvas(mockCanvas, mockDocument, mockURL);
         
         expect(mockCanvas.toBlob).toHaveBeenCalled();
         expect(mockURL.createObjectURL).toHaveBeenCalled();
@@ -37,14 +37,14 @@ describe('Share Functionality Tests', () => {
     });
 
     test('should handle invalid canvas', () => {
-        expect(() => captureCanvas(null)).toThrow('ERR_SH_001');
-        expect(() => captureCanvas(undefined)).toThrow('ERR_SH_001');
+        expect(() => captureCanvas(null, mockDocument, mockURL)).toThrow('ERR_SH_001');
+        expect(() => captureCanvas(undefined, mockDocument, mockURL)).toThrow('ERR_SH_001');
     });
 
     test('should handle blob creation failure', () => {
         mockCanvas.toBlob = jest.fn(callback => callback(null));
         
-        expect(() => captureCanvas(mockCanvas)).toThrow('ERR_SH_002');
+        expect(() => captureCanvas(mockCanvas, mockDocument, mockURL)).toThrow('ERR_SH_002');
     });
 
     test('should handle download failure', () => {
@@ -52,6 +52,6 @@ describe('Share Functionality Tests', () => {
             throw new Error('Download failed');
         });
         
-        expect(() => captureCanvas(mockCanvas)).toThrow('ERR_SH_003');
+        expect(() => captureCanvas(mockCanvas, mockDocument, mockURL)).toThrow('ERR_SH_003');
     });
 });

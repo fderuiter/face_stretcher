@@ -78,11 +78,11 @@ jest.mock('three', () => ({
         subVectors: jest.fn().mockReturnThis(),
         multiplyScalar: jest.fn().mockReturnThis()
     })),
-    Vector3: jest.fn(() => {
+    Vector3: jest.fn((x = 0, y = 0, z = 0) => {
         const vec = {
-            x: 0,
-            y: 0,
-            z: 0,
+            x,
+            y,
+            z,
             subVectors: jest.fn((a, b) => {
                 vec.x = a.x - b.x;
                 vec.y = a.y - b.y;

@@ -1,30 +1,50 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Face Stretcher</title>
-  <link rel="stylesheet" href="src/style.css" />
-</head>
-<body>
-  <!-- Upload container -->
-  <div id="upload-container" title="Click or drag image here to start">
-    <input type="file" id="upload" accept="image/*" />
-    <p>Click or drag image file here</p>
-  </div>
-  <!-- Cropper UI -->
-  <div id="cropper-container" class="hidden">
-    <img id="cropper-image" src="" alt="Crop your photo" />
-    <button id="use-crop" title="Confirm the cropped area">Use This Crop</button>
-    <button id="reupload" title="Select a different image file">Re-upload Photo</button>
-  </div>
-  <!-- Loading bar -->
-  <div id="loading-bar-container" class="hidden">
-    <progress id="loading-bar" value="0" max="100"></progress>
-    <div id="loading-text">Loading...</div>
-  </div>
-  <!-- Main canvas -->
-  <canvas id="c" title="Click and drag to stretch the face!"></canvas>
-  <script type="module" src="src/main.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Face Stretcher</title>
+    <link rel="stylesheet" href="src/style.css" />
+  </head>
+  <body>
+    <!-- Upload container -->
+    <div id="upload-container" title="Click or drag image here to start">
+      <input type="file" id="upload" accept="image/*" />
+      <p>Click or drag image file here</p>
+    </div>
+    <!-- Cropper UI -->
+    <div id="cropper-container" class="hidden">
+      <img id="cropper-image" src="" alt="Crop your photo" />
+      <button id="use-crop" title="Confirm the cropped area">
+        Use This Crop
+      </button>
+      <button id="reupload" title="Select a different image file">
+        Re-upload Photo
+      </button>
+    </div>
+    <!-- Loading bar -->
+    <div id="loading-bar-container" class="hidden">
+      <progress id="loading-bar" value="0" max="100"></progress>
+      <div id="loading-text">Loading...</div>
+    </div>
+    <!-- Main canvas -->
+    <canvas id="c" title="Click and drag to stretch the face!"></canvas>
+    <!-- Reset button -->
+    <button
+      id="reset-btn"
+      class="hidden"
+      title="Reset the mesh to its original shape"
+    >
+      Reset
+    </button>
+    <!-- Download button -->
+    <button
+      id="share-btn"
+      class="hidden"
+      title="Download the current canvas as an image"
+    >
+      Save Image
+    </button>
+    <script type="module" src="src/main.js"></script>
+  </body>
 </html>
