@@ -1,6 +1,6 @@
 import GUI from 'dat.gui';
 
-export function initControls({ onReset, onDownload, onParamsChange, onNewImage, onN64Toggle }) { // Added onNewImage, onN64Toggle
+export function initControls({ onReset, onDownload, onParamsChange, onNewImage, onN64Toggle, onHemisphereToggle }) { // Added onNewImage, onN64Toggle
   const gui = new GUI({ width: 260 });
   const params = {
     radius: 0.3,
@@ -8,6 +8,7 @@ export function initControls({ onReset, onDownload, onParamsChange, onNewImage, 
     stiffness: 8,
     damping: 4,
     n64Mode: true, // Default N64 mode enabled
+    hemisphere: false,
     reset: () => onReset(),
     download: () => onDownload(),
     newImage: () => onNewImage() // Added New Image action
@@ -18,6 +19,7 @@ export function initControls({ onReset, onDownload, onParamsChange, onNewImage, 
   gui.add(params, 'stiffness', 1, 20).onChange(() => onParamsChange(params)).name('Spring Stiffness').domElement.parentElement.parentElement.title = "How quickly the mesh snaps back";
   gui.add(params, 'damping', 0, 10).onChange(() => onParamsChange(params)).name('Spring Damping').domElement.parentElement.parentElement.title = "How much the spring effect wobbles";
   gui.add(params, 'n64Mode').onChange((value) => onN64Toggle(value)).name('N64 Mode').domElement.parentElement.parentElement.title = "Toggle low-poly mesh and pixelated texture"; // Added N64 toggle
+  gui.add(params, 'hemisphere').onChange((value) => onHemisphereToggle(value)).name('Hemisphere').domElement.parentElement.parentElement.title = "Map face onto a curved surface";
   gui.add(params, 'reset').name('Reset Mesh').domElement.parentElement.parentElement.title = "Snap the mesh back to its original state";
   gui.add(params, 'download').name('Save Image').domElement.parentElement.parentElement.title = "Download the current view as a PNG image";
   gui.add(params, 'newImage').name('New Image').domElement.parentElement.parentElement.title = "Start over with a new image"; // Added New Image button

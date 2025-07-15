@@ -114,6 +114,13 @@ describe('MeshDeformer Tests', () => {
         expect(mesh.userData.pixelated).toBe(true);
     });
 
+    test('creates hemisphere geometry when requested', () => {
+        const spy = jest.spyOn(THREE, 'SphereGeometry');
+        mesh = createMesh(texture, 2, 2, 10, false, true);
+        expect(spy).toHaveBeenCalled();
+        expect(mesh.userData.hemisphere).toBe(true);
+    });
+
     test('updateGeometry adjusts segment count', () => {
         mesh = createMesh(texture, 2, 2, 8);
         updateGeometry(2, 2, 4);

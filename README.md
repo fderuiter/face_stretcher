@@ -9,6 +9,7 @@ A lightweight proof of concept for a browser‑based face stretching tool using 
 - Built with Vite for fast development and optimized production build.
 - Automatically detects your face using TensorFlow.js and suggests a crop around your face. If detection fails, a manual cropper UI lets you select the region yourself.
 - Toggle classic **N64 Mode** for a low-poly mesh or switch to a smoother high-res version.
+- Optionally map the face onto a curved hemisphere for extra depth.
 - Stretch the face interactively with mouse, touch, or the new keyboard controls.
 - Dedicated pointer controls ensure smooth dragging on both mouse and touch devices.
 - Nostalgic Mario-style glove cursor over the canvas.
@@ -22,7 +23,7 @@ A lightweight proof of concept for a browser‑based face stretching tool using 
 
 ### Mesh Generation
 
-The cropped face is projected onto a Three.js plane mesh. In **N64 Mode** a
+The cropped face is projected onto a Three.js mesh—either a flat plane or an optional hemisphere for added depth. In **N64 Mode** a
 pixelated texture and just 10 segments recreate the low-poly look. Switch it off
 for a smoother high-res mesh with linear filtering.
 

@@ -42,6 +42,7 @@ const kbCursor = new THREE.Vector3();
 let orientation = { x: 0, y: 0 };
 let lastTime = performance.now();
 let isN64Mode = true; // Default to N64 low-poly mode
+let useHemisphere = false;
 let currentImage = null; // Store the original full image
 let currentBBox = null; // Store the bounding box used
 
@@ -180,7 +181,7 @@ function proceedWithCroppedImage(img, bbox) {
       }
     }
 
-    mesh = generateMesh(cropped, isN64Mode);
+    mesh = generateMesh(cropped, isN64Mode, useHemisphere);
     scene.add(mesh);
 
     if (pointerControl) pointerControl.destroy();
@@ -244,6 +245,12 @@ function proceedWithCroppedImage(img, bbox) {
         },
         onN64Toggle: (enabled) => {
           isN64Mode = enabled;
+          if (currentImage && currentBBox) {
+            proceedWithCroppedImage(currentImage, currentBBox);
+          }
+        },
+        onHemisphereToggle: (enabled) => {
+          useHemisphere = enabled;
           if (currentImage && currentBBox) {
             proceedWithCroppedImage(currentImage, currentBBox);
           }

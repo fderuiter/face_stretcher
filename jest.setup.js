@@ -23,6 +23,26 @@ jest.mock('three', () => ({
             dispose: jest.fn()
         };
     }),
+    SphereGeometry: jest.fn(() => {
+        const posArray = new Float32Array(300);
+        for (let i = 0; i < 100; i++) {
+            posArray[i * 3] = Math.random();
+            posArray[i * 3 + 1] = Math.random();
+            posArray[i * 3 + 2] = Math.random();
+        }
+        return {
+            attributes: {
+                position: {
+                    count: 100,
+                    array: posArray,
+                    needsUpdate: false
+                }
+            },
+            dispose: jest.fn(),
+            scale: jest.fn(),
+            parameters: { widthSegments: 10 }
+        };
+    }),
     MeshBasicMaterial: jest.fn(() => ({
         dispose: jest.fn(),
         map: {
