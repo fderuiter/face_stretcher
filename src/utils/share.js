@@ -17,12 +17,12 @@ export function captureCanvas(canvas) {
         if (!blob) {
           throw new Error('[ERR_SH_002] Failed to create blob from canvas');
         }
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
+        const url = globalThis.URL.createObjectURL(blob);
+        const a = globalThis.document.createElement('a');
         a.href = url;
         a.download = 'stretchy-face.png';
         a.click();
-        URL.revokeObjectURL(url);
+        globalThis.URL.revokeObjectURL(url);
       } catch (error) {
         console.error(`[ERR_SH_003] Download failed: ${error.message}`);
         throw error;
