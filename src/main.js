@@ -11,16 +11,13 @@ import {
   getMeshDimensions,
   getTextureData,
 } from "./utils/meshDeformer.js";
-import {
-  generateMesh,
-  N64_SEGMENTS,
-  HD_SEGMENTS,
-} from "./utils/generateMesh.js";
+import { generateMesh } from "./utils/generateMesh.js";
 import { initControls } from "./ui/controlsUI.js";
 import { captureCanvas } from "./utils/share.js";
 import { initKeyboardControls } from "./ui/keyboardControls.js";
 import { initResetButton } from "./ui/resetButton.js";
 import { initShareButton } from "./ui/shareButton.js";
+import { initLoadingIndicator } from "./ui/loadingIndicator.js";
 
 // Error codes:
 // ERR_IN_001: Initialization failed
@@ -36,39 +33,17 @@ const kbCursor = new THREE.Vector3();
 let orientation = { x: 0, y: 0 };
 let lastTime = performance.now();
 let isN64Mode = true; // Default to N64 low-poly mode
-const N64_SEGMENTS = 10; // Low resolution for N64 mode
-const HD_SEGMENTS = 100; // High resolution for HD mode
 let currentImage = null; // Store the original full image
 let currentBBox = null; // Store the bounding box used
 
 const uploadContainer = document.getElementById("upload-container");
-const loadingContainer = document.getElementById("loading-bar-container");
-const loadingBar = document.getElementById("loading-bar");
-const loadingText = document.getElementById("loading-text");
+let loadingIndicator;
 const resetButton = document.getElementById("reset-btn");
 const shareButton = document.getElementById("share-btn");
 let resetControl;
 let shareControl;
-let loadingInterval;
 
-// Helper functions for loading state
-function showLoading(text = "Loading...") {
-  loadingText.textContent = text;
-  loadingContainer.classList.remove("hidden");
-  loadingBar.value = 0;
-  console.log(`Showing loading: ${text}`);
-  clearInterval(loadingInterval);
-  loadingInterval = setInterval(() => {
-    if (loadingBar.value < 90) loadingBar.value += 10;
-  }, 300);
-}
-
-function hideLoading() {
-  clearInterval(loadingInterval);
-  loadingBar.value = 100;
-  console.log("Hiding loading");
-  setTimeout(() => loadingContainer.classList.add("hidden"), 300);
-}
+// Helper functions for loading state are provided by loadingIndicator
 
 function showResetButton() {
   if (resetButton) resetButton.classList.remove("hidden");
@@ -87,7 +62,7 @@ function hideShareButton() {
 }
 
 async function init(startFile = null) {
-  hideLoading();
+  if (loadingIndicator) loadingIndicator.hide();
   uploadContainer.classList.remove("hidden");
   hideResetButton();
   hideShareButton();
@@ -105,13 +80,13 @@ async function init(startFile = null) {
     uploadContainer.classList.add("hidden");
   } catch (error) {
     console.error("Error during initial image selection:", error);
-    hideLoading();
+    if (loadingIndicator) loadingIndicator.hide();
     uploadContainer.classList.remove("hidden");
     alert("Error loading image. Please try a different file.");
     return;
   }
 
-  showLoading("Detecting face...");
+  if (loadingIndicator) loadingIndicator.show("Detecting face...");
 
   try {
     const { image: faceImg, bbox } = await selectFaceRegion(img, startFile);
@@ -121,14 +96,14 @@ async function init(startFile = null) {
     proceedWithCroppedImage(currentImage, currentBBox);
   } catch (error) {
     console.error("Error during face selection:", error);
-    hideLoading();
+    if (loadingIndicator) loadingIndicator.hide();
     uploadContainer.classList.remove("hidden");
     alert("An error occurred while processing the image. Please try again.");
   }
 }
 
 function proceedWithCroppedImage(img, bbox) {
-  showLoading("Creating mesh...");
+  if (loadingIndicator) loadingIndicator.show("Creating mesh...");
 
   try {
     const cropped = document.createElement("canvas");
@@ -209,7 +184,7 @@ function proceedWithCroppedImage(img, bbox) {
           lastTime = 0;
           // Show upload container again
           uploadContainer.classList.remove("hidden");
-          hideLoading(); // Ensure loading is hidden
+          if (loadingIndicator) loadingIndicator.hide(); // Ensure loading is hidden
           hideResetButton();
           hideShareButton();
           // No page reload needed now
@@ -232,12 +207,12 @@ function proceedWithCroppedImage(img, bbox) {
       lastTime = performance.now();
     }
 
-    hideLoading(); // Hide loading ONLY after everything is set up
+    if (loadingIndicator) loadingIndicator.hide(); // Hide loading ONLY after everything is set up
     showResetButton();
     showShareButton();
   } catch (error) {
     console.error("Error creating mesh:", error);
-    hideLoading();
+    if (loadingIndicator) loadingIndicator.hide();
     uploadContainer.classList.remove("hidden");
     alert("An error occurred while processing the image. Please try again.");
     return;
@@ -394,7 +369,7 @@ function animate(now) {
 }
 
 function setupUploadHandlers() {
-  hideLoading();
+  if (loadingIndicator) loadingIndicator.hide();
   uploadContainer.classList.remove("hidden");
 
   uploadContainer.addEventListener("click", () => init());
@@ -414,6 +389,7 @@ function setupUploadHandlers() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  loadingIndicator = initLoadingIndicator();
   setupUploadHandlers();
   resetControl = initResetButton(() => {
     resetMesh();
