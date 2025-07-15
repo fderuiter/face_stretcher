@@ -1,13 +1,5 @@
+import { initSimpleButton } from './simpleButton.js';
+
 export function initShareButton(onShare = () => {}) {
-  const btn = document.getElementById("share-btn");
-  if (!btn) {
-    return { destroy() {} };
-  }
-  const handler = () => onShare();
-  btn.addEventListener("click", handler);
-  return {
-    destroy() {
-      btn.removeEventListener("click", handler);
-    },
-  };
+  return initSimpleButton('share-btn', onShare);
 }

@@ -14,7 +14,7 @@ A lightweight proof of concept for a browser‑based face stretching tool using 
 - Nostalgic Mario-style glove cursor over the canvas.
 - Click the dedicated **Reset** button at any time to snap the face back to its original shape.
 - Save your creation as a PNG using the **Save Image** button.
-- Copy a shareable link to your stretched face with the **Share Link** button.
+- Copy a shareable link to your stretched face with the **Share Link** button. Opening that link reloads the same image.
 - Visual loading indicators appear while the app detects your face and builds the mesh.
 - Helpful instructions appear the first time you visit so you know how to get started.
 
