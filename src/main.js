@@ -24,6 +24,7 @@ import { initShareLinkButton } from "./ui/shareLinkButton.js";
 import { generateShareLink, loadSharedImage } from "./utils/shareLink.js";
 import { initLoadingIndicator } from "./ui/loadingIndicator.js";
 import { initInstructions } from "./ui/instructions.js";
+import { createDefaultGrabPoints } from "./utils/grabPoints.js";
 import { initPointerControls } from "./ui/pointerControls.js";
 
 // Error codes:
@@ -183,8 +184,16 @@ function proceedWithCroppedImage(img, bbox) {
     scene.add(mesh);
 
     if (pointerControl) pointerControl.destroy();
-pointerControl = initPointerControls({ renderer, camera, mesh, onDrag: stretchRegion });
-    setupKeyboard();
+    const dims = getMeshDimensions();
+    const grabPoints = createDefaultGrabPoints(dims.width, dims.height);
+    pointerControl = initPointerControls({
+      renderer,
+      camera,
+      mesh,
+      onDrag: stretchRegion,
+      grabPoints
+    });
+    setupKeyboard(grabPoints);
 
     if (!controls) {
       controls = initControls({
@@ -263,7 +272,7 @@ pointerControl = initPointerControls({ renderer, camera, mesh, onDrag: stretchRe
   }
 }
 
-function setupKeyboard() {
+function setupKeyboard(grabPoints) {
   if (keyboard) keyboard.destroy();
   keyboard = initKeyboardControls({
     onMove: (pos) => {
@@ -326,6 +335,7 @@ function setupKeyboard() {
       hideShareButton();
       hideLinkButton();
     },
+    grabPoints
   });
 }
 

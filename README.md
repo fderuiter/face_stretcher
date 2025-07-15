@@ -12,6 +12,7 @@ A lightweight proof of concept for a browser‑based face stretching tool using 
 - Stretch the face interactively with mouse, touch, or the new keyboard controls.
 - Dedicated pointer controls ensure smooth dragging on both mouse and touch devices.
 - Nostalgic Mario-style glove cursor over the canvas.
+- Cursor snaps to grab-points like the nose, cheeks and hat brim for precise stretching.
 - Hold **A** then press **R** to lock a deformation in place.
 - Click the dedicated **Reset** button at any time to snap the face back to its original shape.
 - Save your creation as a PNG using the **Save Image** button.

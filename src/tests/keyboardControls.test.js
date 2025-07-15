@@ -97,4 +97,16 @@ describe('keyboard controls', () => {
 
     kc.destroy();
   });
+
+  test('cursor snaps to grab points', () => {
+    const onMove = jest.fn();
+    const grab = [{ x: 0.2, y: 0 }];
+    const kc = initKeyboardControls({ onMove, grabPoints: grab, snapDistance: 0.2 });
+
+    window.dispatchEvent(new KeyboardEvent('keydown', { code: 'ArrowRight' }));
+    expect(kc.state.cursor.x).toBeCloseTo(0.2);
+    expect(onMove).toHaveBeenLastCalledWith({ x: 0.2, y: 0 });
+
+    kc.destroy();
+  });
 });

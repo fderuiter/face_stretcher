@@ -1,6 +1,16 @@
 import * as THREE from 'three';
+import { snapToGrabPoints } from '../utils/grabPoints.js';
 
-export function initPointerControls({ renderer, camera, mesh, onDrag = () => {}, raycaster = new THREE.Raycaster(), vector = new THREE.Vector2() } = {}) {
+export function initPointerControls({
+  renderer,
+  camera,
+  mesh,
+  onDrag = () => {},
+  grabPoints = [],
+  snapDistance = 0.25,
+  raycaster = new THREE.Raycaster(),
+  vector = new THREE.Vector2()
+} = {}) {
   if (!renderer || !camera || !mesh) {
     return { destroy() {} };
   }
@@ -25,13 +35,17 @@ export function initPointerControls({ renderer, camera, mesh, onDrag = () => {},
   function handleDown(e) {
     isDown = true;
     const p = getHit(e);
-    if (p) prevPt.copy(p);
+    if (p) {
+      snapToGrabPoints(p, grabPoints, snapDistance);
+      prevPt.copy(p);
+    }
   }
 
   function handleMove(e) {
     if (!isDown) return;
     const p = getHit(e);
     if (p) {
+      snapToGrabPoints(p, grabPoints, snapDistance);
       onDrag(prevPt, p);
       prevPt.copy(p);
     }

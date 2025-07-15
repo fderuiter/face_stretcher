@@ -32,7 +32,7 @@ This document tracks current and upcoming work for the Mario‑style face stretc
 - [x] **Lockable Deformations** – support holding A + R to pin vertices in place just like the original game.
 
 ## Graphics & Interaction
-- [ ] **Grab Points** – snap the cursor to nose, cheeks, hat brim and other key regions for easier stretching.
+- [x] **Grab Points** – snap the cursor to nose, cheeks, hat brim and other key regions for easier stretching.
 - [ ] **Hemisphere Mesh** – optionally map the face onto a curved surface for more depth.
 - [ ] **Brush & Physics Controls** – expose sliders for radius, strength, stiffness and damping.
 - [ ] **Camera Zoom & Rotation** – keyboard shortcuts for zoom levels and viewing angles.
