@@ -1,6 +1,5 @@
 # Face Stretcher POC
 
-
 A lightweight proof of concept for a browser‑based face stretching tool using HTML5 Canvas and Vite. It lets you upload a photo and drag parts of the face just like the Mario 64 start screen. You can either click the upload area or drag a file onto it.
 
 ## Features

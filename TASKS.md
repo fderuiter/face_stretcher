@@ -13,6 +13,7 @@ This document tracks current and upcoming work for the Mario‑style face stretc
 - [x] **Reset Button** – instantly restore the mesh to its original state.
 - [x] **Save/Share** – capture the canvas to an image so users can download or share their creations.
 - [x] **Keyboard Controls** – support keyboard mappings for cursor movement, grabbing, zoom and rotation as listed in the README.
+- [x] **Pointer Controls** – allow manipulation via the mouse and clicks in addition to the keyboard.
 - [x] **Mario-style Cursor** – show a white glove cursor over the canvas for added nostalgia.
 
 ## Polishing & UX
@@ -26,6 +27,7 @@ This document tracks current and upcoming work for the Mario‑style face stretc
 - [x] **Save Image** – capture the canvas to a PNG for download.
 - [x] **Keyboard Controls** – arrow keys for movement, A/R/B/I/J/K/L and Enter to mimic N64 actions.
 - [x] **Mario‑Style Cursor** – white glove pointer for nostalgia.
+- [x] **Pointer Controls** – click and drag with the mouse to deform the face.
 - [ ] **Share Links** – generate a permalink so finished faces can be re‑loaded or shared on social media.
 - [ ] **Lockable Deformations** – support holding A + R to pin vertices in place just like the original game.
 
