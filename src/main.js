@@ -189,7 +189,8 @@ pointerControl = initPointerControls({ renderer, camera, mesh, onDrag: stretchRe
     if (!controls) {
       controls = initControls({
         onReset: () => resetMesh(),
-        onDownload: () => captureCanvas(renderer.domElement),
+        onDownload: () =>
+          captureCanvas(renderer.domElement).catch((err) => console.error(err)),
         onParamsChange: (params) => {
           if (mesh) {
             mesh.userData.radius = params.radius;
@@ -369,7 +370,8 @@ document.addEventListener("DOMContentLoaded", () => {
     resetMesh();
   });
   shareControl = initShareButton(() => {
-    if (renderer) captureCanvas(renderer.domElement);
+    if (renderer)
+      captureCanvas(renderer.domElement).catch((err) => console.error(err));
   });
   linkControl = initShareLinkButton(() => {
     if (renderer) {
