@@ -68,11 +68,19 @@ npm test
 
 ### End-to-End Tests
 
-The E2E suite is written with [Playwright](https://playwright.dev/).
+The E2E suite is written with [Playwright](https://playwright.dev/) and runs on
+multiple desktop and mobile browsers. If this is your first time running the
+tests, install the browsers first:
+
+```bash
+npx playwright install
+```
 
 ```bash
 npm run test:e2e
 ```
+
+Use `--project` to run a specific browser/device.
 
 ## Keyboard Controls
 
