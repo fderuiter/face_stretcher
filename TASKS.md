@@ -71,7 +71,7 @@ This list should be reviewed and updated as development progresses.
 ## Deployment & CI
 
 - [x] GitHub Actions workflow for linting, tests and builds.
-- [ ] Automatic deployment to Vercel on every push to `main`.
+- [x] Automatic deployment to Vercel on every push to `main`.
 - [ ] Preview deployments for pull requests.
 - [ ] Documentation for configuring custom domains and environment variables.
 

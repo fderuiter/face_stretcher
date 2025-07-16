@@ -100,8 +100,18 @@ Keyboard behavior is configurable via the options passed to [`initKeyboardContro
 ## CI
 
 This project includes a GitHub Actions workflow located at `.github/workflows/ci.yml`. The
-workflow installs dependencies using `npm ci`, runs ESLint, executes the Jest test
-suite and builds the production bundle on every push and pull request.
+workflow installs dependencies using `npm ci`, runs ESLint, executes the Jest test suite
+and builds the production bundle on every push and pull request.
+
+## Deployment
+Deployments are handled by a separate GitHub Actions workflow defined in
+`.github/workflows/deploy.yml`. It automatically pushes the latest `main` branch
+to Vercel using the [`amondnet/vercel-action`](https://github.com/amondnet/vercel-action)
+action. To enable it, configure the following repository secrets in GitHub:
+
+- `VERCEL_TOKEN` – your Vercel personal token
+- `VERCEL_ORG_ID` – the organization ID from your Vercel dashboard
+- `VERCEL_PROJECT_ID` – the project ID for this app
 
 ## Roadmap
 
