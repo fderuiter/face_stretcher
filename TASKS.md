@@ -47,7 +47,7 @@ This document tracks current and upcoming work for the Mario‑style face stretc
 - [x] Write unit tests for critical utilities such as face detection and mesh deformation.
 - [x] Configure a CI workflow (GitHub Actions or similar) to run linting, tests and builds on every pull request.
 - [x] Deploy automatically to a free hosting provider (e.g. Vercel) when the `main` branch updates.
-- [ ] Add Playwright end-to-end tests to validate the user flow.
+- [x] Add Playwright end-to-end tests to validate the user flow.
 
 This list should be reviewed and updated as development progresses.
 
@@ -61,7 +61,7 @@ This list should be reviewed and updated as development progresses.
 ## Testing & Quality
 
 - [x] Unit tests for key utilities and UI helpers.
-- [ ] Playwright end‑to-end tests.
+- [x] Playwright end‑to-end tests.
 - [ ] **Comprehensive Playwright e2e coverage across desktop and mobile browsers.**
 - [ ] Visual regression tests for the canvas output.
 - [ ] Offload spring physics to a Web Worker for better performance on low‑end devices.

@@ -66,6 +66,14 @@ npm run serve
 npm test
 ```
 
+### End-to-End Tests
+
+The E2E suite is written with [Playwright](https://playwright.dev/).
+
+```bash
+npm run test:e2e
+```
+
 ## Keyboard Controls
 
 The original Mario 64 intro relied on the N64 controller. This project mirrors those actions using the keyboard.
