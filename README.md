@@ -60,6 +60,12 @@ npm run build
 npm run serve
 ```
 
+### Tests
+
+```bash
+npm test
+```
+
 ## Keyboard Controls
 
 The original Mario 64 intro relied on the N64 controller. This project mirrors those actions using the keyboard.
@@ -73,8 +79,8 @@ The original Mario 64 intro relied on the N64 controller. This project mirrors t
 | **Zoom levels**                   | Tap **B** to cycle through 3 head sizes: close-up, mid, far                     | At the farthest zoom you can drag features much farther—great for “mega-nose” gags. | ([GameFAQs][1], [GameFAQs][3]) |
 | **Rotate the head**               | Use **I**, **J**, **K** and **L** for C-Up, C-Left, C-Down and C-Right          | Lets you examine your handiwork from any angle.                                     | ([GameFAQs][3])                |
 | **Exit to the actual file menu**  | Press **Enter**                                                                 | The face pops back to normal and the save icons fade in.                            | ([GameFAQs][1])                |
-Keyboard behavior is configurable via the options passed to [`initKeyboardControls`](./src/ui/keyboardControls.js), letting you adjust cursor step size and zoom levels.
 
+Keyboard behavior is configurable via the options passed to [`initKeyboardControls`](./src/ui/keyboardControls.js), letting you adjust cursor step size and zoom levels.
 
 [1]: https://gamefaqs.gamespot.com/n64/198848-super-mario-64/faqs/22000?utm_source=chatgpt.com "Super Mario 64 - Guide and Walkthrough - Nintendo 64 - By CWall"
 [2]: https://gamefaqs.gamespot.com/n64/198848-super-mario-64/faqs/3326?utm_source=chatgpt.com "Super Mario 64 - Guide and Walkthrough - Nintendo 64 - GameFAQs"
@@ -93,7 +99,20 @@ Keyboard behavior is configurable via the options passed to [`initKeyboardContro
 
 ## CI
 
-Continuous integration has not been set up yet. The plan is to add a GitHub Actions workflow that runs linting, tests and a production build on every pull request.
+This project includes a GitHub Actions workflow located at `.github/workflows/ci.yml`. The
+workflow installs dependencies using `npm ci`, runs ESLint, executes the Jest test suite
+and builds the production bundle on every push and pull request.
+
+## Deployment
+Deployments are handled by a separate GitHub Actions workflow defined in
+`.github/workflows/deploy.yml`. Whenever code is pushed to the `main` branch the
+workflow deploys the site to Vercel using the
+[`amondnet/vercel-action`](https://github.com/amondnet/vercel-action)
+action. To enable it, configure the following repository secrets in GitHub:
+
+- `VERCEL_TOKEN` – your Vercel personal token
+- `VERCEL_ORG_ID` – the organization ID from your Vercel dashboard
+- `VERCEL_PROJECT_ID` – the project ID for this app
 
 ## Roadmap
 
