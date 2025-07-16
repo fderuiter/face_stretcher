@@ -32,23 +32,25 @@ This document tracks current and upcoming work for the Mario‑style face stretc
 - [x] **Lockable Deformations** – support holding A + R to pin vertices in place just like the original game.
 
 ## Graphics & Interaction
+
 - [x] **Grab Points** – snap the cursor to nose, cheeks, hat brim and other key regions for easier stretching.
 - [x] **Hemisphere Mesh** – optionally map the face onto a curved surface for more depth.
 - [x] **Brush & Physics Controls** – expose sliders for radius, strength, stiffness and damping.
 - [x] **Camera Zoom & Rotation** – keyboard shortcuts for zoom levels and viewing angles.
 
 ## UI & UX
-- [ ] Loading indicators during face detection and mesh creation.
-- [ ] Simple instructions or tooltips for first‑time users.
-- [ ] Optionally package the app as a Progressive Web App so it can be installed and used offline.
 
-## Development Workflow
-- [ ] Write unit tests for critical utilities such as face detection and mesh deformation.
-- [ ] Configure a CI workflow (GitHub Actions or similar) to run linting, tests and builds on every pull request.
+- [x] Loading indicators during face detection and mesh creation.
+- [x] Simple instructions or tooltips for first‑time users.
+- [x] Optionally package the app as a Progressive Web App so it can be installed and used offline.
+
+- [x] Write unit tests for critical utilities such as face detection and mesh deformation.
+- [x] Configure a CI workflow (GitHub Actions or similar) to run linting, tests and builds on every pull request.
 - [ ] Deploy automatically to a free hosting provider (e.g. Vercel) when the `main` branch updates.
 - [ ] Add Playwright end-to-end tests to validate the user flow.
 
 This list should be reviewed and updated as development progresses.
+
 - [ ] First‑time instructions overlay.
 - [ ] Progressive Web App support so the tool works offline once installed.
 - [ ] Service worker caching of models and textures for a smoother offline experience.
@@ -57,7 +59,8 @@ This list should be reviewed and updated as development progresses.
 - [ ] Dark mode theme.
 
 ## Testing & Quality
-- [ ] Unit tests for key utilities and UI helpers.
+
+- [x] Unit tests for key utilities and UI helpers.
 - [ ] Playwright end‑to-end tests.
 - [ ] **Comprehensive Playwright e2e coverage across desktop and mobile browsers.**
 - [ ] Visual regression tests for the canvas output.
@@ -66,12 +69,14 @@ This list should be reviewed and updated as development progresses.
 - [ ] Error and analytics tracking (e.g. Sentry or Plausible).
 
 ## Deployment & CI
-- [ ] GitHub Actions workflow for linting, tests and builds.
+
+- [x] GitHub Actions workflow for linting, tests and builds.
 - [ ] Automatic deployment to Vercel on every push to `main`.
 - [ ] Preview deployments for pull requests.
 - [ ] Documentation for configuring custom domains and environment variables.
 
 ## Stretch Goals
+
 - [ ] Webcam capture as an alternative to file upload.
 - [ ] Export animations (GIF/MP4) of the stretching process.
 - [ ] Localized UI text for multiple languages.
