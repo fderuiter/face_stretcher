@@ -46,7 +46,7 @@ This document tracks current and upcoming work for the Mario‑style face stretc
 
 - [x] Write unit tests for critical utilities such as face detection and mesh deformation.
 - [x] Configure a CI workflow (GitHub Actions or similar) to run linting, tests and builds on every pull request.
-- [ ] Deploy automatically to a free hosting provider (e.g. Vercel) when the `main` branch updates.
+- [x] Deploy automatically to a free hosting provider (e.g. Vercel) when the `main` branch updates.
 - [ ] Add Playwright end-to-end tests to validate the user flow.
 
 This list should be reviewed and updated as development progresses.

@@ -105,8 +105,9 @@ and builds the production bundle on every push and pull request.
 
 ## Deployment
 Deployments are handled by a separate GitHub Actions workflow defined in
-`.github/workflows/deploy.yml`. It automatically pushes the latest `main` branch
-to Vercel using the [`amondnet/vercel-action`](https://github.com/amondnet/vercel-action)
+`.github/workflows/deploy.yml`. Whenever code is pushed to the `main` branch the
+workflow deploys the site to Vercel using the
+[`amondnet/vercel-action`](https://github.com/amondnet/vercel-action)
 action. To enable it, configure the following repository secrets in GitHub:
 
 - `VERCEL_TOKEN` – your Vercel personal token
