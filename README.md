@@ -21,7 +21,7 @@ A lightweight proof of concept for a browser‑based face stretching tool using 
 - Save your creation as a PNG using the **Save Image** button.
 - Copy a shareable link to your stretched face with the **Share Link** button. Opening that link reloads the same image.
 - Visual loading indicators appear while the app detects your face and builds the mesh.
-- Helpful instructions appear the first time you visit so you know how to get started.
+- A quick-start overlay appears the first time you visit and won't reappear once dismissed.
 
 ### Mesh Generation
 

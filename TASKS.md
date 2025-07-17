@@ -51,7 +51,7 @@ This document tracks current and upcoming work for the Mario‑style face stretc
 
 This list should be reviewed and updated as development progresses.
 
-- [ ] First‑time instructions overlay.
+- [x] First‑time instructions overlay.
 - [ ] Progressive Web App support so the tool works offline once installed.
 - [ ] Service worker caching of models and textures for a smoother offline experience.
 - [ ] Mobile layout improvements and touch‑friendly controls.
