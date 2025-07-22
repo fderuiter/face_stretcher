@@ -104,11 +104,13 @@ workflow installs dependencies using `npm ci`, runs ESLint, executes the Jest te
 and builds the production bundle on every push and pull request.
 
 ## Deployment
-Deployments are handled by a separate GitHub Actions workflow defined in
-`.github/workflows/deploy.yml`. Whenever code is pushed to the `main` branch the
-workflow deploys the site to Vercel using the
-[`amondnet/vercel-action`](https://github.com/amondnet/vercel-action)
-action. To enable it, configure the following repository secrets in GitHub:
+Vercel automatically detects Vite projects and runs `npm run build` to
+generate the `dist` directory. Simply connect this repository to Vercel's
+Git integration and every push to `main` will trigger a new deployment
+without any additional tokens or configuration files.
+
+For setups that still rely on the GitHub Actions workflow found in
+`.github/workflows/deploy.yml`, you will need to provide the following secrets:
 
 - `VERCEL_TOKEN` – your Vercel personal token
 - `VERCEL_ORG_ID` – the organization ID from your Vercel dashboard
