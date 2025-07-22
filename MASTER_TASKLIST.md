@@ -111,9 +111,9 @@ stretchy-face-app/
 
 ## Build Step 4 – To‑Do List for Mario 64-Style Face Stretcher
 ### 1. Face Detection & Cropping
-- [ ] Improve workflow so face detection runs automatically after upload, and only falls back to manual crop if detection fails.
-- [ ] Show a loading indicator while face detection is running.
-- [ ] Ensure the cropped region is always centered on the detected face.
+- [x] Improve workflow so face detection runs automatically after upload, and only falls back to manual crop if detection fails.
+- [x] Show a loading indicator while face detection is running.
+- [x] Ensure the cropped region is always centered on the detected face.
 
 ### 2. Mesh Generation & Mapping
 - [ ] Map the cropped face image as a texture onto the mesh (currently a flat plane).

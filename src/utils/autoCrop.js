@@ -11,23 +11,24 @@ import { detectFace } from './faceDetection.js';
  */
 export async function autoCrop(image, doc = globalThis.document) {
   const bbox = await detectFace(image);
+
+  const imgW = image.naturalWidth || image.width;
+  const imgH = image.naturalHeight || image.height;
+  const size = Math.max(bbox.width, bbox.height);
+  const centerX = bbox.x + bbox.width / 2;
+  const centerY = bbox.y + bbox.height / 2;
+  let x = Math.round(centerX - size / 2);
+  let y = Math.round(centerY - size / 2);
+  x = Math.max(0, Math.min(x, imgW - size));
+  y = Math.max(0, Math.min(y, imgH - size));
+
   const canvas = doc.createElement('canvas');
-  canvas.width = bbox.width;
-  canvas.height = bbox.height;
+  canvas.width = size;
+  canvas.height = size;
   const ctx = canvas.getContext('2d');
   if (!ctx) {
     throw new Error('[ERR_AC_001] Could not get 2D context');
   }
-  ctx.drawImage(
-    image,
-    bbox.x,
-    bbox.y,
-    bbox.width,
-    bbox.height,
-    0,
-    0,
-    bbox.width,
-    bbox.height
-  );
-  return { canvas, bbox };
+  ctx.drawImage(image, x, y, size, size, 0, 0, size, size);
+  return { canvas, bbox: { x, y, width: size, height: size } };
 }
