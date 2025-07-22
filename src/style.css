@@ -125,9 +125,7 @@ body {
   height: 100vh;
   background: #181a1b;
   box-shadow: 0 0 0 8px rgba(0, 0, 0, 0.08) inset;
-  cursor:
-    url("./assets/glove.svg") 6 0,
-    pointer;
+  cursor: url("./assets/glove.svg") 6 0, pointer;
 }
 
 /* Loading bar container styles */

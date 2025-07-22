@@ -122,7 +122,7 @@ stretchy-face-app/
 
 ### 3. Interactive Dragging (Mario 64 Style)
 - [ ] Make mesh vertices draggable only when pointer is near them (like Mario 64's "grab points").
-- [ ] Add visual indicators (dots or handles) for draggable points (corners, mouth, cheeks, etc.).
+ - [x] Add visual indicators (dots or handles) for draggable points (corners, mouth, cheeks, etc.).
 - [ ] Allow user to drag these points and have the mesh smoothly deform and spring back.
 - [ ] Add a "reset" button to snap the mesh back to its original state.
 
