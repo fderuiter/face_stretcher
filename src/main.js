@@ -51,7 +51,7 @@ const prevPt = new THREE.Vector3();
 const kbCursor = new THREE.Vector3();
 let lastTime = performance.now();
 let isN64Mode = true; // Default to N64 low-poly mode
-let useHemisphere = false;
+let meshCurvature = 0;
 let currentImage = null; // Store the original full image
 let currentBBox = null; // Store the bounding box used
 let indicatorControl;
@@ -196,7 +196,7 @@ function proceedWithCroppedImage(img, bbox) {
       }
     }
 
-    mesh = generateMesh(cropped, isN64Mode, useHemisphere);
+    mesh = generateMesh(cropped, isN64Mode, meshCurvature);
     scene.add(mesh);
     cameraCtrl = createCameraController({ camera, mesh });
 
@@ -275,8 +275,8 @@ function proceedWithCroppedImage(img, bbox) {
             proceedWithCroppedImage(currentImage, currentBBox);
           }
         },
-        onHemisphereToggle: (enabled) => {
-          useHemisphere = enabled;
+        onCurvatureChange: (value) => {
+          meshCurvature = value;
           if (currentImage && currentBBox) {
             proceedWithCroppedImage(currentImage, currentBBox);
           }

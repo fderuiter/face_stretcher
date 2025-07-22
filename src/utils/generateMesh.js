@@ -12,11 +12,11 @@ export const HD_SEGMENTS = 100;
  * Generates a deformable face mesh from a cropped image or canvas.
  * @param {HTMLCanvasElement|HTMLImageElement} source - Cropped face image/canvas
  * @param {boolean} n64Mode - If true, use low-poly pixelated mesh
- * @param {boolean} hemisphere - Map texture onto a hemisphere instead of a flat plane
+ * @param {number} curvature - 0 for flat plane, 1 for full hemisphere
  * @param {Document} doc - Document to create a canvas (for tests)
  * @returns {THREE.Mesh}
  */
-export function generateMesh(source, n64Mode = true, hemisphere = false, doc = globalThis.document) {
+export function generateMesh(source, n64Mode = true, curvature = 0, doc = globalThis.document) {
   if (!source || !source.width || !source.height) {
     throw new Error('[ERR_MG_001] Invalid source image');
   }
@@ -39,5 +39,5 @@ export function generateMesh(source, n64Mode = true, hemisphere = false, doc = g
   const width = 2;
   const height = 2 * (canvas.height / canvas.width);
   const segments = n64Mode ? N64_SEGMENTS : HD_SEGMENTS;
-  return createMesh(texture, width, height, segments, n64Mode, hemisphere);
+  return createMesh(texture, width, height, segments, n64Mode, curvature);
 }

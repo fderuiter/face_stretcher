@@ -19,22 +19,29 @@ describe('generateMesh', () => {
 
   test('creates low-poly mesh in N64 mode', () => {
     const spy = jest.spyOn(meshDeformer, 'createMesh').mockReturnValue({ userData: {} });
-    const mesh = generateMesh(canvas, true, false, docMock);
+    const mesh = generateMesh(canvas, true, 0, docMock);
     expect(spy).toHaveBeenCalled();
     const args = spy.mock.calls[0];
     expect(args[3]).toBe(N64_SEGMENTS);
     expect(args[4]).toBe(true);
-    expect(args[5]).toBe(false);
+    expect(args[5]).toBe(0);
     expect(mesh).toBeDefined();
   });
 
   test('creates high-res mesh in HD mode', () => {
     const spy = jest.spyOn(meshDeformer, 'createMesh').mockReturnValue({ userData: {} });
-    generateMesh(canvas, false, false, docMock);
+    generateMesh(canvas, false, 0, docMock);
     const args = spy.mock.calls[0];
     expect(args[3]).toBe(HD_SEGMENTS);
     expect(args[4]).toBe(false);
-    expect(args[5]).toBe(false);
+    expect(args[5]).toBe(0);
+  });
+
+  test('passes curvature value to createMesh', () => {
+    const spy = jest.spyOn(meshDeformer, 'createMesh').mockReturnValue({ userData: {} });
+    generateMesh(canvas, true, 0.5, docMock);
+    const args = spy.mock.calls[0];
+    expect(args[5]).toBeCloseTo(0.5);
   });
 
   test('passes a CanvasTexture containing the source image', () => {
@@ -44,7 +51,7 @@ describe('generateMesh', () => {
     const spy = jest
       .spyOn(meshDeformer, 'createMesh')
       .mockReturnValue({ userData: {} });
-    generateMesh(canvas, true, false, docMock);
+    generateMesh(canvas, true, 0, docMock);
     expect(texSpy).toHaveBeenCalledWith(canvas);
     expect(spy.mock.calls[0][0].image).toBe(canvas);
     texSpy.mockRestore();
