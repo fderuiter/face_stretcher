@@ -9,5 +9,8 @@ module.exports = {
     },
     transformIgnorePatterns: [
         '/node_modules/(?!three|@tensorflow)'
+    ],
+    testPathIgnorePatterns: [
+        '/tests/e2e/'
     ]
 };
