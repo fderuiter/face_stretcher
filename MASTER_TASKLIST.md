@@ -127,9 +127,9 @@ stretchy-face-app/
   - [x] Add a "reset" button to snap the mesh back to its original state.
 
 ### 4. UI/UX Improvements
-- [ ] Hide upload/crop UI after mesh is generated; show a "re-upload" button somewhere non-intrusive.
-- [ ] Add a loading spinner or progress bar during face detection and mesh generation.
-- [ ] Add tooltips or short instructions for first-time users.
+ - [x] Hide upload/crop UI after mesh is generated; show a "re-upload" button somewhere non-intrusive.
+- [x] Add a loading spinner or progress bar during face detection and mesh generation.
+- [x] Add tooltips or short instructions for first-time users.
 
 ### 5. Polish & Stretch Goals
 - [ ] Add a toggle for "N64 Mode" (low-poly, pixelated texture) vs. "HD Mode" (high-res, smooth mesh).

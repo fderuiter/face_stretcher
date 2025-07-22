@@ -21,6 +21,7 @@ import { initKeyboardControls } from "./ui/keyboardControls.js";
 import { initResetButton } from "./ui/resetButton.js";
 import { initShareButton } from "./ui/shareButton.js";
 import { initShareLinkButton } from "./ui/shareLinkButton.js";
+import { initReuploadButton } from "./ui/reuploadButton.js";
 import { generateShareLink, loadSharedImage } from "./utils/shareLink.js";
 import { initLoadingIndicator } from "./ui/loadingIndicator.js";
 import { initInstructions } from "./ui/instructions.js";
@@ -61,9 +62,11 @@ let loadingIndicator;
 const resetButton = document.getElementById("reset-btn");
 const shareButton = document.getElementById("share-btn");
 const linkButton = document.getElementById("link-btn");
+const reuploadButton = document.getElementById("reupload-btn");
 let resetControl;
 let shareControl;
 let linkControl;
+let reuploadControl;
 let instructionsControl;
 let uploadControl;
 let themeControl;
@@ -109,12 +112,21 @@ function hideLinkButton() {
   if (linkButton) linkButton.classList.add("hidden");
 }
 
+function showReuploadButton() {
+  if (reuploadButton) reuploadButton.classList.remove("hidden");
+}
+
+function hideReuploadButton() {
+  if (reuploadButton) reuploadButton.classList.add("hidden");
+}
+
 async function init(startFile = null) {
   if (loadingIndicator) loadingIndicator.hide();
   uploadContainer.classList.remove("hidden");
   hideResetButton();
   hideShareButton();
   hideLinkButton();
+  hideReuploadButton();
   if (indicatorControl) {
     indicatorControl.destroy();
     indicatorControl = null;
@@ -266,6 +278,7 @@ function proceedWithCroppedImage(img, bbox) {
           hideResetButton();
           hideShareButton();
           hideLinkButton();
+          hideReuploadButton();
           // No page reload needed now
           // window.location.reload();
         },
@@ -296,6 +309,7 @@ function proceedWithCroppedImage(img, bbox) {
     showResetButton();
     showShareButton();
     showLinkButton();
+    showReuploadButton();
   } catch (error) {
     console.error("Error creating mesh:", error);
     if (loadingIndicator) loadingIndicator.hide();
@@ -352,6 +366,7 @@ function setupKeyboard(grabPoints) {
       hideResetButton();
       hideShareButton();
       hideLinkButton();
+      hideReuploadButton();
     },
     grabPoints,
   });
@@ -414,10 +429,45 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   });
+  reuploadControl = initReuploadButton(() => {
+    if (controls) controls.destroy();
+    if (pointerControl) {
+      pointerControl.destroy();
+      pointerControl = null;
+    }
+    if (indicatorControl) {
+      indicatorControl.destroy();
+      indicatorControl = null;
+    }
+    controls = null;
+    if (keyboard) {
+      keyboard.destroy();
+      keyboard = null;
+    }
+    if (mesh) {
+      scene.remove(mesh);
+      if (mesh.geometry) mesh.geometry.dispose();
+      if (mesh.material) {
+        if (mesh.material.map) mesh.material.map.dispose();
+        mesh.material.dispose();
+      }
+    }
+    mesh = null;
+    currentImage = null;
+    currentBBox = null;
+    lastTime = 0;
+    uploadContainer.classList.remove("hidden");
+    if (loadingIndicator) loadingIndicator.hide();
+    hideResetButton();
+    hideShareButton();
+    hideLinkButton();
+    hideReuploadButton();
+  });
   instructionsControl = initInstructions();
   themeControl = initThemeToggle();
   hideResetButton();
   hideShareButton();
   hideLinkButton();
+  hideReuploadButton();
 });
 // init(); // Call init directly if script is at the end of body or defer
