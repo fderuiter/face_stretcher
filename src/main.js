@@ -24,6 +24,7 @@ import { initShareLinkButton } from "./ui/shareLinkButton.js";
 import { generateShareLink, loadSharedImage } from "./utils/shareLink.js";
 import { initLoadingIndicator } from "./ui/loadingIndicator.js";
 import { initInstructions } from "./ui/instructions.js";
+import { initThemeToggle } from "./ui/themeToggle.js";
 import { createDefaultGrabPoints } from "./utils/grabPoints.js";
 import { initPointerControls } from "./ui/pointerControls.js";
 import { createCameraController } from "./utils/cameraController.js";
@@ -56,6 +57,7 @@ let shareControl;
 let linkControl;
 let instructionsControl;
 let uploadControl;
+let themeControl;
 
 // Helper functions for loading state are provided by loadingIndicator
 
@@ -386,6 +388,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
   instructionsControl = initInstructions();
+  themeControl = initThemeToggle();
   hideResetButton();
   hideShareButton();
   hideLinkButton();
