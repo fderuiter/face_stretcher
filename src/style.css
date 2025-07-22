@@ -1,4 +1,3 @@
-
 :root {
   --bg-gradient: linear-gradient(135deg, #232526 0%, #414345 100%);
   --text-color: #222;
@@ -126,7 +125,9 @@ body {
   height: 100vh;
   background: #181a1b;
   box-shadow: 0 0 0 8px rgba(0, 0, 0, 0.08) inset;
-  cursor: url('./assets/glove.svg') 6 0, pointer;
+  cursor:
+    url("./assets/glove.svg") 6 0,
+    pointer;
 }
 
 /* Loading bar container styles */
@@ -329,3 +330,23 @@ canvas:focus {
   outline-offset: 2px;
 }
 
+#grab-indicators {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.grab-indicator {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  margin-top: -5px;
+  border-radius: 50%;
+  background: rgba(255, 0, 0, 0.7);
+  pointer-events: none;
+}

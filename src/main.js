@@ -28,6 +28,7 @@ import { initThemeToggle } from "./ui/themeToggle.js";
 import { createDefaultGrabPoints } from "./utils/grabPoints.js";
 import { initPointerControls } from "./ui/pointerControls.js";
 import { createCameraController } from "./utils/cameraController.js";
+import { initGrabIndicators } from "./ui/grabIndicators.js";
 
 // Error codes:
 // ERR_IN_001: Initialization failed
@@ -38,7 +39,14 @@ import { createCameraController } from "./utils/cameraController.js";
 // ERR_IN_006: WebGL context lost
 // ERR_IN_007: Resource cleanup failed
 
-let renderer, scene, camera, mesh, controls, keyboard, pointerControl, cameraCtrl;
+let renderer,
+  scene,
+  camera,
+  mesh,
+  controls,
+  keyboard,
+  pointerControl,
+  cameraCtrl;
 const prevPt = new THREE.Vector3();
 const kbCursor = new THREE.Vector3();
 let lastTime = performance.now();
@@ -46,6 +54,7 @@ let isN64Mode = true; // Default to N64 low-poly mode
 let useHemisphere = false;
 let currentImage = null; // Store the original full image
 let currentBBox = null; // Store the bounding box used
+let indicatorControl;
 
 const uploadContainer = document.getElementById("upload-container");
 let loadingIndicator;
@@ -70,7 +79,7 @@ function setupRenderer() {
     45,
     window.innerWidth / window.innerHeight,
     0.1,
-    100,
+    100
   );
   camera.position.z = 5;
   window.addEventListener("resize", onWindowResize);
@@ -106,6 +115,10 @@ async function init(startFile = null) {
   hideResetButton();
   hideShareButton();
   hideLinkButton();
+  if (indicatorControl) {
+    indicatorControl.destroy();
+    indicatorControl = null;
+  }
 
   let img;
   try {
@@ -163,7 +176,7 @@ function proceedWithCroppedImage(img, bbox) {
       0,
       0,
       bbox.width,
-      bbox.height,
+      bbox.height
     );
 
     if (!renderer) {
@@ -195,7 +208,13 @@ function proceedWithCroppedImage(img, bbox) {
       camera,
       mesh,
       onDrag: stretchRegion,
-      grabPoints
+      grabPoints,
+    });
+    if (indicatorControl) indicatorControl.destroy();
+    indicatorControl = initGrabIndicators({
+      points: grabPoints,
+      width: dims.width,
+      height: dims.height,
     });
     setupKeyboard(grabPoints);
 
@@ -226,6 +245,10 @@ function proceedWithCroppedImage(img, bbox) {
           if (pointerControl) {
             pointerControl.destroy();
             pointerControl = null;
+          }
+          if (indicatorControl) {
+            indicatorControl.destroy();
+            indicatorControl = null;
           }
           controls = null;
           if (keyboard) {
@@ -311,10 +334,14 @@ function setupKeyboard(grabPoints) {
     },
     onExit: () => {
       if (controls) controls.destroy();
-          if (pointerControl) {
-            pointerControl.destroy();
-            pointerControl = null;
-          }
+      if (pointerControl) {
+        pointerControl.destroy();
+        pointerControl = null;
+      }
+      if (indicatorControl) {
+        indicatorControl.destroy();
+        indicatorControl = null;
+      }
       controls = null;
       if (keyboard) {
         keyboard.destroy();
@@ -326,7 +353,7 @@ function setupKeyboard(grabPoints) {
       hideShareButton();
       hideLinkButton();
     },
-    grabPoints
+    grabPoints,
   });
 }
 
@@ -346,11 +373,11 @@ function animate(now) {
   }
   const dt = (now - lastTime) / 1000;
   updateSprings(Math.min(dt, 0.1)); // Clamp dt to avoid instability
+  if (indicatorControl) indicatorControl.update();
   renderer.render(scene, camera);
   lastTime = now;
   requestAnimationFrame(animate);
 }
-
 
 document.addEventListener("DOMContentLoaded", () => {
   loadingIndicator = initLoadingIndicator();
@@ -380,7 +407,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(link).then(
           () => alert("Link copied to clipboard!"),
-          () => window.prompt("Copy this link:", link),
+          () => window.prompt("Copy this link:", link)
         );
       } else {
         window.prompt("Copy this link:", link);
