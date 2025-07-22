@@ -8,32 +8,47 @@
   </head>
   <body>
     <!-- Upload container -->
-    <div id="upload-container" title="Click or drag image here to start">
-      <input type="file" id="upload" accept="image/*" />
+    <div
+      id="upload-container"
+      role="region"
+      aria-label="Image upload"
+      title="Click or drag image here to start"
+    >
+      <input
+        type="file"
+        id="upload"
+        accept="image/*"
+        aria-label="Upload image"
+      />
       <p>Click or drag image file here</p>
     </div>
     <!-- Cropper UI -->
-    <div id="cropper-container" class="hidden">
+    <div id="cropper-container" class="hidden" role="dialog" aria-label="Cropper dialog">
       <img id="cropper-image" src="" alt="Crop your photo" />
-      <button id="use-crop" title="Confirm the cropped area">
+      <button id="use-crop" title="Confirm the cropped area" aria-label="Use selected crop">
         Use This Crop
       </button>
-      <button id="reupload" title="Select a different image file">
+      <button id="reupload" title="Select a different image file" aria-label="Re-upload photo">
         Re-upload Photo
       </button>
     </div>
     <!-- Loading bar -->
-    <div id="loading-bar-container" class="hidden">
-      <progress id="loading-bar" value="0" max="100"></progress>
+    <div id="loading-bar-container" class="hidden" role="status" aria-live="polite">
+      <progress id="loading-bar" value="0" max="100" role="progressbar"></progress>
       <div id="loading-text">Loading...</div>
     </div>
     <!-- Main canvas -->
-    <canvas id="c" title="Click and drag to stretch the face!"></canvas>
+    <canvas
+      id="c"
+      title="Click and drag to stretch the face!"
+      tabindex="0"
+      aria-label="Interactive face canvas"
+    ></canvas>
     <!-- Instructions overlay -->
-    <div id="instructions-overlay" class="hidden">
+    <div id="instructions-overlay" class="hidden" role="dialog" aria-label="Instructions">
       <div class="instructions-box">
         <p>Upload a photo, then drag or use the keyboard to stretch your face!</p>
-        <button id="close-instructions">Got it</button>
+        <button id="close-instructions" aria-label="Close instructions">Got it</button>
       </div>
     </div>
     <!-- Reset button -->
@@ -41,6 +56,7 @@
       id="reset-btn"
       class="hidden"
       title="Reset the mesh to its original shape"
+      aria-label="Reset face"
     >
       Reset
     </button>
@@ -49,11 +65,19 @@
       id="share-btn"
       class="hidden"
       title="Download the current canvas as an image"
+      aria-label="Save image"
     >
       Save Image
     </button>
     <!-- Share link button -->
-    <button id="link-btn" class="hidden" title="Copy a shareable link">Share Link</button>
+    <button
+      id="link-btn"
+      class="hidden"
+      title="Copy a shareable link"
+      aria-label="Copy share link"
+    >
+      Share Link
+    </button>
     <script type="module" src="src/main.js"></script>
   </body>
 </html>

@@ -265,3 +265,12 @@ body {
     font-size: 1rem;
   }
 }
+
+/* Accessible focus styles */
+button:focus,
+input[type="file"]:focus,
+canvas:focus {
+  outline: 2px solid #6a82fb;
+  outline-offset: 2px;
+}
+

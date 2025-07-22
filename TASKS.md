@@ -55,7 +55,7 @@ This list should be reviewed and updated as development progresses.
 - [x] Progressive Web App support so the tool works offline once installed.
 - [x] Service worker caching of models and textures for a smoother offline experience.
 - [x] Mobile layout improvements and touch‑friendly controls.
-- [ ] Accessibility polish including ARIA labels and better focus states.
+- [x] Accessibility polish including ARIA labels and better focus states.
 - [ ] Dark mode theme.
 
 ## Testing & Quality
