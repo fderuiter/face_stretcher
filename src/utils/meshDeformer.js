@@ -20,7 +20,14 @@ let positions,
 /**
  * Creates a subdivided plane mesh, sets up userData for springs.
  */
-export function createMesh(initialTexture, width, height, segments, pixelated = false, hemisphere = false) {
+export function createMesh(
+  initialTexture,
+  width,
+  height,
+  segments,
+  pixelated = false,
+  curvature = 0
+) {
   try {
     if (!initialTexture || width <= 0 || height <= 0 || segments < 1) {
       throw new Error('[ERR_MD_001] Invalid mesh parameters');
@@ -37,18 +44,24 @@ export function createMesh(initialTexture, width, height, segments, pixelated = 
       texture.minFilter = THREE.LinearFilter;
     }
 
-    if (hemisphere) {
+    let curv = curvature;
+    if (typeof curvature === 'boolean') curv = curvature ? 1 : 0;
+
+    if (curv > 0) {
       const radius = width / 2;
+      const thetaLength = Math.PI * curv;
+      const thetaStart = (Math.PI - thetaLength) / 2;
       geo = new THREE.SphereGeometry(
         radius,
         segments,
         segments,
         -Math.PI / 2,
         Math.PI,
-        0,
-        Math.PI
+        thetaStart,
+        thetaLength
       );
-      const scaleY = height / width;
+      const baseHeight = 2 * radius * Math.sin(thetaLength / 2);
+      const scaleY = height / baseHeight;
       geo.scale(1, scaleY, 1);
     } else {
       geo = new THREE.PlaneGeometry(width, height, segments, segments);
@@ -71,7 +84,7 @@ export function createMesh(initialTexture, width, height, segments, pixelated = 
     mesh.userData.damping = 4;
     mesh.userData.segments = segments; // Store segments count
     mesh.userData.pixelated = pixelated; // Store pixelated state
-    mesh.userData.hemisphere = hemisphere; // Store hemisphere flag
+    mesh.userData.curvature = curv; // Store curvature amount
 
     return mesh;
   } catch (error) {
@@ -189,21 +202,27 @@ export function updateTexture(newTexture) {
  * @param {number} height
  * @param {number} segments
  */
-export function updateGeometry(width, height, segments) {
+export function updateGeometry(width, height, segments, curvature = mesh ? mesh.userData.curvature : 0) {
   if (mesh) {
     geo.dispose(); // Dispose old geometry
-    if (mesh.userData.hemisphere) {
+    let curv = curvature;
+    if (typeof curvature === 'boolean') curv = curvature ? 1 : 0;
+    if (curv > 0) {
       const radius = width / 2;
+      const thetaLength = Math.PI * curv;
+      const thetaStart = (Math.PI - thetaLength) / 2;
       geo = new THREE.SphereGeometry(
         radius,
         segments,
         segments,
         -Math.PI / 2,
         Math.PI,
-        0,
-        Math.PI
+        thetaStart,
+        thetaLength
       );
-      geo.scale(1, height / width, 1);
+      const baseHeight = 2 * radius * Math.sin(thetaLength / 2);
+      const scaleY = height / baseHeight;
+      geo.scale(1, scaleY, 1);
     } else {
       geo = new THREE.PlaneGeometry(width, height, segments, segments);
     }
@@ -214,6 +233,7 @@ export function updateGeometry(width, height, segments) {
     lockedVerts = new Uint8Array(vertexCount).fill(0);
     mesh.geometry = geo;
     mesh.userData.segments = segments;
+    mesh.userData.curvature = curv;
   }
 }
 

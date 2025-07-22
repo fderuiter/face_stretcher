@@ -126,16 +126,22 @@ describe('MeshDeformer Tests', () => {
         expect(mesh.userData.pixelated).toBe(true);
     });
 
-    test('creates hemisphere geometry when requested', () => {
+    test('creates curved geometry when curvature > 0', () => {
         const spy = jest.spyOn(THREE, 'SphereGeometry');
-        mesh = createMesh(texture, 2, 2, 10, false, true);
+        mesh = createMesh(texture, 2, 2, 10, false, 1);
         expect(spy).toHaveBeenCalled();
-        expect(mesh.userData.hemisphere).toBe(true);
+        expect(mesh.userData.curvature).toBe(1);
     });
 
     test('updateGeometry adjusts segment count', () => {
         mesh = createMesh(texture, 2, 2, 8);
         updateGeometry(2, 2, 4);
         expect(mesh.userData.segments).toBe(4);
+    });
+
+    test('updateGeometry can change curvature', () => {
+        mesh = createMesh(texture, 2, 2, 8);
+        updateGeometry(2, 2, 8, 0.75);
+        expect(mesh.userData.curvature).toBeCloseTo(0.75);
     });
 });
