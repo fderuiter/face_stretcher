@@ -104,11 +104,11 @@ workflow installs dependencies using `npm ci`, runs ESLint, executes the Jest te
 and builds the production bundle on every push and pull request.
 
 ## Deployment
-Vercel can build and host this app directly from GitHub. The included
-`vercel.json` file tells Vercel to run `npm run build` and publish the
-contents of the `dist` directory. If you connect the repository to Vercel's
-Git integration, every push to `main` will trigger a new deployment without
-any additional tokens.
+Vercel can build and host this app directly from GitHub. When connected
+via the Git integration, Vercel automatically runs `npm run build` and
+serves the contents of the `dist` directory. The `vercel.json` file only
+defines a catch‑all rewrite so that the SPA works when users refresh on
+deep links. No tokens are required when deploying this way.
 
 For setups that still rely on the GitHub Actions workflow found in
 `.github/workflows/deploy.yml`, you will need to provide the following secrets:
