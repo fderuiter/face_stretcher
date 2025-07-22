@@ -14,7 +14,19 @@ import { showCropper } from '../ui/cropperUI.js';
 export async function selectFaceRegion(image, file = null) {
   try {
     const bbox = await detectFace(image);
-    return { image, bbox };
+
+    const imgW = image.naturalWidth || image.width;
+    const imgH = image.naturalHeight || image.height;
+    const size = Math.max(bbox.width, bbox.height);
+    const centerX = bbox.x + bbox.width / 2;
+    const centerY = bbox.y + bbox.height / 2;
+    let x = Math.round(centerX - size / 2);
+    let y = Math.round(centerY - size / 2);
+    x = Math.max(0, Math.min(x, imgW - size));
+    y = Math.max(0, Math.min(y, imgH - size));
+    const centeredBox = { x, y, width: size, height: size };
+
+    return { image, bbox: centeredBox };
   } catch (err) {
     const manual = await showCropper(true, file);
     if (!manual) {

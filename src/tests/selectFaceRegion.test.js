@@ -4,19 +4,21 @@ import * as cropperUI from '../ui/cropperUI.js';
 
 describe('selectFaceRegion', () => {
   const img = new Image();
+  img.width = 100;
+  img.height = 100;
   const file = new File(['a'], 'test.png', { type: 'image/png' });
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  test('returns detected bbox when face detection succeeds', async () => {
+  test('returns centered bbox when face detection succeeds', async () => {
     jest.spyOn(faceDetection, 'detectFace').mockResolvedValue({ x: 1, y: 2, width: 3, height: 4 });
     const spy = jest.spyOn(cropperUI, 'showCropper').mockResolvedValue(null);
     const result = await selectFaceRegion(img, file);
     expect(faceDetection.detectFace).toHaveBeenCalledWith(img);
     expect(spy).not.toHaveBeenCalled();
-    expect(result).toEqual({ image: img, bbox: { x: 1, y: 2, width: 3, height: 4 } });
+    expect(result).toEqual({ image: img, bbox: { x: 1, y: 2, width: 4, height: 4 } });
   });
 
   test('falls back to manual cropper when detection fails', async () => {
