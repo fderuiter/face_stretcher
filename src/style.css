@@ -239,3 +239,29 @@ body {
 #instructions-overlay button:hover {
   background: linear-gradient(90deg, #fc5c7d 0%, #6a82fb 100%);
 }
+
+@media (max-width: 600px) {
+  #upload-container {
+    width: 90%;
+    padding: 1rem;
+  }
+
+  #cropper-container {
+    width: 90%;
+    top: 5%;
+    padding: 1rem;
+  }
+
+  #cropper-container img {
+    max-width: 80vw;
+    max-height: 50vh;
+  }
+
+  #reset-btn,
+  #share-btn,
+  #link-btn {
+    bottom: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+  }
+}
