@@ -16,7 +16,14 @@ describe('pointer controls', () => {
       intersectObject: jest.fn(() => [{ point: new THREE.Vector3(0, 0, 0) }])
     };
 
-    const ctl = initPointerControls({ renderer, camera, mesh, onDrag, raycaster });
+    const ctl = initPointerControls({
+      renderer,
+      camera,
+      mesh,
+      onDrag,
+      raycaster,
+      grabPoints: [new THREE.Vector3(0, 0, 0)],
+    });
     canvas.dispatchEvent(new MouseEvent('pointerdown', { clientX: 10, clientY: 10 }));
     canvas.dispatchEvent(new MouseEvent('pointermove', { clientX: 15, clientY: 15 }));
     expect(onDrag).toHaveBeenCalled();
@@ -38,7 +45,14 @@ describe('pointer controls', () => {
     };
 
     const onDrag = jest.fn();
-    const ctl = initPointerControls({ renderer, camera, mesh, onDrag, raycaster });
+    const ctl = initPointerControls({
+      renderer,
+      camera,
+      mesh,
+      onDrag,
+      raycaster,
+      grabPoints: [new THREE.Vector3(0, 0, 0)],
+    });
     ctl.destroy();
     canvas.dispatchEvent(new MouseEvent('pointerdown', { clientX: 5, clientY: 5 }));
     canvas.dispatchEvent(new MouseEvent('pointermove', { clientX: 6, clientY: 6 }));

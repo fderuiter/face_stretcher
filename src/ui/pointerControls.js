@@ -33,11 +33,12 @@ export function initPointerControls({
   }
 
   function handleDown(e) {
-    isDown = true;
     const p = getHit(e);
-    if (p) {
-      snapToGrabPoints(p, grabPoints, snapDistance);
+    if (p && snapToGrabPoints(p, grabPoints, snapDistance)) {
+      isDown = true;
       prevPt.copy(p);
+    } else {
+      isDown = false;
     }
   }
 
