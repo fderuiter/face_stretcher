@@ -116,7 +116,7 @@ stretchy-face-app/
 - [x] Ensure the cropped region is always centered on the detected face.
 
 ### 2. Mesh Generation & Mapping
-- [ ] Map the cropped face image as a texture onto the mesh (currently a flat plane).
+- [x] Map the cropped face image as a texture onto the mesh (currently a flat plane).
 - [ ] (Optional) Switch to a hemisphere or slightly curved mesh for a more 3D effect, like Mario 64.
 - [ ] Ensure mesh aspect ratio matches the cropped face region.
 
