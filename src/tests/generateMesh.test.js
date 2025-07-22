@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import * as meshDeformer from '../utils/meshDeformer.js';
 import { generateMesh, N64_SEGMENTS, HD_SEGMENTS } from '../utils/generateMesh.js';
 
@@ -34,6 +35,19 @@ describe('generateMesh', () => {
     expect(args[3]).toBe(HD_SEGMENTS);
     expect(args[4]).toBe(false);
     expect(args[5]).toBe(false);
+  });
+
+  test('passes a CanvasTexture containing the source image', () => {
+    const texSpy = jest
+      .spyOn(THREE, 'CanvasTexture')
+      .mockImplementation((img) => ({ image: img }));
+    const spy = jest
+      .spyOn(meshDeformer, 'createMesh')
+      .mockReturnValue({ userData: {} });
+    generateMesh(canvas, true, false, docMock);
+    expect(texSpy).toHaveBeenCalledWith(canvas);
+    expect(spy.mock.calls[0][0].image).toBe(canvas);
+    texSpy.mockRestore();
   });
 
   test('throws on invalid source', () => {
