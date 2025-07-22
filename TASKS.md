@@ -47,14 +47,14 @@ This document tracks current and upcoming work for the Mario‑style face stretc
 - [x] Write unit tests for critical utilities such as face detection and mesh deformation.
 - [x] Configure a CI workflow (GitHub Actions or similar) to run linting, tests and builds on every pull request.
 - [x] Deploy automatically to a free hosting provider (e.g. Vercel) when the `main` branch updates.
-- [ ] Add Playwright end-to-end tests to validate the user flow.
+- [x] Add Playwright end-to-end tests to validate the user flow.
 
 This list should be reviewed and updated as development progresses.
 
-- [ ] First‑time instructions overlay.
-- [ ] Progressive Web App support so the tool works offline once installed.
-- [ ] Service worker caching of models and textures for a smoother offline experience.
-- [ ] Mobile layout improvements and touch‑friendly controls.
+- [x] First‑time instructions overlay.
+- [x] Progressive Web App support so the tool works offline once installed.
+- [x] Service worker caching of models and textures for a smoother offline experience.
+- [x] Mobile layout improvements and touch‑friendly controls.
 - [ ] Accessibility polish including ARIA labels and better focus states.
 - [ ] Dark mode theme.
 
