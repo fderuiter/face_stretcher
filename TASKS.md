@@ -56,12 +56,12 @@ This list should be reviewed and updated as development progresses.
 - [x] Service worker caching of models and textures for a smoother offline experience.
 - [x] Mobile layout improvements and touch‑friendly controls.
 - [x] Accessibility polish including ARIA labels and better focus states.
-- [ ] Dark mode theme.
+- [x] Dark mode theme.
 
 ## Testing & Quality
 
 - [x] Unit tests for key utilities and UI helpers.
-- [ ] Playwright end‑to-end tests.
+ - [x] Playwright end‑to-end tests.
 - [ ] **Comprehensive Playwright e2e coverage across desktop and mobile browsers.**
 - [ ] Visual regression tests for the canvas output.
 - [ ] Offload spring physics to a Web Worker for better performance on low‑end devices.

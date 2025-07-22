@@ -22,6 +22,15 @@
     <div id="loading-text">Loading...</div>
   </div>
   <canvas id="c" title="Click and drag to stretch the face!"></canvas>
+  <!-- Instructions overlay -->
+  <div id="instructions-overlay" class="hidden" role="dialog" aria-label="Instructions">
+    <div class="instructions-box">
+      <p>Upload a photo, then drag or use the keyboard to stretch your face!</p>
+      <button id="close-instructions" aria-label="Close instructions">Got it</button>
+    </div>
+  </div>
+  <!-- Theme toggle button -->
+  <button id="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">Dark Mode</button>
   <script type="module" src="./main.js"></script>
 </body>
 </html>

@@ -7,11 +7,11 @@ const config = {
   timeout: 30000,
   use: {
     headless: true,
-    baseURL: 'http://localhost:3000'
+    baseURL: 'http://localhost:3010'
   },
   webServer: {
-    command: 'npm run dev -- --port 3000',
-    port: 3000,
+    command: 'npm run dev -- --port 3010 --strictPort',
+    port: 3010,
     reuseExistingServer: !process.env.CI
   }
 };

@@ -9,7 +9,9 @@
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,html}\"",
     "deploy": "vercel --prod",
     "test": "jest",
-    "test:e2e": "playwright test"
+    "pretest:e2e": "npm run build",
+    "test:e2e": "playwright test",
+    "postinstall": "playwright install --with-deps"
   },
   "dependencies": {
     "@tensorflow-models/face-landmarks-detection": "^1.0.2",
