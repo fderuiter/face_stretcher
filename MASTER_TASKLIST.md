@@ -121,10 +121,10 @@ stretchy-face-app/
 - [x] Ensure mesh aspect ratio matches the cropped face region.
 
 ### 3. Interactive Dragging (Mario 64 Style)
-- [ ] Make mesh vertices draggable only when pointer is near them (like Mario 64's "grab points").
+ - [x] Make mesh vertices draggable only when pointer is near them (like Mario 64's "grab points").
  - [x] Add visual indicators (dots or handles) for draggable points (corners, mouth, cheeks, etc.).
-- [ ] Allow user to drag these points and have the mesh smoothly deform and spring back.
-- [ ] Add a "reset" button to snap the mesh back to its original state.
+  - [x] Allow user to drag these points and have the mesh smoothly deform and spring back.
+  - [x] Add a "reset" button to snap the mesh back to its original state.
 
 ### 4. UI/UX Improvements
 - [ ] Hide upload/crop UI after mesh is generated; show a "re-upload" button somewhere non-intrusive.
