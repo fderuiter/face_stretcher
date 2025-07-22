@@ -11,7 +11,7 @@
     "test": "jest",
     "pretest:e2e": "npm run build",
     "test:e2e": "playwright test",
-    "postinstall": "playwright install --with-deps"
+    "postinstall": "playwright install"
   },
   "dependencies": {
     "@tensorflow-models/face-landmarks-detection": "^1.0.2",
