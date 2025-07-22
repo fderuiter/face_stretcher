@@ -57,6 +57,26 @@ describe('generateMesh', () => {
     texSpy.mockRestore();
   });
 
+  test('maintains aspect ratio when width > height', () => {
+    const spy = jest.spyOn(meshDeformer, 'createMesh').mockReturnValue({ userData: {} });
+    canvas.width = 200;
+    canvas.height = 100;
+    generateMesh(canvas, true, 0, docMock);
+    const args = spy.mock.calls[0];
+    expect(args[1]).toBeCloseTo(2); // width scaled to 2
+    expect(args[2]).toBeCloseTo(1); // height scaled proportionally
+  });
+
+  test('maintains aspect ratio when height > width', () => {
+    const spy = jest.spyOn(meshDeformer, 'createMesh').mockReturnValue({ userData: {} });
+    canvas.width = 100;
+    canvas.height = 200;
+    generateMesh(canvas, true, 0, docMock);
+    const args = spy.mock.calls[0];
+    expect(args[1]).toBeCloseTo(1); // width scaled proportionally
+    expect(args[2]).toBeCloseTo(2); // height scaled to 2
+  });
+
   test('throws on invalid source', () => {
     expect(() => generateMesh(null)).toThrow('ERR_MG_001');
   });

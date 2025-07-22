@@ -36,8 +36,10 @@ export function generateMesh(source, n64Mode = true, curvature = 0, doc = global
   }
 
   const texture = new THREE.CanvasTexture(canvas);
-  const width = 2;
-  const height = 2 * (canvas.height / canvas.width);
+  // Scale so the longest side is 2 units and preserve aspect ratio
+  const maxDim = Math.max(canvas.width, canvas.height);
+  const width = (canvas.width / maxDim) * 2;
+  const height = (canvas.height / maxDim) * 2;
   const segments = n64Mode ? N64_SEGMENTS : HD_SEGMENTS;
   return createMesh(texture, width, height, segments, n64Mode, curvature);
 }

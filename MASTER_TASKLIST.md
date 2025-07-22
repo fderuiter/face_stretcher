@@ -118,7 +118,7 @@ stretchy-face-app/
 ### 2. Mesh Generation & Mapping
 - [x] Map the cropped face image as a texture onto the mesh (currently a flat plane).
 - [x] (Optional) Switch to a hemisphere or slightly curved mesh for a more 3D effect, like Mario 64.
-- [ ] Ensure mesh aspect ratio matches the cropped face region.
+- [x] Ensure mesh aspect ratio matches the cropped face region.
 
 ### 3. Interactive Dragging (Mario 64 Style)
 - [ ] Make mesh vertices draggable only when pointer is near them (like Mario 64's "grab points").
