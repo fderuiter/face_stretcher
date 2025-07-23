@@ -1,3 +1,5 @@
+import { logError } from './analytics.js';
+
 // Error codes:
 // ERR_SH_001: Canvas capture failed
 // ERR_SH_002: Blob creation failed
@@ -31,11 +33,11 @@ export async function captureCanvas(
       urlObj.revokeObjectURL(url);
     } catch (error) {
       urlObj.revokeObjectURL(url);
-      console.error(`[ERR_SH_003] Download failed: ${error.message}`);
+      logError(new Error(`[ERR_SH_003] Download failed: ${error.message}`));
       throw new Error('[ERR_SH_003] Download failed');
     }
   } catch (error) {
-    console.error(`Canvas capture failed: ${error.message}`);
+    logError(new Error(`Canvas capture failed: ${error.message}`));
     throw error;
   }
 }

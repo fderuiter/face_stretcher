@@ -1,5 +1,6 @@
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
 import '@tensorflow/tfjs-backend-webgl';
+import { logError } from './analytics.js';
 
 // Error codes:
 // ERR_FD_001: General face detection failure
@@ -63,7 +64,7 @@ export async function detectFace(imageElementOrCanvas) {
       }
     }
   } catch (error) {
-    console.error(error);
+    logError(error);
     throw error;
   }
 }

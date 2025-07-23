@@ -1,6 +1,7 @@
 import Cropper from 'cropperjs';
 import 'cropperjs/dist/cropper.css';
 import { loadAndValidateImage } from '../utils/imageValidation.js';
+import { logError } from '../utils/analytics.js';
 
 const uploadInput = document.getElementById('upload');
 const cropperContainer = document.getElementById('cropper-container');
@@ -38,7 +39,7 @@ export function showCropper(forceManual = false, file = null) {
           }
         })
         .catch(err => {
-          console.error('Image validation failed:', err);
+          logError(new Error(`Image validation failed: ${err.message}`));
           alert(err.message);
           reject(err);
         });
@@ -50,7 +51,7 @@ export function showCropper(forceManual = false, file = null) {
           reject(err);
         });
       } catch (err) {
-        console.error(`[ERR_CR_002] Cropper setup error: ${err.message}`);
+        logError(new Error(`[ERR_CR_002] Cropper setup error: ${err.message}`));
         reject(new Error(`[ERR_CR_002] Cropper setup error: ${err.message}`));
       }
     } else {
@@ -68,7 +69,7 @@ export function showCropper(forceManual = false, file = null) {
               resolve(validatedImage);
             }
           } catch (error) {
-            console.error("Image validation failed:", error);
+            logError(new Error(`Image validation failed: ${error.message}`));
             alert(error.message); // Show user-friendly error
             reject(error);
           }
@@ -79,7 +80,7 @@ export function showCropper(forceManual = false, file = null) {
 
     useCropButton.onclick = () => {
       if (!cropperInstance || !currentResolve) {
-        console.error('[ERR_CR_006] Cropper not properly initialized');
+        logError(new Error('[ERR_CR_006] Cropper not properly initialized'));
         return;
       }
       
@@ -95,7 +96,7 @@ export function showCropper(forceManual = false, file = null) {
         };
         imgElement.src = cropperImage.src;
       } catch (error) {
-        console.error(`[ERR_CR_008] Error during crop confirmation: ${error.message}`);
+        logError(new Error(`[ERR_CR_008] Error during crop confirmation: ${error.message}`));
         reject(error);
       }
     };
@@ -137,14 +138,14 @@ function setupCropper(imageSrc) {
           }
         });
       } catch (error) {
-        console.error(`[ERR_CR_003] Cropper.js init failed: ${error.message}`);
+        logError(new Error(`[ERR_CR_003] Cropper.js init failed: ${error.message}`));
         cleanup();
         reject(new Error(`[ERR_CR_003] Cropper.js init failed: ${error.message}`));
       }
     };
 
     cropperImage.onerror = () => {
-      console.error(`[ERR_CR_004] Cropper image load error: ${imageSrc}`);
+      logError(new Error(`[ERR_CR_004] Cropper image load error: ${imageSrc}`));
       cleanup();
       reject(new Error(`[ERR_CR_004] Cropper image load error: ${imageSrc}`));
     };

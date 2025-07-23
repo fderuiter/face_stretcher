@@ -117,6 +117,10 @@ For setups that still rely on the GitHub Actions workflow found in
 - `VERCEL_ORG_ID` – the organization ID from your Vercel dashboard
 - `VERCEL_PROJECT_ID` – the project ID for this app
 
+## Analytics & Error Tracking
+
+Set the `VITE_SENTRY_DSN` environment variable to enable Sentry error reporting. If omitted, the app runs without collecting any analytics.
+
 ## Roadmap
 
 See the files under `build/` for long term ideas and check `TASKS.md` for the current to‑do list.

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { logError } from './analytics.js';
 
 let positions,
   originalPos,
@@ -88,7 +89,7 @@ export function createMesh(
 
     return mesh;
   } catch (error) {
-    console.error(`[ERR_MD_003] Geometry creation failed: ${error.message}`);
+    logError(new Error(`[ERR_MD_003] Geometry creation failed: ${error.message}`));
     throw error;
   }
 }
@@ -121,7 +122,7 @@ export function stretchRegion(from, to) {
     }
     positions.needsUpdate = true;
   } catch (error) {
-    console.error(`[ERR_MD_006] Region stretch failed: ${error.message}`);
+    logError(new Error(`[ERR_MD_006] Region stretch failed: ${error.message}`));
     throw error;
   }
 }
@@ -161,7 +162,7 @@ export function updateSprings(dt) {
     }
     positions.needsUpdate = true;
   } catch (error) {
-    console.error(`[ERR_MD_005] Spring physics update failed: ${error.message}`);
+    logError(new Error(`[ERR_MD_005] Spring physics update failed: ${error.message}`));
     throw error;
   }
 }

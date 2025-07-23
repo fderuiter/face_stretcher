@@ -135,7 +135,7 @@ stretchy-face-app/
 - [x] Add a toggle for "N64 Mode" (low-poly, pixelated texture) vs. "HD Mode" (high-res, smooth mesh).
 - [x] Add ability to save/share the stretched face (already partially implemented).
 - [x] Add PWA support for offline use.
-- [ ] Add analytics/error tracking (optional for production).
+- [x] Add analytics/error tracking (optional for production).
 
 ## Project Task List (from `TASKS.md`)
 

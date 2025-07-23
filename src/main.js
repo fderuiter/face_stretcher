@@ -30,6 +30,7 @@ import { createDefaultGrabPoints } from "./utils/grabPoints.js";
 import { initPointerControls } from "./ui/pointerControls.js";
 import { createCameraController } from "./utils/cameraController.js";
 import { initGrabIndicators } from "./ui/grabIndicators.js";
+import { initAnalytics, installGlobalErrorHandlers, logError } from "./utils/analytics.js";
 
 // Error codes:
 // ERR_IN_001: Initialization failed
@@ -144,7 +145,7 @@ async function init(startFile = null) {
     hideCropper();
     uploadContainer.classList.add("hidden");
   } catch (error) {
-    console.error("Error during initial image selection:", error);
+    logError(new Error(`Error during initial image selection: ${error.message}`));
     if (loadingIndicator) loadingIndicator.hide();
     uploadContainer.classList.remove("hidden");
     alert("Error loading image. Please try a different file.");
@@ -160,7 +161,7 @@ async function init(startFile = null) {
     hideCropper();
     proceedWithCroppedImage(currentImage, currentBBox);
   } catch (error) {
-    console.error("Error during face selection:", error);
+    logError(new Error(`Error during face selection: ${error.message}`));
     if (loadingIndicator) loadingIndicator.hide();
     uploadContainer.classList.remove("hidden");
     alert("An error occurred while processing the image. Please try again.");
@@ -234,7 +235,7 @@ function proceedWithCroppedImage(img, bbox) {
       controls = initControls({
         onReset: () => resetMesh(),
         onDownload: () =>
-          captureCanvas(renderer.domElement).catch((err) => console.error(err)),
+          captureCanvas(renderer.domElement).catch((err) => logError(err)),
         onParamsChange: (params) => {
           if (mesh) {
             mesh.userData.radius = params.radius;
@@ -311,7 +312,7 @@ function proceedWithCroppedImage(img, bbox) {
     showLinkButton();
     showReuploadButton();
   } catch (error) {
-    console.error("Error creating mesh:", error);
+    logError(new Error(`Error creating mesh: ${error.message}`));
     if (loadingIndicator) loadingIndicator.hide();
     uploadContainer.classList.remove("hidden");
     alert("An error occurred while processing the image. Please try again.");
@@ -395,6 +396,8 @@ function animate(now) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  initAnalytics();
+  installGlobalErrorHandlers();
   loadingIndicator = initLoadingIndicator();
   uploadControl = initUploadArea((file) => init(file));
   const shared = loadSharedImage();
@@ -414,7 +417,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   shareControl = initShareButton(() => {
     if (renderer)
-      captureCanvas(renderer.domElement).catch((err) => console.error(err));
+      captureCanvas(renderer.domElement).catch((err) => logError(err));
   });
   linkControl = initShareLinkButton(() => {
     if (renderer) {
