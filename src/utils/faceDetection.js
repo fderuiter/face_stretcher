@@ -14,8 +14,9 @@ let modelPromise = null;
 
 async function loadModel() {
   if (!modelPromise) {
-    modelPromise = faceLandmarksDetection.load(
-      faceLandmarksDetection.SupportedPackages.mediapipeFacemesh,
+    modelPromise = faceLandmarksDetection.createDetector(
+      faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh,
+      { runtime: 'tfjs' },
     );
   }
   return modelPromise;
@@ -43,7 +44,7 @@ export async function detectFace(imageElementOrCanvas) {
     }
 
     try {
-      const predictions = await model.estimateFaces({ input: imageElementOrCanvas });
+      const predictions = await model.estimateFaces(imageElementOrCanvas);
       if (!predictions.length) {
         throw new Error('[ERR_FD_002] No face detected');
       }
