@@ -3,7 +3,7 @@ import * as Sentry from '@sentry/browser';
 let sentryEnabled = false;
 
 export function initAnalytics() {
-  const dsn = process.env.VITE_SENTRY_DSN;
+  const dsn = (typeof process !== 'undefined' && process.env && process.env.VITE_SENTRY_DSN) || (typeof window !== 'undefined' && window.process && window.process.env && window.process.env.VITE_SENTRY_DSN);
   if (dsn) {
     Sentry.init({ dsn });
     sentryEnabled = true;

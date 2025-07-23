@@ -27,7 +27,7 @@ describe('detectFace', () => {
 
   test('wraps model loading errors', async () => {
     const err = new Error('bad');
-    global.faceLandmarksDetection.load.mockRejectedValueOnce(err);
+    global.faceLandmarksDetection.createDetector.mockRejectedValueOnce(err);
     await expect(detectFace(img)).rejects.toThrow('ERR_FD_003');
   });
 

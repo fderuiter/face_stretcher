@@ -189,18 +189,13 @@ const mockEstimateFaces = jest.fn().mockResolvedValue([{
     scaledMesh: Array(468).fill([0, 0, 0])
 }]);
 
-const mockFaceLandmarksDetection = function() {
-    return {
+const mockFaceLandmarksDetection = {
+    createDetector: jest.fn().mockImplementation(async () => ({
         estimateFaces: mockEstimateFaces
-    };
-};
-
-mockFaceLandmarksDetection.load = jest.fn().mockImplementation(async () => ({
-    estimateFaces: mockEstimateFaces
-}));
-
-mockFaceLandmarksDetection.SupportedPackages = {
-    mediapipeFacemesh: 'mediapipeFacemesh'
+    })),
+    SupportedModels: {
+        MediaPipeFaceMesh: 'MediaPipeFaceMesh'
+    }
 };
 
 jest.mock('@tensorflow-models/face-landmarks-detection', () => mockFaceLandmarksDetection);
