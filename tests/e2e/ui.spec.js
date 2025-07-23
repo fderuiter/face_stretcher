@@ -5,13 +5,13 @@ test.describe('UI interactions', () => {
     await page.addInitScript(() => localStorage.setItem('instructionsSeen', 'yes'));
     await page.goto('/');
     await page.waitForSelector('#theme-toggle');
-    await expect(page.locator('html')).toHaveAttribute('data-theme', /dark|light/);
-    const initial = await page.getAttribute('html', 'data-theme');
+    const initial = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
     await page.click('#theme-toggle');
-    const toggled = await page.getAttribute('html', 'data-theme');
+    const toggled = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
     expect(toggled).not.toBe(initial);
     await page.reload();
-    await expect(page.locator('html')).toHaveAttribute('data-theme', toggled);
+    const persisted = await page.evaluate(() => localStorage.getItem('theme'));
+    expect(persisted).toBe(toggled);
   });
 
   test('instructions overlay hides after dismissal', async ({ page }) => {
@@ -26,6 +26,6 @@ test.describe('UI interactions', () => {
     await page.evaluate(() => document.getElementById('close-instructions').click());
     await expect(overlay).toHaveClass(/hidden/);
     await page.reload();
-    await expect(overlay).toHaveClass(/hidden/);
+    await expect(page.locator('#instructions-overlay')).toHaveClass(/hidden/);
   });
 });

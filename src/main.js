@@ -395,7 +395,7 @@ function animate(now) {
   requestAnimationFrame(animate);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function startApp() {
   initAnalytics();
   installGlobalErrorHandlers();
   loadingIndicator = initLoadingIndicator();
@@ -472,5 +472,11 @@ document.addEventListener("DOMContentLoaded", () => {
   hideShareButton();
   hideLinkButton();
   hideReuploadButton();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', startApp);
+} else {
+  startApp();
+}
 // init(); // Call init directly if script is at the end of body or defer
