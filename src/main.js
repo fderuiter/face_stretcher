@@ -148,7 +148,7 @@ async function init(startFile = null) {
     logError(new Error(`Error during initial image selection: ${error.message}`));
     if (loadingIndicator) loadingIndicator.hide();
     uploadContainer.classList.remove("hidden");
-    alert("Error loading image. Please try a different file.");
+    alert(`Error loading image: ${error.message}`);
     return;
   }
 
@@ -164,7 +164,7 @@ async function init(startFile = null) {
     logError(new Error(`Error during face selection: ${error.message}`));
     if (loadingIndicator) loadingIndicator.hide();
     uploadContainer.classList.remove("hidden");
-    alert("An error occurred while processing the image. Please try again.");
+    alert(`Image processing failed: ${error.message}`);
   }
 }
 
@@ -315,7 +315,7 @@ function proceedWithCroppedImage(img, bbox) {
     logError(new Error(`Error creating mesh: ${error.message}`));
     if (loadingIndicator) loadingIndicator.hide();
     uploadContainer.classList.remove("hidden");
-    alert("An error occurred while processing the image. Please try again.");
+    alert(`Image processing failed: ${error.message}`);
     return;
   }
 }
