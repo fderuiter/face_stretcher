@@ -189,7 +189,7 @@ stretchy-face-app/
 ### Testing & Quality
 - [x] Unit tests for key utilities and UI helpers.
 - [x] Playwright end‑to-end tests.
-- [ ] **Comprehensive Playwright e2e coverage across desktop and mobile browsers.**
+- [x] **Comprehensive Playwright e2e coverage across desktop and mobile browsers.**
 - [ ] Visual regression tests for the canvas output.
 - [ ] Offload spring physics to a Web Worker for better performance on low‑end devices.
 - [ ] Automated Lighthouse checks and performance budgets in CI.

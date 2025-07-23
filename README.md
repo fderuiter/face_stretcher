@@ -98,6 +98,24 @@ Keyboard behavior is configurable via the options passed to [`initKeyboardContro
 └── .gitignore      # Exclude node_modules, dist, etc.
 ```
 
+## Testing
+
+Run unit tests with **Jest** via:
+
+```bash
+npm test
+```
+
+End‑to‑end tests use **Playwright** and cover both desktop and mobile
+browsers. Build the app first and then run:
+
+```bash
+npm run test:e2e
+```
+
+This starts a local server and executes the Playwright suite against
+Chromium and WebKit (iPhone 12 emulation).
+
 ## CI
 
 This project includes a GitHub Actions workflow located at `.github/workflows/ci.yml`. The
