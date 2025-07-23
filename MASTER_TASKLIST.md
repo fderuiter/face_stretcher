@@ -132,9 +132,9 @@ stretchy-face-app/
 - [x] Add tooltips or short instructions for first-time users.
 
 ### 5. Polish & Stretch Goals
-- [ ] Add a toggle for "N64 Mode" (low-poly, pixelated texture) vs. "HD Mode" (high-res, smooth mesh).
-- [ ] Add ability to save/share the stretched face (already partially implemented).
-- [ ] Add PWA support for offline use.
+- [x] Add a toggle for "N64 Mode" (low-poly, pixelated texture) vs. "HD Mode" (high-res, smooth mesh).
+- [x] Add ability to save/share the stretched face (already partially implemented).
+- [x] Add PWA support for offline use.
 - [ ] Add analytics/error tracking (optional for production).
 
 ## Project Task List (from `TASKS.md`)

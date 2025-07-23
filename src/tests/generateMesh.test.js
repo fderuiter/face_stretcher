@@ -10,7 +10,13 @@ describe('generateMesh', () => {
     canvas = new HTMLCanvasElement();
     canvas.width = 100;
     canvas.height = 50;
-    docMock = { createElement: jest.fn(() => new HTMLCanvasElement()) };
+    docMock = {
+      createElement: jest.fn(() => {
+        const c = new HTMLCanvasElement();
+        c.getContext = jest.fn(() => ({ drawImage: jest.fn() }));
+        return c;
+      }),
+    };
   });
 
   afterEach(() => {
@@ -37,6 +43,28 @@ describe('generateMesh', () => {
     expect(args[5]).toBe(0);
   });
 
+  test('scales texture to 128px max in N64 mode', () => {
+    const spy = jest.spyOn(meshDeformer, 'createMesh').mockReturnValue({ userData: {} });
+    generateMesh(canvas, true, 0, docMock);
+    const created = docMock.createElement.mock.results[0].value;
+    expect(created.width).toBe(128);
+    expect(created.height).toBe(64);
+    const args = spy.mock.calls[0];
+    expect(args[1]).toBeCloseTo(2);
+    expect(args[2]).toBeCloseTo(1);
+  });
+
+  test('scales texture to 512px max in HD mode', () => {
+    const spy = jest.spyOn(meshDeformer, 'createMesh').mockReturnValue({ userData: {} });
+    generateMesh(canvas, false, 0, docMock);
+    const created = docMock.createElement.mock.results[0].value;
+    expect(created.width).toBe(512);
+    expect(created.height).toBe(256);
+    const args = spy.mock.calls[0];
+    expect(args[1]).toBeCloseTo(2);
+    expect(args[2]).toBeCloseTo(1);
+  });
+
   test('passes curvature value to createMesh', () => {
     const spy = jest.spyOn(meshDeformer, 'createMesh').mockReturnValue({ userData: {} });
     generateMesh(canvas, true, 0.5, docMock);
@@ -44,7 +72,7 @@ describe('generateMesh', () => {
     expect(args[5]).toBeCloseTo(0.5);
   });
 
-  test('passes a CanvasTexture containing the source image', () => {
+  test('passes a CanvasTexture containing the scaled image', () => {
     const texSpy = jest
       .spyOn(THREE, 'CanvasTexture')
       .mockImplementation((img) => ({ image: img }));
@@ -52,8 +80,9 @@ describe('generateMesh', () => {
       .spyOn(meshDeformer, 'createMesh')
       .mockReturnValue({ userData: {} });
     generateMesh(canvas, true, 0, docMock);
-    expect(texSpy).toHaveBeenCalledWith(canvas);
-    expect(spy.mock.calls[0][0].image).toBe(canvas);
+    const created = docMock.createElement.mock.results[0].value;
+    expect(texSpy).toHaveBeenCalledWith(created);
+    expect(spy.mock.calls[0][0].image).toBe(created);
     texSpy.mockRestore();
   });
 

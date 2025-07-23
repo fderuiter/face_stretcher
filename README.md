@@ -27,8 +27,8 @@ A lightweight proof of concept for a browser‑based face stretching tool using 
 ### Mesh Generation
 
 The cropped face is projected onto a Three.js mesh. Use the **Curvature** slider to bend it from a flat plane up to a full hemisphere. In **N64 Mode** a
-pixelated texture and just 10 segments recreate the low-poly look. Switch it off
-for a smoother high-res mesh with linear filtering.
+pixelated 128×128 texture and just 10 segments recreate the low-poly look. Switch it off
+for a smoother 512×512 texture with linear filtering.
 
 ### Manual Crop Fallback
 
