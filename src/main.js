@@ -31,6 +31,7 @@ import { initPointerControls } from "./ui/pointerControls.js";
 import { createCameraController } from "./utils/cameraController.js";
 import { initGrabIndicators } from "./ui/grabIndicators.js";
 import { initAnalytics, installGlobalErrorHandlers, logError } from "./utils/analytics.js";
+import { assertBackendHealthy } from "./utils/backendChecks.js";
 
 // Error codes:
 // ERR_IN_001: Initialization failed
@@ -40,6 +41,7 @@ import { initAnalytics, installGlobalErrorHandlers, logError } from "./utils/ana
 // ERR_IN_005: Image load failed
 // ERR_IN_006: WebGL context lost
 // ERR_IN_007: Resource cleanup failed
+// ERR_IN_008: Backend health check failed
 
 let renderer,
   scene,
@@ -491,8 +493,9 @@ function startApp() {
   hideReuploadButton();
 }
 
-function safeStart() {
+async function safeStart() {
   try {
+    await assertBackendHealthy();
     startApp();
   } catch (error) {
     logError(new Error(`[ERR_IN_001] Initialization failed: ${error.message}`));

@@ -207,3 +207,10 @@ stretchy-face-app/
 - [ ] Localized UI text for multiple languages.
 - [ ] Preset faces and the ability to save/load editing sessions.
 
+
+### Backend Debugging & Error Handling
+- [ ] Add health checks for WebGL and TensorFlow initialization.
+- [ ] Display clear overlay messages when back-end components fail to load.
+- [ ] Capture startup diagnostics for easier troubleshooting.
+- [ ] Warn users when the browser lacks required features.
+- [ ] Document blank-screen troubleshooting steps.
