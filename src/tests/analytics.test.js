@@ -10,6 +10,7 @@ describe('analytics', () => {
   afterEach(() => {
     jest.restoreAllMocks();
     delete global.console.error;
+    document.body.innerHTML = '';
   });
 
   test('initAnalytics does nothing without DSN', () => {
@@ -25,5 +26,14 @@ describe('analytics', () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     logError(err);
     expect(consoleSpy).toHaveBeenCalledWith(err);
+  });
+
+  test('logError injects overlay with message', () => {
+    const err = new Error('[ERR_TEST] fail');
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+    logError(err);
+    const overlay = document.getElementById('error-overlay');
+    expect(overlay).not.toBeNull();
+    expect(overlay.textContent).toContain('[ERR_TEST]');
   });
 });
