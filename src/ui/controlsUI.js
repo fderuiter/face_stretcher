@@ -1,4 +1,4 @@
-import GUI from 'dat.gui';
+import { GUI } from 'dat.gui';
 
 export function initControls({ onReset, onDownload, onParamsChange, onNewImage, onN64Toggle, onCurvatureChange }) {
   const gui = new GUI({ width: 260 });
