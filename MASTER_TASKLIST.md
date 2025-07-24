@@ -89,6 +89,7 @@ stretchy-face-app/
 2. **WASM Proof‑of‑Concept** – swap in a Rust/WASM spring simulator for faster performance on low‑end devices.
 3. **Adaptive Quality** – detect device performance and lower segment count or texture resolution automatically.
 4. **Analytics & Error‑Tracking** – integrate Plausible or Google Analytics and add Sentry for capturing JS errors.
+5. **Include Worker in Build** – ensure `springWorker.js` is copied to `dist/workers/` during the Vite build.
 
 ### Development Workflow
 1. **GitHub Repo** – push all code to GitHub.
