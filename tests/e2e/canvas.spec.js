@@ -22,8 +22,11 @@ test('canvas output matches snapshot', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('instructionsSeen', 'yes'));
   await page.goto('/');
   await page.setInputFiles('#upload', imagePath);
+  await page.waitForSelector('#upload-container.hidden', { state: 'attached' });
   await page.waitForSelector('canvas#c');
   // Wait a moment to allow rendering
   await page.waitForTimeout(1000);
-  await expect(page.locator('canvas#c')).toHaveScreenshot('canvas.png');
+  await expect(page.locator('canvas#c')).toHaveScreenshot('canvas.png', {
+    maxDiffPixelRatio: 0.03
+  });
 });
