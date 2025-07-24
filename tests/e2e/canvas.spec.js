@@ -4,27 +4,26 @@ import { mockBackendChecks } from './utils.js';
 
 const imagePath = path.resolve('tests/test_face.jpg');
 
-// Mock the TensorFlow face detection model so estimateFaces returns no results
 const mockScript = `
   export const SupportedModels = { MediaPipeFaceMesh: 'MediaPipeFaceMesh' };
   export function createDetector() {
     return Promise.resolve({
-      estimateFaces: async () => []
+      estimateFaces: async () => [{ box: { xMin: 0, yMin: 0, xMax: 128, yMax: 128 } }]
     });
   }
 `;
 
-test('manual cropper appears when auto detection finds no faces', async ({ page }) => {
-  // Intercept the module request from Vite
+test('canvas output matches snapshot', async ({ page }) => {
+  await mockBackendChecks(page);
   await page.route(/.*face-landmarks-detection.*\.js.*/, route => {
     route.fulfill({ contentType: 'application/javascript', body: mockScript });
   });
 
-  await mockBackendChecks(page);
-
   await page.addInitScript(() => localStorage.setItem('instructionsSeen', 'yes'));
   await page.goto('/');
   await page.setInputFiles('#upload', imagePath);
-  await page.waitForSelector('#cropper-container');
-  await expect(page.locator('#cropper-container')).toBeVisible();
+  await page.waitForSelector('canvas#c');
+  // Wait a moment to allow rendering
+  await page.waitForTimeout(1000);
+  await expect(page.locator('canvas#c')).toHaveScreenshot('canvas.png');
 });
