@@ -8,6 +8,7 @@
   <!-- PWA manifest and theme color will be injected by vite-plugin-pwa -->
 </head>
 <body>
+  <main id="main-content">
   <div id="upload-container" title="Click or drag image here to start">
     <input type="file" id="upload" accept="image/*" />
     <p>Click or drag image file here</p> <!-- Added instruction -->
@@ -32,5 +33,6 @@
   <!-- Theme toggle button -->
   <button id="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">Dark Mode</button>
   <script type="module" src="./main.js"></script>
+  </main>
 </body>
 </html>
