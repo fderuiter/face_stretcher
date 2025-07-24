@@ -18,7 +18,9 @@ export function initThemeToggle() {
   }
 
   function updateButtonText(theme) {
-    btn.textContent = theme === 'dark' ? 'Light Mode' : 'Dark Mode';
+    const text = theme === 'dark' ? 'Light Mode' : 'Dark Mode';
+    btn.textContent = text;
+    btn.setAttribute('aria-label', text);
   }
 
   const toggle = () => {

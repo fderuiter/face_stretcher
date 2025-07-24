@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { mockBackendChecks } from './utils.js';
 
 test.describe('UI interactions', () => {
   test('theme toggle persists across reload', async ({ page }) => {
+    await mockBackendChecks(page);
     await page.addInitScript(() => localStorage.setItem('instructionsSeen', 'yes'));
     await page.goto('/');
     await page.waitForSelector('#theme-toggle');
@@ -15,6 +17,7 @@ test.describe('UI interactions', () => {
   });
 
   test('instructions overlay hides after dismissal', async ({ page }) => {
+    await mockBackendChecks(page);
     await page.goto('/');
     await page.evaluate(() => {
       localStorage.removeItem('instructionsSeen');

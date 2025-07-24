@@ -11,8 +11,11 @@ describe('theme toggle', () => {
     document.body.innerHTML = '<button id="theme-toggle"></button>';
     const ctrl = initThemeToggle();
     expect(document.documentElement.getAttribute('data-theme')).toBe('light');
+    const btn = document.getElementById('theme-toggle');
+    expect(btn.getAttribute('aria-label')).toBe('Dark Mode');
     document.getElementById('theme-toggle').click();
     expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
+    expect(btn.getAttribute('aria-label')).toBe('Light Mode');
     ctrl.destroy();
   });
 

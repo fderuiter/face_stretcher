@@ -208,6 +208,7 @@ jest.mock('@tensorflow/tfjs-core', () => ({
     getBackend: jest.fn(() => 'webgl')
 }));
 jest.mock('@tensorflow/tfjs-backend-webgl', () => ({}));
+jest.mock('@tensorflow/tfjs-backend-cpu', () => ({}));
 
 // Set up global mocks
 global.faceLandmarksDetection = mockFaceLandmarksDetection;

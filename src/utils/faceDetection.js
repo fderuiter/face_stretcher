@@ -1,8 +1,8 @@
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
 import * as tf from '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-backend-webgl';
+import '@tensorflow/tfjs-backend-cpu';
 import { logError } from './analytics.js';
-
 // Error codes:
 // ERR_FD_001: General face detection failure
 // ERR_FD_002: No face detected
@@ -12,6 +12,18 @@ import { logError } from './analytics.js';
 // ERR_FD_006: Memory allocation error
 
 let modelPromise = null;
+
+async function ensureBackend() {
+  if (tf.getBackend()) return;
+  try {
+    await tf.setBackend('webgl');
+    await tf.ready();
+  } catch (e) {
+    console.warn('WebGL backend failed, falling back to CPU', e);
+    await tf.setBackend('cpu');
+    await tf.ready();
+  }
+}
 
 async function loadModel() {
   if (!modelPromise) {
@@ -45,6 +57,8 @@ export async function detectFace(imageElementOrCanvas) {
     if (!imageElementOrCanvas) {
       throw new Error('[ERR_FD_004] Invalid input image');
     }
+
+    await ensureBackend();
 
     let model;
     try {
