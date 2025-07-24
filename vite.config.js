@@ -1,9 +1,13 @@
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import legacy from '@vitejs/plugin-legacy';
 
 export default defineConfig({
   // ... other config if any
   plugins: [
+    legacy({
+      targets: ['defaults', 'not IE 11']
+    }),
     VitePWA({
       registerType: 'autoUpdate', // Automatically update the service worker
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'], // Add your icons here

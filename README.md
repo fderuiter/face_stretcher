@@ -54,6 +54,12 @@ npm run dev
 
 Open the provided localhost URL in your browser.
 
+### Legacy Browser Support
+
+This project uses modern JavaScript features. If you need to support older
+browsers, the build pipeline now includes **@vitejs/plugin-legacy**, which adds
+polyfills and transpiles the bundle for wider compatibility.
+
 ### Production Build
 
 ```bash
