@@ -135,6 +135,22 @@ For setups that still rely on the GitHub Actions workflow found in
 - `VERCEL_ORG_ID` – the organization ID from your Vercel dashboard
 - `VERCEL_PROJECT_ID` – the project ID for this app
 
+## TensorFlow Model Downloads
+
+Face detection uses the `@tensorflow-models/face-landmarks-detection` package.
+The underlying TensorFlow model weights are fetched from the internet the first
+time you load the page. If the network request fails, the app may only show a
+generic “An error occurred…” alert without a specific error code. Follow these
+steps to troubleshoot:
+
+1. Confirm your internet connection is working by opening another website or
+   running `ping` from a terminal.
+2. Open your browser’s developer tools (usually with **F12**) and inspect the
+   **Console** and **Network** tabs for failed requests related to TensorFlow
+   model files.
+3. Once connectivity is restored, reload the page so the models can download
+   properly.
+
 ## Analytics & Error Tracking
 
 Set the `VITE_SENTRY_DSN` environment variable to enable Sentry error reporting. If omitted, the app runs without collecting any analytics.
