@@ -87,6 +87,12 @@ function setupRenderer() {
   );
   camera.position.z = 5;
   window.addEventListener("resize", onWindowResize);
+  renderer.domElement.addEventListener("webglcontextlost", (e) => {
+    e.preventDefault();
+    const err = new Error("[ERR_IN_006] WebGL context lost");
+    logError(err);
+    alert(err.message);
+  });
 }
 
 function showResetButton() {
@@ -145,10 +151,11 @@ async function init(startFile = null) {
     hideCropper();
     uploadContainer.classList.add("hidden");
   } catch (error) {
-    logError(new Error(`Error during initial image selection: ${error.message}`));
+    const err = new Error(`[ERR_IN_005] Error during initial image selection: ${error.message}`);
+    logError(err);
     if (loadingIndicator) loadingIndicator.hide();
     uploadContainer.classList.remove("hidden");
-    alert(`Error loading image: ${error.message}`);
+    alert(err.message);
     return;
   }
 
@@ -161,10 +168,11 @@ async function init(startFile = null) {
     hideCropper();
     proceedWithCroppedImage(currentImage, currentBBox);
   } catch (error) {
-    logError(new Error(`Error during face selection: ${error.message}`));
+    const err = new Error(`[ERR_IN_003] Error during face selection: ${error.message}`);
+    logError(err);
     if (loadingIndicator) loadingIndicator.hide();
     uploadContainer.classList.remove("hidden");
-    alert(`Image processing failed: ${error.message}`);
+    alert(err.message);
   }
 }
 
@@ -235,7 +243,9 @@ function proceedWithCroppedImage(img, bbox) {
       controls = initControls({
         onReset: () => resetMesh(),
         onDownload: () =>
-          captureCanvas(renderer.domElement).catch((err) => logError(err)),
+          captureCanvas(renderer.domElement).catch((err) =>
+            logError(new Error(`[ERR_IN_004] ${err.message}`))
+          ),
         onParamsChange: (params) => {
           if (mesh) {
             mesh.userData.radius = params.radius;
@@ -245,43 +255,47 @@ function proceedWithCroppedImage(img, bbox) {
           }
         },
         onNewImage: () => {
-          // Clean up Three.js resources
-          if (mesh) {
-            scene.remove(mesh);
-            if (mesh.geometry) mesh.geometry.dispose();
-            if (mesh.material) {
-              if (mesh.material.map) mesh.material.map.dispose();
-              mesh.material.dispose();
+          try {
+            // Clean up Three.js resources
+            if (mesh) {
+              scene.remove(mesh);
+              if (mesh.geometry) mesh.geometry.dispose();
+              if (mesh.material) {
+                if (mesh.material.map) mesh.material.map.dispose();
+                mesh.material.dispose();
+              }
             }
+            if (controls) controls.destroy();
+            if (pointerControl) {
+              pointerControl.destroy();
+              pointerControl = null;
+            }
+            if (indicatorControl) {
+              indicatorControl.destroy();
+              indicatorControl = null;
+            }
+            controls = null;
+            if (keyboard) {
+              keyboard.destroy();
+              keyboard = null;
+            }
+            mesh = null;
+            currentImage = null;
+            currentBBox = null;
+            // Stop animation loop
+            lastTime = 0;
+            // Show upload container again
+            uploadContainer.classList.remove("hidden");
+            if (loadingIndicator) loadingIndicator.hide(); // Ensure loading is hidden
+            hideResetButton();
+            hideShareButton();
+            hideLinkButton();
+            hideReuploadButton();
+            // No page reload needed now
+            // window.location.reload();
+          } catch (error) {
+            logError(new Error(`[ERR_IN_007] Cleanup failed: ${error.message}`));
           }
-          if (controls) controls.destroy();
-          if (pointerControl) {
-            pointerControl.destroy();
-            pointerControl = null;
-          }
-          if (indicatorControl) {
-            indicatorControl.destroy();
-            indicatorControl = null;
-          }
-          controls = null;
-          if (keyboard) {
-            keyboard.destroy();
-            keyboard = null;
-          }
-          mesh = null;
-          currentImage = null;
-          currentBBox = null;
-          // Stop animation loop
-          lastTime = 0;
-          // Show upload container again
-          uploadContainer.classList.remove("hidden");
-          if (loadingIndicator) loadingIndicator.hide(); // Ensure loading is hidden
-          hideResetButton();
-          hideShareButton();
-          hideLinkButton();
-          hideReuploadButton();
-          // No page reload needed now
-          // window.location.reload();
         },
         onN64Toggle: (enabled) => {
           isN64Mode = enabled;
@@ -312,10 +326,11 @@ function proceedWithCroppedImage(img, bbox) {
     showLinkButton();
     showReuploadButton();
   } catch (error) {
-    logError(new Error(`Error creating mesh: ${error.message}`));
+    const err = new Error(`[ERR_IN_003] Error creating mesh: ${error.message}`);
+    logError(err);
     if (loadingIndicator) loadingIndicator.hide();
     uploadContainer.classList.remove("hidden");
-    alert(`Image processing failed: ${error.message}`);
+    alert(err.message);
     return;
   }
 }
@@ -417,7 +432,9 @@ function startApp() {
   });
   shareControl = initShareButton(() => {
     if (renderer)
-      captureCanvas(renderer.domElement).catch((err) => logError(err));
+      captureCanvas(renderer.domElement).catch((err) =>
+        logError(new Error(`[ERR_IN_004] ${err.message}`))
+      );
   });
   linkControl = initShareLinkButton(() => {
     if (renderer) {
@@ -474,9 +491,17 @@ function startApp() {
   hideReuploadButton();
 }
 
+function safeStart() {
+  try {
+    startApp();
+  } catch (error) {
+    logError(new Error(`[ERR_IN_001] Initialization failed: ${error.message}`));
+  }
+}
+
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', startApp);
+  document.addEventListener('DOMContentLoaded', safeStart);
 } else {
-  startApp();
+  safeStart();
 }
 // init(); // Call init directly if script is at the end of body or defer
