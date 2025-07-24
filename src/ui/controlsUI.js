@@ -21,15 +21,20 @@ export function initControls({
     newImage: () => onNewImage(), // Added New Image action
   };
 
+  const setAriaLabel = (ctrl, label) => {
+    const el = ctrl.domElement.querySelector("input, button");
+    if (el) {
+      el.setAttribute("aria-label", label);
+    }
+  };
+
   const radiusCtrl = gui
     .add(params, "radius", 0.05, 1.0)
     .onChange(() => onParamsChange(params))
     .name("Brush Radius");
   radiusCtrl.domElement.parentElement.parentElement.title =
     "Size of the area affected by dragging";
-  if (radiusCtrl.__input) {
-    radiusCtrl.__input.setAttribute("aria-label", "Brush Radius");
-  }
+  setAriaLabel(radiusCtrl, "Brush Radius");
 
   const strengthCtrl = gui
     .add(params, "strength", 0.1, 5.0)
@@ -37,9 +42,7 @@ export function initControls({
     .name("Brush Strength");
   strengthCtrl.domElement.parentElement.parentElement.title =
     "How much the mesh moves when dragged";
-  if (strengthCtrl.__input) {
-    strengthCtrl.__input.setAttribute("aria-label", "Brush Strength");
-  }
+  setAriaLabel(strengthCtrl, "Brush Strength");
 
   const stiffnessCtrl = gui
     .add(params, "stiffness", 1, 20)
@@ -47,9 +50,7 @@ export function initControls({
     .name("Spring Stiffness");
   stiffnessCtrl.domElement.parentElement.parentElement.title =
     "How quickly the mesh snaps back";
-  if (stiffnessCtrl.__input) {
-    stiffnessCtrl.__input.setAttribute("aria-label", "Spring Stiffness");
-  }
+  setAriaLabel(stiffnessCtrl, "Spring Stiffness");
 
   const dampingCtrl = gui
     .add(params, "damping", 0, 10)
@@ -57,9 +58,7 @@ export function initControls({
     .name("Spring Damping");
   dampingCtrl.domElement.parentElement.parentElement.title =
     "How much the spring effect wobbles";
-  if (dampingCtrl.__input) {
-    dampingCtrl.__input.setAttribute("aria-label", "Spring Damping");
-  }
+  setAriaLabel(dampingCtrl, "Spring Damping");
 
   const n64Ctrl = gui
     .add(params, "n64Mode")
@@ -67,9 +66,7 @@ export function initControls({
     .name("N64 Mode");
   n64Ctrl.domElement.parentElement.parentElement.title =
     "Toggle low-poly mesh and pixelated texture"; // Added N64 toggle
-  if (n64Ctrl.__checkbox) {
-    n64Ctrl.__checkbox.setAttribute("aria-label", "N64 Mode");
-  }
+  setAriaLabel(n64Ctrl, "N64 Mode");
 
   const curvatureCtrl = gui
     .add(params, "curvature", 0, 1, 0.05)
@@ -77,30 +74,22 @@ export function initControls({
     .name("Curvature");
   curvatureCtrl.domElement.parentElement.parentElement.title =
     "0 = flat, 1 = hemisphere";
-  if (curvatureCtrl.__input) {
-    curvatureCtrl.__input.setAttribute("aria-label", "Curvature");
-  }
+  setAriaLabel(curvatureCtrl, "Curvature");
 
   const resetCtrl = gui.add(params, "reset").name("Reset Mesh");
   resetCtrl.domElement.parentElement.parentElement.title =
     "Snap the mesh back to its original state";
-  if (resetCtrl.__button) {
-    resetCtrl.__button.setAttribute("aria-label", "Reset Mesh");
-  }
+  setAriaLabel(resetCtrl, "Reset Mesh");
 
   const downloadCtrl = gui.add(params, "download").name("Save Image");
   downloadCtrl.domElement.parentElement.parentElement.title =
     "Download the current view as a PNG image";
-  if (downloadCtrl.__button) {
-    downloadCtrl.__button.setAttribute("aria-label", "Save Image");
-  }
+  setAriaLabel(downloadCtrl, "Save Image");
 
   const newImageCtrl = gui.add(params, "newImage").name("New Image");
   newImageCtrl.domElement.parentElement.parentElement.title =
     "Start over with a new image"; // Added New Image button
-  if (newImageCtrl.__button) {
-    newImageCtrl.__button.setAttribute("aria-label", "New Image");
-  }
+  setAriaLabel(newImageCtrl, "New Image");
 
   // Store initial params for N64 toggle reference
   gui.userData = { initialParams: { ...params } };
