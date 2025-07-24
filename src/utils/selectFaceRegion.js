@@ -1,5 +1,6 @@
-import { detectFace } from './faceDetection.js';
-import { showCropper } from '../ui/cropperUI.js';
+import { detectFace } from "./faceDetection.js";
+import { showCropper } from "../ui/cropperUI.js";
+import { logError } from "./analytics.js";
 
 // Error codes:
 // ERR_SR_001: Manual crop cancelled
@@ -28,9 +29,10 @@ export async function selectFaceRegion(image, file = null) {
 
     return { image, bbox: centeredBox };
   } catch (err) {
+    logError(err);
     const manual = await showCropper(true, file);
     if (!manual) {
-      throw new Error('[ERR_SR_001] Manual crop cancelled');
+      throw new Error("[ERR_SR_001] Manual crop cancelled");
     }
     return { image: manual.imageElement, bbox: manual.cropData };
   }
