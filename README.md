@@ -75,13 +75,10 @@ npm test
 
 ### Handling `[ERR_FD_002]`
 
-This error appears when the app can't find a face in the uploaded image. Common
-causes include a side profile photo or the browser failing to download the face
-detection model because you're offline. Try these steps:
-
-1. Use the manual cropper to highlight your face and run detection again.
-2. Ensure your network connection is working so TensorFlow can load the model
-   files.
+This error appears when the app can't find a face in the uploaded image. If it
+occurs, the manual cropper automatically opens so you can select the face region
+yourself. If you continue to see this message, check that your network
+connection is working so TensorFlow can download the model files.
 
 ## Keyboard Controls
 
