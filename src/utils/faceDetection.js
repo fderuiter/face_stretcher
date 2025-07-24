@@ -80,8 +80,8 @@ export async function detectFace(imageElementOrCanvas) {
         height: box.yMax - box.yMin,
       };
     } catch (error) {
-      if (error.message.includes('No face detected') && typeof alert === 'function') {
-        alert('No face detected in the image. Ensure the face is clearly visible and try cropping manually.');
+      if (error.message.includes('No face detected')) {
+        console.warn('No face detected in the image. Falling back to manual cropping.');
       }
       if (error.message.includes('WebGL')) {
         throw new Error(`[ERR_FD_005] WebGL error: ${error.message}`);
