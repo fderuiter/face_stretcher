@@ -129,6 +129,14 @@ npm run test:e2e
 This starts a local server and executes the Playwright suite against
 Chromium and WebKit (iPhone 12 emulation).
 
+### dat.GUI controllers
+
+Older versions of `dat.gui` expose controller input elements through private
+properties like `__input`. In some environments those properties are missing,
+which previously caused runtime errors when initializing the controls UI. The
+code now locates the `<input>` element with `querySelector` and uses optional
+chaining, ensuring the ARIA labels are applied without throwing.
+
 ## CI
 
 This project includes a GitHub Actions workflow located at `.github/workflows/ci.yml`. The
