@@ -3,7 +3,6 @@ import * as tf from '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-backend-webgl';
 import '@tensorflow/tfjs-backend-cpu';
 import { logError } from './analytics.js';
-
 // Error codes:
 // ERR_FD_001: General face detection failure
 // ERR_FD_002: No face detected
