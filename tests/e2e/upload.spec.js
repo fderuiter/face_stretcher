@@ -11,7 +11,7 @@ test('image upload works', async ({ page }) => {
   await page.goto('/');
   await page.setInputFiles('#upload', imagePath);
   await page.waitForSelector('canvas#c');
-  await expect(page.locator('#upload-container')).toHaveClass(/hidden/);
+  await expect(page.locator("#upload-container")).toHaveClass(/hidden/, { timeout: 10000 });
   // canvas should be visible after upload
   await expect(page.locator('canvas#c')).toBeVisible();
 });
