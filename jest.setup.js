@@ -200,6 +200,15 @@ const mockFaceLandmarksDetection = {
 
 jest.mock('@tensorflow-models/face-landmarks-detection', () => mockFaceLandmarksDetection);
 
+// Mock TensorFlow.js core and backend to avoid heavy initialization during tests
+jest.mock('@tensorflow/tfjs-core', () => ({
+    ready: jest.fn(() => Promise.resolve()),
+    findBackend: jest.fn(() => 'webgl'),
+    setBackend: jest.fn(() => Promise.resolve()),
+    getBackend: jest.fn(() => 'webgl')
+}));
+jest.mock('@tensorflow/tfjs-backend-webgl', () => ({}));
+
 // Set up global mocks
 global.faceLandmarksDetection = mockFaceLandmarksDetection;
 global.mockEstimateFaces = mockEstimateFaces;
