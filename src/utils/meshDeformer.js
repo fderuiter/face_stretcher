@@ -8,7 +8,10 @@ let positions,
   geo,
   mesh,
   texture,
-  lockedVerts;
+  lockedVerts,
+  springWorker;
+
+let useWorker = false;
 
 // Error codes:
 // ERR_MD_001: Invalid mesh parameters
@@ -135,32 +138,39 @@ export function updateSprings(dt) {
     if (!positions || !originalPos || !velocities || dt <= 0) {
       throw new Error('[ERR_MD_005] Invalid spring update parameters');
     }
-
-    const pos = positions.array;
-    for (let i = 0; i < vertexCount; i++) {
-      const idx = i * 3;
-      if (lockedVerts && lockedVerts[i]) {
-        velocities[idx] = velocities[idx + 1] = velocities[idx + 2] = 0;
-        continue;
+    if (useWorker && springWorker) {
+      springWorker.postMessage({
+        dt,
+        positions: positions.array,
+        originalPos,
+        velocities,
+        lockedVerts,
+        kStiff: mesh.userData.kStiff,
+        damping: mesh.userData.damping,
+      });
+    } else {
+      const pos = positions.array;
+      for (let i = 0; i < vertexCount; i++) {
+        const idx = i * 3;
+        if (lockedVerts && lockedVerts[i]) {
+          velocities[idx] = velocities[idx + 1] = velocities[idx + 2] = 0;
+          continue;
+        }
+        const dx = pos[idx] - originalPos[idx];
+        const dy = pos[idx + 1] - originalPos[idx + 1];
+        const dz = pos[idx + 2] - originalPos[idx + 2];
+        const fx = -mesh.userData.kStiff * dx - mesh.userData.damping * velocities[idx];
+        const fy = -mesh.userData.kStiff * dy - mesh.userData.damping * velocities[idx + 1];
+        const fz = -mesh.userData.kStiff * dz - mesh.userData.damping * velocities[idx + 2];
+        velocities[idx] += fx * dt;
+        velocities[idx + 1] += fy * dt;
+        velocities[idx + 2] += fz * dt;
+        pos[idx] += velocities[idx] * dt;
+        pos[idx + 1] += velocities[idx + 1] * dt;
+        pos[idx + 2] += velocities[idx + 2] * dt;
       }
-      const dx = pos[idx] - originalPos[idx];
-      const dy = pos[idx + 1] - originalPos[idx + 1];
-      const dz = pos[idx + 2] - originalPos[idx + 2];
-      // Hooke's law + damping
-      const fx = -mesh.userData.kStiff * dx -
-        mesh.userData.damping * velocities[idx];
-      const fy = -mesh.userData.kStiff * dy -
-        mesh.userData.damping * velocities[idx + 1];
-      const fz = -mesh.userData.kStiff * dz -
-        mesh.userData.damping * velocities[idx + 2];
-      velocities[idx] += fx * dt;
-      velocities[idx + 1] += fy * dt;
-      velocities[idx + 2] += fz * dt;
-      pos[idx] += velocities[idx] * dt;
-      pos[idx + 1] += velocities[idx + 1] * dt;
-      pos[idx + 2] += velocities[idx + 2] * dt;
+      positions.needsUpdate = true;
     }
-    positions.needsUpdate = true;
   } catch (error) {
     logError(new Error(`[ERR_MD_005] Spring physics update failed: ${error.message}`));
     throw error;
@@ -270,4 +280,49 @@ export function lockCurrentDeformation() {
  */
 export function unlockDeformation() {
   if (lockedVerts) lockedVerts.fill(0);
+}
+
+export function getSpringState() {
+  return {
+    positions: positions ? positions.array.slice() : null,
+    originalPos: originalPos ? originalPos.slice() : null,
+    velocities: velocities ? velocities.slice() : null,
+    lockedVerts: lockedVerts ? lockedVerts.slice() : null,
+  };
+}
+
+export function applySpringState({ positions: pos, velocities: vel }) {
+  if (positions && pos) {
+    positions.array.set(pos);
+    positions.needsUpdate = true;
+  }
+  if (velocities && vel) {
+    velocities.set(vel);
+  }
+}
+
+export function enableSpringWorker() {
+  if (typeof Worker === 'undefined' || springWorker) return;
+  try {
+    let url = './workers/springWorker.js';
+    if (typeof document !== 'undefined') {
+      url = new URL('./workers/springWorker.js', document.baseURI).href;
+    }
+    springWorker = new Worker(url, { type: 'module' });
+    springWorker.onmessage = (e) => {
+      applySpringState(e.data);
+    };
+    useWorker = true;
+  } catch (err) {
+    console.warn('Web Worker initialization failed:', err);
+    springWorker = null;
+  }
+}
+
+export function disableSpringWorker() {
+  if (springWorker) {
+    springWorker.terminate();
+    springWorker = null;
+  }
+  useWorker = false;
 }

@@ -13,6 +13,8 @@ import {
   getTextureData,
   lockCurrentDeformation,
   unlockDeformation,
+  enableSpringWorker,
+  disableSpringWorker,
 } from "./utils/meshDeformer.js";
 import { generateMesh } from "./utils/generateMesh.js";
 import { initControls } from "./ui/controlsUI.js";
@@ -281,6 +283,7 @@ function proceedWithCroppedImage(img, bbox) {
               keyboard.destroy();
               keyboard = null;
             }
+            disableSpringWorker();
             mesh = null;
             currentImage = null;
             currentBBox = null;
@@ -379,6 +382,7 @@ function setupKeyboard(grabPoints) {
         keyboard.destroy();
         keyboard = null;
       }
+      disableSpringWorker();
       resetMesh();
       uploadContainer.classList.remove("hidden");
       hideResetButton();
@@ -415,6 +419,7 @@ function animate(now) {
 function startApp() {
   initAnalytics();
   installGlobalErrorHandlers();
+  enableSpringWorker();
   loadingIndicator = initLoadingIndicator();
   uploadControl = initUploadArea((file) => init(file));
   const shared = loadSharedImage();
@@ -466,6 +471,7 @@ function startApp() {
       keyboard.destroy();
       keyboard = null;
     }
+    disableSpringWorker();
     if (mesh) {
       scene.remove(mesh);
       if (mesh.geometry) mesh.geometry.dispose();
