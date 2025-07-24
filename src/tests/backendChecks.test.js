@@ -1,4 +1,4 @@
-import { checkBackendStatus } from '../utils/backendChecks.js';
+import { checkBackendStatus, assertBackendHealthy } from '../utils/backendChecks.js';
 import * as tf from '@tensorflow/tfjs-core';
 
 describe('checkBackendStatus', () => {
@@ -29,5 +29,28 @@ describe('checkBackendStatus', () => {
     jest.spyOn(tf, 'findBackend').mockReturnValue('webgl');
     const issues = await checkBackendStatus(doc, tf);
     expect(issues).toEqual([]);
+  });
+});
+
+describe('assertBackendHealthy', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  test('throws with logged error when issues detected', async () => {
+    const doc = {
+      createElement: () => ({ getContext: () => null })
+    };
+    const logSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    await expect(assertBackendHealthy(doc, tf)).rejects.toThrow(/Backend issues/);
+    expect(logSpy).toHaveBeenCalled();
+  });
+
+  test('resolves when environment ok', async () => {
+    const doc = {
+      createElement: () => ({ getContext: () => ({}) })
+    };
+    jest.spyOn(tf, 'findBackend').mockReturnValue('webgl');
+    await expect(assertBackendHealthy(doc, tf)).resolves.toBeUndefined();
   });
 });

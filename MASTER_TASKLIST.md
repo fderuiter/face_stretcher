@@ -209,7 +209,7 @@ stretchy-face-app/
 
 
 ### Backend Debugging & Error Handling
-- [ ] Add health checks for WebGL and TensorFlow initialization.
+- [x] Add health checks for WebGL and TensorFlow initialization.
 - [ ] Display clear overlay messages when back-end components fail to load.
 - [ ] Capture startup diagnostics for easier troubleshooting.
 - [ ] Warn users when the browser lacks required features.
