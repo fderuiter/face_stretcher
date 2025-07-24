@@ -1,4 +1,5 @@
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
+import * as tf from '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-backend-webgl';
 import { logError } from './analytics.js';
 
@@ -14,6 +15,15 @@ let modelPromise = null;
 
 async function loadModel() {
   if (!modelPromise) {
+    // Ensure we have a working backend before creating the detector. Some
+    // browsers disable WebGL which can cause an empty detection result.
+    await tf.ready();
+    if (tf.findBackend('webgl')) {
+      await tf.setBackend('webgl');
+    } else if (tf.findBackend('wasm')) {
+      await tf.setBackend('wasm');
+    }
+
     modelPromise = faceLandmarksDetection.createDetector(
       faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh,
       { runtime: 'tfjs' },
