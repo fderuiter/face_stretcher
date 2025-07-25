@@ -103,8 +103,8 @@ Keyboard behavior is configurable via the options passed to [`initKeyboardContro
 ## Project Structure
 
 ```txt
-├── index.html      # Entry point with canvas
 ├── src
+│   ├── index.html  # Entry point with canvas
 │   ├── main.js     # Core application logic
 │   └── style.css   # Basic UI styles
 ├── dist/           # Production output (ignored by git)
