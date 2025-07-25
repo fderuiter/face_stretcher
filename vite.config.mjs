@@ -1,10 +1,19 @@
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import legacy from '@vitejs/plugin-legacy';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 export default defineConfig({
   // ... other config if any
   plugins: [
+    viteStaticCopy({
+      targets: [
+        {
+          src: 'workers/springWorker.js',
+          dest: 'workers'
+        }
+      ]
+    }),
     legacy({
       targets: ['defaults', 'not IE 11']
     }),
