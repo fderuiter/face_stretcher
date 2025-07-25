@@ -34,6 +34,8 @@ import { createCameraController } from "./utils/cameraController.js";
 import { initGrabIndicators } from "./ui/grabIndicators.js";
 import { initAnalytics, installGlobalErrorHandlers, logError } from "./utils/analytics.js";
 import { assertBackendHealthy } from "./utils/backendChecks.js";
+import Stats from "stats.js";
+import { initStatsToggle } from "./ui/statsToggle.js";
 
 // Error codes:
 // ERR_IN_001: Initialization failed
@@ -75,6 +77,8 @@ let reuploadControl;
 let instructionsControl;
 let uploadControl;
 let themeControl;
+let stats;
+let statsControl;
 
 // Helper functions for loading state are provided by loadingIndicator
 
@@ -408,10 +412,12 @@ function animate(now) {
     lastTime = 0; // Reset time to indicate loop stopped
     return;
   }
+  if (stats) stats.begin();
   const dt = (now - lastTime) / 1000;
   updateSprings(Math.min(dt, 0.1)); // Clamp dt to avoid instability
   if (indicatorControl) indicatorControl.update();
   renderer.render(scene, camera);
+  if (stats) stats.end();
   lastTime = now;
   requestAnimationFrame(animate);
 }
@@ -493,6 +499,11 @@ function startApp() {
   });
   instructionsControl = initInstructions();
   themeControl = initThemeToggle();
+  if (process.env.NODE_ENV !== 'production') {
+    stats = new Stats();
+    stats.showPanel(0);
+    statsControl = initStatsToggle(stats);
+  }
   hideResetButton();
   hideShareButton();
   hideLinkButton();
