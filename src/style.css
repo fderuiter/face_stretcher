@@ -255,6 +255,24 @@ body {
 #theme-toggle:hover {
   background: linear-gradient(90deg, #fc5c7d 0%, #6a82fb 100%);
 }
+#stats-toggle {
+  position: absolute;
+  top: 1rem;
+  right: 6rem;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 7px;
+  background: linear-gradient(90deg, #6a82fb 0%, #fc5c7d 100%);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  z-index: 30;
+}
+#stats-toggle:hover {
+  background: linear-gradient(90deg, #fc5c7d 0%, #6a82fb 100%);
+}
 #share-btn:hover {
   background: linear-gradient(90deg, #fc5c7d 0%, #6a82fb 100%);
 }
@@ -332,7 +350,8 @@ body {
 
   #reset-btn,
   #share-btn,
-  #link-btn {
+  #link-btn,
+  #stats-toggle {
     bottom: 0.5rem;
     padding: 0.6rem 1.2rem;
     font-size: 1rem;

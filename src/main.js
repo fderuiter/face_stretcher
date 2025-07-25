@@ -28,6 +28,8 @@ import { generateShareLink, loadSharedImage } from "./utils/shareLink.js";
 import { initLoadingIndicator } from "./ui/loadingIndicator.js";
 import { initInstructions } from "./ui/instructions.js";
 import { initThemeToggle } from "./ui/themeToggle.js";
+import { initStatsToggle } from "./ui/statsToggle.js";
+import Stats from "stats.js";
 import { createDefaultGrabPoints } from "./utils/grabPoints.js";
 import { initPointerControls } from "./ui/pointerControls.js";
 import { createCameraController } from "./utils/cameraController.js";
@@ -68,6 +70,7 @@ const resetButton = document.getElementById("reset-btn");
 const shareButton = document.getElementById("share-btn");
 const linkButton = document.getElementById("link-btn");
 const reuploadButton = document.getElementById("reupload-btn");
+const statsToggleButton = document.getElementById("stats-toggle");
 let resetControl;
 let shareControl;
 let linkControl;
@@ -75,6 +78,8 @@ let reuploadControl;
 let instructionsControl;
 let uploadControl;
 let themeControl;
+let statsToggleControl;
+let stats;
 
 // Helper functions for loading state are provided by loadingIndicator
 
@@ -129,6 +134,14 @@ function showReuploadButton() {
 
 function hideReuploadButton() {
   if (reuploadButton) reuploadButton.classList.add("hidden");
+}
+
+function showStatsButton() {
+  if (statsToggleButton) statsToggleButton.classList.remove("hidden");
+}
+
+function hideStatsButton() {
+  if (statsToggleButton) statsToggleButton.classList.add("hidden");
 }
 
 async function init(startFile = null) {
@@ -296,6 +309,7 @@ function proceedWithCroppedImage(img, bbox) {
             hideShareButton();
             hideLinkButton();
             hideReuploadButton();
+            hideStatsButton();
             // No page reload needed now
             // window.location.reload();
           } catch (error) {
@@ -389,6 +403,7 @@ function setupKeyboard(grabPoints) {
       hideShareButton();
       hideLinkButton();
       hideReuploadButton();
+      hideStatsButton();
     },
     grabPoints,
   });
@@ -408,10 +423,12 @@ function animate(now) {
     lastTime = 0; // Reset time to indicate loop stopped
     return;
   }
+  if (stats) stats.begin();
   const dt = (now - lastTime) / 1000;
   updateSprings(Math.min(dt, 0.1)); // Clamp dt to avoid instability
   if (indicatorControl) indicatorControl.update();
   renderer.render(scene, camera);
+  if (stats) stats.end();
   lastTime = now;
   requestAnimationFrame(animate);
 }
@@ -493,6 +510,15 @@ function startApp() {
   });
   instructionsControl = initInstructions();
   themeControl = initThemeToggle();
+  if (process.env.NODE_ENV !== "production") {
+    stats = new Stats();
+    stats.showPanel(0);
+    document.body.appendChild(stats.dom);
+    statsToggleControl = initStatsToggle(stats);
+    showStatsButton();
+  } else {
+    hideStatsButton();
+  }
   hideResetButton();
   hideShareButton();
   hideLinkButton();
