@@ -27,18 +27,11 @@ async function ensureBackend() {
 
 async function loadModel() {
   if (!modelPromise) {
-    // Ensure we have a working backend before creating the detector. Some
-    // browsers disable WebGL which can cause an empty detection result.
+    // Backend should be initialized by ensureBackend() before this is called.
     await tf.ready();
-    if (tf.findBackend('webgl')) {
-      await tf.setBackend('webgl');
-    } else if (tf.findBackend('wasm')) {
-      await tf.setBackend('wasm');
-    }
-
     modelPromise = faceLandmarksDetection.createDetector(
       faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh,
-      { runtime: 'tfjs' },
+      { runtime: 'tfjs' }
     );
   }
   return modelPromise;
