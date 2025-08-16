@@ -21,23 +21,17 @@ let useWorker = false;
 // ERR_MD_005: Spring update error
 // ERR_MD_006: Stretch region error
 
-/**
- * Creates a subdivided plane mesh, sets up userData for springs.
- */
-export function createMesh(
-  initialTexture,
-  width,
-  height,
-  segments,
-  pixelated = false,
-  curvature = 0
-) {
+export function createMeshFromData(meshData) {
   try {
-    if (!initialTexture || width <= 0 || height <= 0 || segments < 1) {
-      throw new Error('[ERR_MD_001] Invalid mesh parameters');
-    }
+    const {
+      geometryData,
+      textureBitmap,
+      segments,
+      pixelated,
+      curvature
+    } = meshData;
 
-    texture = initialTexture;
+    texture = new THREE.CanvasTexture(textureBitmap);
     texture.needsUpdate = true;
 
     if (pixelated) {
@@ -48,53 +42,53 @@ export function createMesh(
       texture.minFilter = THREE.LinearFilter;
     }
 
-    let curv = curvature;
-    if (typeof curvature === 'boolean') curv = curvature ? 1 : 0;
+    geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(geometryData.positions, 3));
+    geo.setAttribute('uv', new THREE.BufferAttribute(geometryData.uvs, 2));
+    geo.setIndex(new THREE.BufferAttribute(geometryData.indices, 1));
 
-    if (curv > 0) {
-      const radius = width / 2;
-      const thetaLength = Math.PI * curv;
-      const thetaStart = (Math.PI - thetaLength) / 2;
-      geo = new THREE.SphereGeometry(
-        radius,
-        segments,
-        segments,
-        -Math.PI / 2,
-        Math.PI,
-        thetaStart,
-        thetaLength
-      );
-      const baseHeight = 2 * radius * Math.sin(thetaLength / 2);
-      const scaleY = height / baseHeight;
-      geo.scale(1, scaleY, 1);
-    } else {
-      geo = new THREE.PlaneGeometry(width, height, segments, segments);
-    }
-    const mat = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide }); // Use DoubleSide
+    const mat = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
     mesh = new THREE.Mesh(geo, mat);
 
-    // use geometry from mesh to support mocks
     geo = mesh.geometry;
     positions = geo.attributes.position;
-    vertexCount = positions.count || geo.attributes.position.count;
+    vertexCount = positions.count;
     originalPos = positions.array.slice();
     velocities = new Float32Array(vertexCount * 3).fill(0);
     lockedVerts = new Uint8Array(vertexCount).fill(0);
 
-    // default spring params & brush
     mesh.userData.radius = 0.3;
     mesh.userData.strength = 1.0;
     mesh.userData.kStiff = 8;
     mesh.userData.damping = 4;
-    mesh.userData.segments = segments; // Store segments count
-    mesh.userData.pixelated = pixelated; // Store pixelated state
-    mesh.userData.curvature = curv; // Store curvature amount
+    mesh.userData.segments = segments;
+    mesh.userData.pixelated = pixelated;
+    mesh.userData.curvature = curvature;
 
     return mesh;
   } catch (error) {
     logError(new Error(`[ERR_MD_003] Geometry creation failed: ${error.message}`));
     throw error;
   }
+}
+
+/**
+ * Creates a subdivided plane mesh, sets up userData for springs.
+ * This is now a wrapper for createMeshFromData for convenience, but the primary
+ * creation path is via the worker and createMeshFromData.
+ */
+export function createMesh(
+  initialTexture,
+  width,
+  height,
+  segments,
+  pixelated = false,
+  curvature = 0
+) {
+  // This function is now mostly for mocking and compatibility.
+  // The main path uses the worker.
+  console.warn("createMesh is deprecated. Use the generation worker.");
+  return mesh;
 }
 
 /**

@@ -1,9 +1,8 @@
 import * as THREE from "three";
-import { selectFaceRegion } from "./utils/selectFaceRegion.js";
 import { showCropper, hideCropper } from "./ui/cropperUI.js";
 import { initUploadArea } from "./ui/uploadArea.js";
 import {
-  createMesh,
+  createMeshFromData,
   stretchRegion,
   updateSprings,
   resetMesh,
@@ -16,7 +15,6 @@ import {
   enableSpringWorker,
   disableSpringWorker,
 } from "./utils/meshDeformer.js";
-import { generateMesh } from "./utils/generateMesh.js";
 import { initControls } from "./ui/controlsUI.js";
 import { captureCanvas } from "./utils/share.js";
 import { initKeyboardControls } from "./ui/keyboardControls.js";
@@ -131,6 +129,33 @@ function hideReuploadButton() {
   if (reuploadButton) reuploadButton.classList.add("hidden");
 }
 
+let generationWorker;
+
+function initWorker() {
+  const workerUrl = new URL('./workers/generationWorker.js', import.meta.url);
+  generationWorker = new Worker(workerUrl, { type: 'module' });
+
+  generationWorker.onmessage = (event) => {
+    const { type, payload, error } = event.data;
+    if (error) {
+      logError(new Error(error));
+      if (loadingIndicator) loadingIndicator.hide();
+      uploadContainer.classList.remove("hidden");
+      alert(error);
+      return;
+    }
+
+    switch (type) {
+      case 'faceDetected':
+        handleFaceDetected(payload.bbox);
+        break;
+      case 'meshGenerated':
+        handleMeshGenerated(payload);
+        break;
+    }
+  };
+}
+
 async function init(startFile = null) {
   if (loadingIndicator) loadingIndicator.hide();
   uploadContainer.classList.remove("hidden");
@@ -154,25 +179,13 @@ async function init(startFile = null) {
     currentImage = img;
     hideCropper();
     uploadContainer.classList.add("hidden");
+    if (loadingIndicator) loadingIndicator.show("Detecting face...");
+
+    const imageBitmap = await createImageBitmap(currentImage);
+    generationWorker.postMessage({ type: 'detectFace', payload: { imageBitmap } }, [imageBitmap]);
+
   } catch (error) {
     const err = new Error(`[ERR_IN_005] Error during initial image selection: ${error.message}`);
-    logError(err);
-    if (loadingIndicator) loadingIndicator.hide();
-    uploadContainer.classList.remove("hidden");
-    alert(err.message);
-    return;
-  }
-
-  if (loadingIndicator) loadingIndicator.show("Detecting face...");
-
-  try {
-    const { image: faceImg, bbox } = await selectFaceRegion(img, startFile);
-    currentImage = faceImg;
-    currentBBox = bbox;
-    hideCropper();
-    proceedWithCroppedImage(currentImage, currentBBox);
-  } catch (error) {
-    const err = new Error(`[ERR_IN_003] Error during face selection: ${error.message}`);
     logError(err);
     if (loadingIndicator) loadingIndicator.hide();
     uploadContainer.classList.remove("hidden");
@@ -180,30 +193,46 @@ async function init(startFile = null) {
   }
 }
 
-function proceedWithCroppedImage(img, bbox) {
+async function handleFaceDetected(bbox) {
+  if (bbox) {
+    currentBBox = bbox;
+    proceedWithCroppedImage(currentImage, currentBBox);
+  } else {
+    // Face detection failed, fallback to manual crop
+    try {
+      const manual = await showCropper(true, null);
+      if (!manual) {
+        throw new Error("[ERR_SR_001] Manual crop cancelled");
+      }
+      currentImage = manual.imageElement;
+      currentBBox = manual.cropData;
+      proceedWithCroppedImage(currentImage, currentBBox);
+    } catch (error) {
+      logError(error);
+      if (loadingIndicator) loadingIndicator.hide();
+      uploadContainer.classList.remove("hidden");
+      alert(error.message);
+    }
+  }
+}
+
+async function proceedWithCroppedImage(img, bbox) {
   if (loadingIndicator) loadingIndicator.show("Creating mesh...");
 
-  try {
-    const cropped = document.createElement("canvas");
-    cropped.width = bbox.width;
-    cropped.height = bbox.height;
-    const ctx = cropped.getContext("2d");
-    if (!ctx) {
-      throw new Error("[ERR_IN_003] Could not get 2D context");
+  const cropped = await createImageBitmap(img, bbox.x, bbox.y, bbox.width, bbox.height);
+
+  generationWorker.postMessage({
+    type: 'generateMesh',
+    payload: {
+      imageBitmap: cropped,
+      n64Mode: isN64Mode,
+      curvature: meshCurvature,
     }
+  }, [cropped]);
+}
 
-    ctx.drawImage(
-      img,
-      bbox.x,
-      bbox.y,
-      bbox.width,
-      bbox.height,
-      0,
-      0,
-      bbox.width,
-      bbox.height
-    );
-
+function handleMeshGenerated(meshData) {
+   try {
     if (!renderer) {
       try {
         setupRenderer();
@@ -221,7 +250,7 @@ function proceedWithCroppedImage(img, bbox) {
       }
     }
 
-    mesh = generateMesh(cropped, isN64Mode, meshCurvature);
+    mesh = createMeshFromData(meshData);
     scene.add(mesh);
     cameraCtrl = createCameraController({ camera, mesh });
 
@@ -284,6 +313,10 @@ function proceedWithCroppedImage(img, bbox) {
               keyboard = null;
             }
             disableSpringWorker();
+            if (generationWorker) {
+              generationWorker.terminate();
+              generationWorker = null;
+            }
             mesh = null;
             currentImage = null;
             currentBBox = null;
@@ -420,6 +453,7 @@ function startApp() {
   initAnalytics();
   installGlobalErrorHandlers();
   enableSpringWorker();
+  initWorker();
   loadingIndicator = initLoadingIndicator();
   uploadControl = initUploadArea((file) => init(file));
   const shared = loadSharedImage();
