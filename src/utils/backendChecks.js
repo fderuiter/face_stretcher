@@ -1,4 +1,5 @@
 import * as tf from '@tensorflow/tfjs-core';
+import '@tensorflow/tfjs-backend-webgl';
 import { logError } from './analytics.js';
 
 /**
