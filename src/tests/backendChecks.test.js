@@ -54,3 +54,13 @@ describe('assertBackendHealthy', () => {
     await expect(assertBackendHealthy(doc, tf)).resolves.toBeUndefined();
   });
 });
+
+describe('TensorFlow.js Backend Registration', () => {
+  test('should have the WebGL backend registered', async () => {
+    // This test ensures that the WebGL backend is properly imported and registered.
+    // It does not use mocks, so it will fail if the import is removed.
+    await tf.ready();
+    const backend = tf.getBackend();
+    expect(backend).toBe('webgl');
+  });
+});
