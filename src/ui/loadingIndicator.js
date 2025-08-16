@@ -2,29 +2,45 @@ export function initLoadingIndicator() {
   const container = document.getElementById('loading-bar-container');
   const bar = document.getElementById('loading-bar');
   const text = document.getElementById('loading-text');
-  let interval;
+  let progressInterval;
+  let hideTimeout;
 
   function show(message = 'Loading...') {
     if (!container || !bar || !text) return;
+    clearTimeout(hideTimeout);
+    clearInterval(progressInterval);
     text.textContent = message;
+    bar.classList.remove('error');
     container.classList.remove('hidden');
     bar.value = 0;
-    clearInterval(interval);
-    interval = setInterval(() => {
+    progressInterval = setInterval(() => {
       if (bar.value < 90) bar.value += 10;
     }, 300);
   }
 
   function hide() {
     if (!container || !bar) return;
-    clearInterval(interval);
+    clearTimeout(hideTimeout);
+    clearInterval(progressInterval);
     bar.value = 100;
-    setTimeout(() => container.classList.add('hidden'), 300);
+    hideTimeout = setTimeout(() => container.classList.add('hidden'), 300);
+  }
+
+  function showError(message) {
+    if (!container || !bar || !text) return;
+    clearTimeout(hideTimeout);
+    clearInterval(progressInterval);
+    text.textContent = message;
+    bar.value = 100;
+    bar.classList.add('error');
+    container.classList.remove('hidden');
+    hideTimeout = setTimeout(() => container.classList.add('hidden'), 5000);
   }
 
   function destroy() {
-    clearInterval(interval);
+    clearTimeout(hideTimeout);
+    clearInterval(progressInterval);
   }
 
-  return { show, hide, destroy };
+  return { show, hide, showError, destroy };
 }
