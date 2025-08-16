@@ -139,9 +139,8 @@ function initWorker() {
     const { type, payload, error } = event.data;
     if (error) {
       logError(new Error(error));
-      if (loadingIndicator) loadingIndicator.hide();
+      if (loadingIndicator) loadingIndicator.showError(error);
       uploadContainer.classList.remove("hidden");
-      alert(error);
       return;
     }
 
@@ -187,9 +186,8 @@ async function init(startFile = null) {
   } catch (error) {
     const err = new Error(`[ERR_IN_005] Error during initial image selection: ${error.message}`);
     logError(err);
-    if (loadingIndicator) loadingIndicator.hide();
+    if (loadingIndicator) loadingIndicator.showError(err.message);
     uploadContainer.classList.remove("hidden");
-    alert(err.message);
   }
 }
 
@@ -202,16 +200,18 @@ async function handleFaceDetected(bbox) {
     try {
       const manual = await showCropper(true, null);
       if (!manual) {
-        throw new Error("[ERR_SR_001] Manual crop cancelled");
+        // User cancelled manual crop, just show the upload UI again
+        if (loadingIndicator) loadingIndicator.hide();
+        uploadContainer.classList.remove('hidden');
+        return;
       }
       currentImage = manual.imageElement;
       currentBBox = manual.cropData;
       proceedWithCroppedImage(currentImage, currentBBox);
     } catch (error) {
       logError(error);
-      if (loadingIndicator) loadingIndicator.hide();
+      if (loadingIndicator) loadingIndicator.showError(error.message);
       uploadContainer.classList.remove("hidden");
-      alert(error.message);
     }
   }
 }

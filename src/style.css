@@ -166,6 +166,12 @@ body {
   background: linear-gradient(90deg, #6a82fb 0%, #fc5c7d 100%);
   border-radius: 6px;
 }
+#loading-bar.error::-webkit-progress-value {
+  background: #e74c3c;
+}
+#loading-bar.error::-moz-progress-bar {
+  background: #e74c3c;
+}
 #loading-text {
   font-size: 1.1rem;
   color: var(--loading-text-color);

@@ -87,7 +87,7 @@ async function detectFace(imageBitmap) {
   } catch (error) {
     // Instead of logging and re-throwing, post an error message back to the main thread
     self.postMessage({ type: 'error', error: error.message });
-    throw error; // Still throw to stop execution in the worker
+    // By not re-throwing, we prevent an unhandled promise rejection.
   }
 }
 
@@ -188,12 +188,9 @@ self.onmessage = async (event) => {
   const { type, payload } = event.data;
 
   if (type === 'detectFace') {
-    try {
-      const bbox = await detectFace(payload.imageBitmap);
-      self.postMessage({ type: 'faceDetected', payload: { bbox } });
-    } catch (error) {
-      // Error is already posted in detectFace
-    }
+    const bbox = await detectFace(payload.imageBitmap);
+    // If bbox is undefined (due to an error), the main thread will know.
+    self.postMessage({ type: 'faceDetected', payload: { bbox } });
   } else if (type === 'generateMesh') {
     try {
       const { imageBitmap, n64Mode, curvature } = payload;
